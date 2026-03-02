@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "../components/Header";
-import CTASection from "../components/CTASection";
+import Header from "../../components/Header";
+import CTASection from "../../components/CTASection";
 import Image from "next/image";
 import { Calendar, ArrowLeft, Clock, Tag, Loader2 } from "lucide-react";
 import Link from "next/link";

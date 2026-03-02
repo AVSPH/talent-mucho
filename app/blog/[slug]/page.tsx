@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Header from "../../components/Header";
-import CTASection from "../../components/CTASection";
+import Header from "../../../components/Header";
+import CTASection from "../../../components/CTASection";
 import Image from "next/image";
 import {
   Calendar,

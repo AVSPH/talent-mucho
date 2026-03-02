@@ -1,16 +1,16 @@
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import WhoWeAreSection from "./components/WhoWeAreSection";
-import BenefitsSection from "./components/BenefitsSection";
-import ChallengeSection from "./components/ChallengeSection";
-import PhilosophySection from "./components/PhilosophySection";
-import ServicesSection from "./components/ServicesSection";
-import WhyUsSection from "./components/WhyUsSection";
-import ClientsSection from "./components/ClientsSection";
-import ProcessSection from "./components/ProcessSection";
-import TestimonialsSection from "./components/TestimonialsSection";
-import BlogSection from "./components/BlogSection";
-import CTASection from "./components/CTASection";
+import Header from "../components/Header";
+import Hero from "../components/Hero";
+import ClientsSection from "../components/ClientsSection";
+import ChallengeSection from "../components/ChallengeSection";
+import WhoWeAreSection from "../components/WhoWeAreSection";
+import ServicesSection from "../components/ServicesSection";
+import BenefitsSection from "../components/BenefitsSection";
+import ProcessSection from "../components/ProcessSection";
+import PhilosophySection from "../components/PhilosophySection";
+import WhyUsSection from "../components/WhyUsSection";
+import TestimonialsSection from "../components/TestimonialsSection";
+import BlogSection from "../components/BlogSection";
+import CTASection from "../components/CTASection";
 
 export default function Home() {
   return (
@@ -18,14 +18,14 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <WhoWeAreSection />
-        <BenefitsSection />
-        <ServicesSection />
+        <ClientsSection />
         <ChallengeSection />
+        <WhoWeAreSection />
+        <ServicesSection />
+        <BenefitsSection />
+        <ProcessSection />
         <PhilosophySection />
         <WhyUsSection />
-        <ClientsSection />
-        <ProcessSection />
         <TestimonialsSection />
         <BlogSection />
         <CTASection />

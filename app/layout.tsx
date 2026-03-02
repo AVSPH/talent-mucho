@@ -1,18 +1,20 @@
+
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
-import JsonLd from "./components/JsonLd";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
+import JsonLd from "../components/JsonLd";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
   display: "swap",
 });
@@ -128,7 +130,7 @@ export default function RootLayout({
         />
         <JsonLd />
       </head>
-      <body className={`${playfair.variable} ${inter.variable}`}>
+      <body className={`${cormorant.variable} ${manrope.variable}`}>
         {children}
         <Analytics />
         <SpeedInsights />
