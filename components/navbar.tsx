@@ -57,6 +57,8 @@ import {
 } from "@aliimam/icons";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Menu, X } from "lucide-react";
 
 import Image from "next/image";
 
@@ -102,6 +104,7 @@ const insights: {
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -194,16 +197,127 @@ export function Header() {
           </NavigationMenu>
         </div>
         <div className="flex items-center gap-4">
-          <a
-            href="https://calendly.com/talentmucho/30min"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary text-sm py-2 px-6 rounded-full"
+          <div className="hidden lg:block">
+            <a
+              href="https://calendly.com/talentmucho/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary text-sm py-2 px-6 rounded-full"
+            >
+              Book a Call
+            </a>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="lg:hidden p-2 text-charcoal-900 hover:bg-beige-100 rounded-full transition-colors"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open mobile menu"
           >
-            Book a Call
-          </a>
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-charcoal-900/40 backdrop-blur-sm z-40 lg:hidden"
+            />
+
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 bottom-0 w-4/5 max-w-sm bg-beige-50 z-50 shadow-2xl flex flex-col lg:hidden border-r border-beige-200"
+            >
+              <div className="p-6 flex items-center justify-between border-b border-beige-200/50 flex-shrink-0">
+                <Image
+                  src="/tm-logo.png"
+                  alt="Talent Mucho"
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto object-contain"
+                />
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 text-charcoal-900 hover:bg-beige-200/50 rounded-full transition-colors"
+                  aria-label="Close mobile menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-8">
+                <div>
+                  <h4 className="text-xs font-semibold text-clay-500 uppercase tracking-widest mb-4">Our Studio</h4>
+                  <div className="flex flex-col gap-3">
+                    {ourStudio.map((item) => (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-start gap-4 p-3 rounded-xl hover:bg-beige-100 transition-colors border border-transparent hover:border-beige-200/50"
+                      >
+                        <div className="mt-0.5 text-clay-500 bg-white p-2 rounded-lg border border-beige-200 shadow-sm shrink-0">
+                          {React.cloneElement(item.icon as React.ReactElement<any>, { className: "w-4 h-4" })}
+                        </div>
+                        <div>
+                          <div className="font-medium text-charcoal-900">{item.title}</div>
+                          <div className="text-xs text-taupe-500 mt-1 leading-relaxed">{item.description}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-clay-500 uppercase tracking-widest mb-4">Insights</h4>
+                  <div className="flex flex-col gap-3">
+                    {insights.map((item) => (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-start gap-4 p-3 rounded-xl hover:bg-beige-100 transition-colors border border-transparent hover:border-beige-200/50"
+                      >
+                        <div className="mt-0.5 text-clay-500 bg-white p-2 rounded-lg border border-beige-200 shadow-sm shrink-0">
+                          {React.cloneElement(item.icon as React.ReactElement<any>, { className: "w-4 h-4" })}
+                        </div>
+                        <div>
+                          <div className="font-medium text-charcoal-900">{item.title}</div>
+                          <div className="text-xs text-taupe-500 mt-1 leading-relaxed">{item.description}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-beige-200/50 bg-white shrink-0">
+                <a
+                  href="https://calendly.com/talentmucho/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-full py-4 bg-charcoal-900 text-beige-50 font-medium rounded-xl shadow-lg hover:bg-clay-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Book a Strategy Call
+                </a>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -23,7 +23,6 @@ export default function Home() {
         <ServicesSection />
         <BenefitsSection />
         <ProcessSection />
-        <PhilosophySection />
         <WhyUsSection />
         <TestimonialsSection />
         <BlogSection />

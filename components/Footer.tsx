@@ -38,19 +38,24 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-charcoal-900 border-t border-beige-50/10 py-12">
+        <footer className="bg-charcoal-900 border-t border-beige-50/10 py-10 relative z-10">
             <div className="section-container">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                    {/* Logo */}
-                    <a href="#" className="flex items-center">
-                        <Image
-                            src="/tm-logo.png"
-                            alt="Talent Mucho"
-                            width={120}
-                            height={40}
-                            className="h-10 w-auto object-contain brightness-0 invert"
-                        />
-                    </a>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    {/* Logo & Copyright */}
+                    <div className="flex flex-col items-center md:items-start gap-4">
+                        <a href="#" className="flex items-center">
+                            <Image
+                                src="/tm-logo.png"
+                                alt="Talent Mucho"
+                                width={120}
+                                height={40}
+                                className="h-8 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+                            />
+                        </a>
+                        <p className="text-xs text-beige-200/40 font-medium tracking-wide">
+                            © {new Date().getFullYear()} Talent Mucho. All rights reserved.
+                        </p>
+                    </div>
 
                     {/* Social Media Links */}
                     <div className="flex items-center gap-3">
@@ -63,18 +68,18 @@ export default function Footer() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={social.name}
-                                    className={`w-10 h-10 flex items-center justify-center rounded-full bg-beige-50/10 text-beige-50 transition-all duration-300 ${social.hoverColor} hover:text-white hover:scale-110`}
+                                    className={`w-10 h-10 flex items-center justify-center rounded-full bg-beige-50/5 border border-beige-50/10 text-beige-50/70 transition-all duration-300 ${social.hoverColor} hover:text-white hover:scale-110 hover:border-transparent`}
                                 >
-                                    <Icon className="w-5 h-5" />
+                                    <Icon className="w-4 h-4" />
                                 </a>
                             );
                         })}
                     </div>
 
                     {/* Location & Contact */}
-                    <div className="flex flex-col items-center md:items-end gap-2 text-sm text-beige-200/60">
+                    <div className="flex flex-col items-center md:items-end gap-2 text-xs text-beige-200/60 font-medium tracking-wide">
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
+                            <MapPin className="w-3.5 h-3.5" />
                             <span>Torrevieja, Spain 03185</span>
                         </div>
                         <a
@@ -83,17 +88,10 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 hover:text-beige-50 transition-colors"
                         >
-                            <FaWhatsapp className="w-4 h-4" />
+                            <FaWhatsapp className="w-3.5 h-3.5" />
                             <span>+34 657 752 940</span>
                         </a>
                     </div>
-                </div>
-
-                {/* Copyright */}
-                <div className="mt-8 pt-6 border-t border-beige-50/10 text-center">
-                    <p className="text-sm text-beige-200/40">
-                        © {new Date().getFullYear()} Talent Mucho. All rights reserved.
-                    </p>
                 </div>
             </div>
         </footer>
