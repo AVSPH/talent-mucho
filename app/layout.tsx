@@ -4,6 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import JsonLd from "../components/JsonLd";
+import { Header } from "../components/navbar";
+import Hero from "../components/Hero";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -122,7 +124,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-
       <head>
         <meta
           name="google-site-verification"
@@ -131,6 +132,7 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body className={`${cormorant.variable} ${manrope.variable}`}>
+        <Header />
         {children}
         <Analytics />
         <SpeedInsights />

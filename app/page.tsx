@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Hero from "../components/Hero";
 import ClientsSection from "../components/ClientsSection";
 import ChallengeSection from "../components/ChallengeSection";
@@ -15,11 +14,9 @@ import CTASection from "../components/CTASection";
 export default function Home() {
   return (
     <>
-      <Header />
       <main>
         <Hero />
         <ClientsSection />
-        <ChallengeSection />
         <WhoWeAreSection />
         <ServicesSection />
         <BenefitsSection />

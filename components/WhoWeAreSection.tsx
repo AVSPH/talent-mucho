@@ -56,7 +56,7 @@ export default function WhoWeAreSection() {
                             </p>
                         </div>
 
-                        <a href="#services" className="inline-flex items-center gap-2 text-clay-500 hover:text-clay-400 font-medium transition-colors group">
+                        <a href="#services" className="inline-flex items-center gap-2 text-white font-medium transition-colors group btn-primary">
                             Explore Our Services
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>

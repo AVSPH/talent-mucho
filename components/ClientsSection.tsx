@@ -9,7 +9,7 @@ export default function ClientsSection() {
     ];
 
     return (
-        <section className="py-14 bg-beige-100 border-y border-beige-200 overflow-hidden">
+        <section className="py-14 bg-beige-100 border-y border-beige-200 overflow-hidden border-none">
             <div className="section-container">
                 <p className="text-center text-taupe-400 text-xs font-semibold uppercase tracking-[0.25em] mb-8">
                     Trusted by builders worldwide

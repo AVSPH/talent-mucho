@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { Target, Briefcase, Star, CheckCircle } from "lucide-react";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-b from-beige-100 to-beige-50 overflow-hidden">
+    <section className="relative min-h-screen flex items-center bg-beige-100 overflow-hidden">
       {/* Diagonal Cross Grid Pattern */}
       <div
         className="absolute inset-0"
@@ -99,7 +100,10 @@ export default function Hero() {
               {/* Floating Card - Experience Badge */}
               <div className="absolute top-8 right-0 lg:-right-4 z-20 animate-fade-in-up animation-delay-300">
                 <div className="bg-clay-500 text-beige-50 px-4 py-3 rounded-lg shadow-lg">
-                  <span className="text-2xl font-bold">10+</span>
+                  <span className="text-2xl font-bold flex items-center">
+                    <NumberTicker value={10} className="text-beige-50" />
+                    <span>+</span>
+                  </span>
                   <p className="text-white text-xs opacity-90">
                     Years
                     <br />
@@ -124,7 +128,10 @@ export default function Hero() {
                       <p className="text-xs text-taupe-400">This Month</p>
                     </div>
                   </div>
-                  <p className="text-xl font-bold text-clay-500">250+</p>
+                  <p className="text-xl font-bold text-clay-500 flex items-center">
+                    <NumberTicker value={250} className="text-clay-500" />
+                    <span>+</span>
+                  </p>
                 </div>
               </div>
 
@@ -132,7 +139,10 @@ export default function Hero() {
               <div className="absolute bottom-20 -right-4 lg:-right-8 z-20 opacity-0 animate-fade-in-up animation-delay-500">
                 <div className="bg-beige-50 px-4 py-3 rounded-xl shadow-lg border border-beige-200">
                   <p className="text-xs text-taupe-400 mb-1">Client Growth</p>
-                  <p className="text-lg font-bold text-charcoal-900">98%</p>
+                  <p className="text-lg font-bold text-charcoal-900 flex items-center">
+                    <NumberTicker value={98} className="text-charcoal-900" />
+                    <span>%</span>
+                  </p>
                   <div className="flex items-end gap-1 mt-2">
                     <div className="w-2 h-3 bg-beige-300 rounded-sm" />
                     <div className="w-2 h-4 bg-beige-300 rounded-sm" />
