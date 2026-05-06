@@ -34,41 +34,26 @@ const services = [
         details: "Skills-matched hiring, not guesswork.",
         href: "/services/virtual-assistants"
     },
-    {
-        id: "branding",
-        title: "Personal Branding",
-        subtitle: "Authority & Influence",
-        description: "Build a compelling personal brand that establishes authority and drives meaningful connections.",
-        icon: TrendingUp,
-        spanClass: "lg:col-span-4 lg:row-span-2",
-        className: "bg-charcoal-900 text-beige-50 border-charcoal-800",
-        features: [
-            "Content Strategy",
-            "Profile Optimization",
-            "Thought Leadership",
-            "Audience Growth"
-        ],
-        href: "/services/personal-branding"
-    },
-    {
-        id: "marketing",
-        title: "Marketing & Strategy",
-        subtitle: "Visibility & Growth",
-        description: "Turn founders into authorities with targeted execution and strategic brand positioning.",
-        icon: Share2,
-        spanClass: "lg:col-span-6",
-        className: "bg-white",
-        features: ["Brand Positioning", "SMM & Engagement", "SEO & Visibility"],
-        href: "/services/marketing"
-    },
+    // Personal Branding + Marketing & Strategy hidden for now ~ focus on
+    // Educate (bootcamp), Build (websites), and Operate (VAs + AI training).
+    // {
+    //     id: "branding",
+    //     title: "Personal Branding",
+    //     ...
+    // },
+    // {
+    //     id: "marketing",
+    //     title: "Marketing & Strategy",
+    //     ...
+    // },
     {
         id: "web",
         title: "Websites & Pages",
         subtitle: "Digital Storefronts",
         description: "Conversion-focused designs that look good and work hard for your brand's growth.",
         icon: LayoutTemplate,
-        spanClass: "lg:col-span-6",
-        className: "bg-white",
+        spanClass: "lg:col-span-4 lg:row-span-2",
+        className: "bg-charcoal-900 text-beige-50 border-charcoal-800",
         features: ["Custom Web Design", "LP Optimization", "Speed & Mobile First"],
         href: "/services/websites"
     },
@@ -132,7 +117,7 @@ export default function ServicesSection() {
 function ServiceCard({ service }: { service: any }) {
     const isLink = Boolean(service.href);
     const Icon = service.icon;
-    const isDark = service.id === "branding";
+    const isDark = typeof service.className === "string" && service.className.includes("charcoal-900");
 
     const cardContent = (
         <div
