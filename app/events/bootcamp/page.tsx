@@ -651,7 +651,11 @@ export default function BootcampPage() {
                 <ArrowRight className="w-4 h-4" />
               </a>
               <p className="text-center text-xs text-taupe-400 font-light mt-4">
-                Secure checkout via Stripe. Email receipt sent immediately.
+                Secure checkout via Stripe ~ takes about 90 seconds.
+              </p>
+              <p className="text-center text-[11px] text-taupe-400/80 font-light mt-2 leading-relaxed">
+                You'll be asked for your email, country, phone (for priority DM access), and one
+                quick question: <em>what do you most want to build in Cohort 1?</em>
               </p>
             </div>
 
