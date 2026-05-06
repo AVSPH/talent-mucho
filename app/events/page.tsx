@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FREE_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
+const FREE_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7";
 
 interface EventEntry {
   status: "upcoming" | "past";

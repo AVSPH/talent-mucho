@@ -1,5 +1,25 @@
 {
-  "enabledMcpjsonServers": [
-    "supabase"
-  ]
+  "permissions": {
+    "allow": [
+      "Bash(git merge *)",
+      "Bash(npm run *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__get_stripe_account_info",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__list_products",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__create_product",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__create_price",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__stripe_api_execute",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__stripe_api_details",
+      "Bash(git fetch *)",
+      "Bash(curl -s http://localhost:3000/sitemap.xml)",
+      "Bash(grep -E \"^├ ○ /$|error\")",
+      "Bash(gh pr edit 41 --title 'Community page + homepage reorg around 3 pillars \\(Educate first\\)' --body ' *)",
+      "Bash(gh pr *)",
+      "Bash(git stash *)",
+      "mcp__4e05362c-72b4-4fb2-9e73-41014394ca0b__stripe_api_search"
+    ]
+  }
 }

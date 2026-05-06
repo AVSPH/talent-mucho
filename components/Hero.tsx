@@ -87,7 +87,7 @@ export default function Hero() {
                 Join Cohort 1 ~ €247
               </a>
               <a
-                href="https://www.skool.com/future-proof-with-ai-4339"
+                href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"

@@ -312,7 +312,7 @@ export default function ClaudeEventPage() {
                 {/* ── CTA ── */}
                 <div className="flex justify-center md:justify-end flex-shrink-0">
                   <a
-                    href="https://www.skool.com/future-proof-with-ai-4339"
+                    href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group inline-flex flex-col items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-7 py-5 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"

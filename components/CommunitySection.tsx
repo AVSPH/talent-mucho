@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Users, Zap } from "lucide-react";
 
-const FREE_URL = "https://www.skool.com/future-proof-with-ai-4339";
+const FREE_URL = "https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7";
 
 export default function CommunitySection() {
     return (

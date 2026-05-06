@@ -156,7 +156,7 @@ export default function RegisterForm() {
             This is where we&apos;ll share updates, your workbook, and a few surprises before the session. Come say hi ~ we&apos;d love to meet you early.
           </p>
           <a
-            href="https://www.skool.com/future-proof-with-ai-4339"
+            href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center justify-center gap-2 bg-charcoal-900 hover:bg-clay-600 text-beige-50 font-medium text-sm py-3.5 rounded-full transition-colors duration-200"
@@ -206,7 +206,7 @@ export default function RegisterForm() {
       <p className="text-xs text-taupe-400 font-light text-center -mt-2">
         Can&apos;t make May 1?{" "}
         <a
-          href="https://www.skool.com/future-proof-with-ai-4339"
+          href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
           target="_blank"
           rel="noopener noreferrer"
           className="text-clay-500 hover:underline"
