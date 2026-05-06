@@ -562,7 +562,7 @@ export const SEGMENTS: Segment[] = [
           { type: 'scripted', speaker: 'ABIE', text: "A consultant charges €150 an hour to teach you this. Nine sessions at that rate is €1,350. We're at €9.15 a session. The full programme is €247." },
           { type: 'stage', text: "Pause here. Don't speak. Let the contrast sit for 3 full seconds." },
           { type: 'scripted', speaker: 'ABIE', text: "I want to be transparent about the price. This is Cohort 1. We are building this programme with you, not just for you. That matters. We're pricing it like it does. Cohort 2 opens at €397. Not a pressure tactic ~ just the honest math." },
-          { type: 'scripted', speaker: 'ABIE', text: "Because you're in the room tonight ~ you also get the VIP bundle free. That's the €397 upgrade: custom prompt buildout for your business, 90 days in the premium community, and direct DM access to us for the entire month." },
+          { type: 'scripted', speaker: 'ABIE', text: "Because you're in the room tonight ~ you also get the VIP bundle free. That's the €397 upgrade: custom prompt buildout for your business, 30 days in the premium community, and direct DM access to us for the entire month." },
           { type: 'scripted', speaker: 'ABIE', text: "€247. €644 of value. VIP included. Midnight tonight ~ then the founding price is gone and the VIP bundle goes back to full price." },
           { type: 'stage', text: "QR and link are on screen. Let them look. 5 full seconds of silence. You don't have to speak." },
         ],

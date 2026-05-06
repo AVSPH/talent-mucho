@@ -1224,7 +1224,7 @@ const THREE_DOORS: DoorOption[] = [
       "Week 2: AI content engine built and running",
       "Week 3: AI employees in your workflows",
       "Week 4: custom dashboard + daily AI routine",
-      "VIP bundle included free ~ €397 value (custom prompts, 90-day community, priority DM access)",
+      "VIP bundle included free ~ €397 value (custom prompts, 30-day community, priority DM access)",
     ],
     nextStep: 'Cohort 1 closes at midnight. €247 tonight ~ €397 next cohort. Link in chat.',
     cta: 'Join Bootcamp ~ €247',
@@ -3337,7 +3337,7 @@ const BOOTCAMP_WEEKS = [
 const BOOTCAMP_VIP_PERKS = [
   { title: 'Small groups', desc: 'Live sessions capped so everyone gets airtime and real feedback' },
   { title: 'Custom prompt buildout', desc: 'Prompts written specifically for your business and niche' },
-  { title: '90-day community access', desc: '3x the standard 30-day access to the Skool community' },
+  { title: '30-day community access', desc: 'Free 30-day access to the Skool premium community for the duration of the bootcamp' },
   { title: 'Priority DM support', desc: 'Direct access to the instructor throughout the full bootcamp' },
 ];
 
