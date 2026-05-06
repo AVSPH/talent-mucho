@@ -18,11 +18,11 @@ export default function Home() {
     <>
       <main>
         <Hero />
+        <EducateBuildOperate />
         <CommunitySection />
         <ClientsSection />
         <TestimonialsSection />
         <ChallengeSection />
-        <EducateBuildOperate />
         <WhoWeAreSection />
         <WebsiteServiceSection />
         <ServicesSection />
