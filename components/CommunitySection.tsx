@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, Users, Calendar, Star } from "lucide-react";
+import { ArrowRight, Users, Zap } from "lucide-react";
+
+const FREE_URL = "https://www.skool.com/future-proof-with-ai-4339";
 
 export default function CommunitySection() {
     return (
         <section className="section-padding bg-charcoal-900 relative overflow-hidden">
-            {/* Subtle grid backdrop */}
             <div
                 className="absolute inset-0 pointer-events-none opacity-[0.04]"
                 style={{
@@ -15,7 +16,6 @@ export default function CommunitySection() {
 
             <div className="section-container relative">
                 <div className="max-w-5xl mx-auto">
-                    {/* Header */}
                     <div className="text-center mb-14">
                         <div className="inline-flex items-center gap-2 bg-clay-500/15 border border-clay-500/30 rounded-full px-4 py-2 mb-6">
                             <span className="w-2 h-2 rounded-full bg-clay-500 animate-pulse shrink-0" />
@@ -31,32 +31,30 @@ export default function CommunitySection() {
                             className="text-4xl md:text-5xl lg:text-6xl font-light text-beige-50 mb-6 leading-[1.05]"
                             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                         >
-                            Two doors.{" "}
-                            <em className="italic text-clay-500">One community.</em>
+                            Learn AI <em className="italic text-clay-500">in the room</em>, not alone.
                         </h2>
                         <p className="text-beige-200 font-light leading-relaxed text-lg max-w-2xl mx-auto">
-                            Learn AI alongside other operators ~ not alone in front of YouTube. Start free
-                            with replays and the vault, or join us live every week.
+                            Two ways to learn with us right now: join the free community for replays
+                            and the vault, or come build live with Cohort 1 of the bootcamp.
                         </p>
                     </div>
 
-                    {/* Two doors */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-                        {/* Free */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {/* Free community */}
                         <div className="bg-espresso-800/60 border border-white/5 rounded-2xl p-7 flex flex-col">
                             <div className="flex items-start justify-between mb-5">
                                 <div className="w-11 h-11 rounded-xl bg-beige-100/10 flex items-center justify-center text-beige-200">
                                     <Users className="w-5 h-5" />
                                 </div>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-beige-300/60">
-                                    Door 1
+                                    Free · Skool
                                 </span>
                             </div>
                             <p
                                 className="text-3xl font-light text-beige-50 mb-2"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                             >
-                                Free <em className="italic text-beige-200/60">tier</em>
+                                Free <em className="italic text-beige-200/60">community</em>
                             </p>
                             <p className="text-2xl font-light text-clay-500 mb-4"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
@@ -68,6 +66,7 @@ export default function CommunitySection() {
                                     "Free replays from every public event",
                                     "Free vault ~ prompts and frameworks",
                                     "Abie's growing AI Playbooks library",
+                                    "First in line when premium opens",
                                 ].map((item) => (
                                     <li key={item} className="flex items-start gap-2 text-sm text-beige-200 font-light leading-relaxed">
                                         <span className="text-clay-500 mt-1.5 text-[8px]">●</span>
@@ -75,46 +74,48 @@ export default function CommunitySection() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link
-                                href="/community#free"
+                            <a
+                                href={FREE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center gap-2 border border-white/15 hover:border-clay-500 text-beige-50 font-medium text-sm px-6 py-3 rounded-full transition-all duration-200 self-start"
                             >
-                                Start free
+                                Join free on Skool
                                 <ArrowRight className="w-3.5 h-3.5" />
-                            </Link>
+                            </a>
                         </div>
 
-                        {/* Premium ~ highlighted */}
+                        {/* Bootcamp */}
                         <div className="bg-clay-500/10 border border-clay-500/40 rounded-2xl p-7 flex flex-col relative">
                             <span className="absolute -top-2.5 left-7 bg-clay-500 text-beige-50 text-[9px] font-bold uppercase tracking-[0.18em] px-2.5 py-1 rounded-full">
-                                Most pick this
+                                Cohort 1 · Founding price
                             </span>
                             <div className="flex items-start justify-between mb-5">
                                 <div className="w-11 h-11 rounded-xl bg-clay-500/20 flex items-center justify-center text-clay-500">
-                                    <Star className="w-5 h-5 fill-clay-500" />
+                                    <Zap className="w-5 h-5" />
                                 </div>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-clay-500">
-                                    Door 2 · Inner Circle
+                                    Starts Tue, Jun 2
                                 </span>
                             </div>
                             <p
                                 className="text-3xl font-light text-beige-50 mb-2"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                             >
-                                Premium <em className="italic text-clay-500">membership</em>
+                                AI Business <em className="italic text-clay-500">Bootcamp</em>
                             </p>
                             <p
                                 className="text-2xl font-light text-clay-500 mb-4"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                             >
-                                €49<span className="text-base text-beige-200/60 font-light"> /mo</span>
+                                €247
                             </p>
                             <ul className="flex flex-col gap-2 mb-6 flex-1">
                                 {[
-                                    "Weekly live group calls (starts Jun 2)",
-                                    "Premium vault ~ every replay we've made",
-                                    "Vibe coding sessions ~ build live",
-                                    "30% off every bootcamp, forever",
+                                    "9 live sessions · Tue & Thu · 4–7 PM CEST",
+                                    "Four real deliverables you keep",
+                                    "Small group · live mentorship",
+                                    "VIP bundle included free (€397 value)",
                                 ].map((item) => (
                                     <li key={item} className="flex items-start gap-2 text-sm text-beige-50 font-light leading-relaxed">
                                         <span className="text-clay-500 mt-1.5 text-[8px]">●</span>
@@ -123,35 +124,26 @@ export default function CommunitySection() {
                                 ))}
                             </ul>
                             <Link
-                                href="/community#premium"
+                                href="/events/bootcamp"
                                 className="inline-flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm px-6 py-3 rounded-full transition-all duration-200 self-start"
                             >
-                                Join premium
+                                See Cohort 1 details
                                 <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>
                     </div>
 
-                    {/* Bottom row: monthly bootcamp note + main CTA */}
-                    <div className="bg-espresso-800/40 border border-white/5 rounded-2xl px-6 md:px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-                        <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-lg bg-clay-500/20 flex items-center justify-center shrink-0 mt-0.5 text-clay-500">
-                                <Calendar className="w-4 h-4" />
-                            </div>
-                            <div>
-                                <p className="font-semibold text-beige-50 text-sm mb-1">
-                                    A new bootcamp every month.
-                                </p>
-                                <p className="text-xs text-beige-300 font-light leading-relaxed">
-                                    Premium members lock 30% off every cohort, forever. Cohort 1 starts Tue Jun 2.
-                                </p>
-                            </div>
-                        </div>
+                    {/* Premium teaser */}
+                    <div className="mt-10 bg-espresso-800/40 border border-white/5 rounded-2xl px-6 md:px-8 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <p className="text-sm text-beige-300 font-light leading-relaxed">
+                            <span className="font-semibold text-beige-50">Premium membership opens July 2026</span>{" "}
+                            ~ after Cohort 1 graduates. Join the free community to get first access.
+                        </p>
                         <Link
                             href="/community"
-                            className="inline-flex items-center gap-2 text-sm font-medium text-clay-500 hover:text-beige-50 transition-colors shrink-0"
+                            className="text-sm font-medium text-clay-500 hover:text-beige-50 transition-colors shrink-0 inline-flex items-center gap-1.5"
                         >
-                            See how the doors compare
+                            Read more
                             <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                     </div>
