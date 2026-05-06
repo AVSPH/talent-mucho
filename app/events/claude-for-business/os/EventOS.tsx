@@ -1,7 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset } from './config';
+import communityData from '@/data/community-combined.json';
 
 // ── Palettes ─────────────────────────────────────────────────────────────────
 type ThemeKey = 'tm' | 'am';
@@ -12,15 +13,15 @@ interface ThemeFonts {
   serif: string;  // scripted / italic accents
 }
 
-// Both themes use Abie Maxey's brand fonts ~ only the colors differ between themes
+// Body sans = Avenir (matches happyvoyager.com), serif = Instrument Serif (matches admin dashboard)
 const FONTS: Record<ThemeKey, ThemeFonts> = {
   tm: {
-    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
   am: {
-    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
 };
 
@@ -231,6 +232,8 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const [nextQId, setNextQId] = useState(1);
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
+  const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
+  const [showLiveQA, setShowLiveQA] = useState(true);
   const [compareState, setCompareState] = useState<CompareState>({
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
@@ -412,6 +415,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
     else setShowTab('abie');
     prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    // Broadcast to audience live page
+    fetch('/api/events/claude-for-business/state', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_segment: idx, is_live: true }),
+    }).catch(() => {});
   }, []);
 
   const goToBeat = useCallback((idx: number) => {
@@ -589,6 +598,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
+          <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
+            {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
+          </Btn>
+          <Btn onClick={() => setShowLiveQA(q => !q)} C={C} style={{ color: showLiveQA ? C.primary : C.muted }}>
+            {showLiveQA ? '💬 HIDE Q&A' : '💬 SHOW Q&A'}
+          </Btn>
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
           </Btn>
@@ -690,7 +705,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
       )}
 
       {/* ── NOTES DRAWER ── */}
-      {showNotes && view === 'presenter' && (
+      {showNotes && (
         <div style={{ background: '#fff8d6', borderBottom: '2px solid #d4a92a', padding: '10px 16px', flexShrink: 0, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
             <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7a5e10', marginBottom: 6 }}>
@@ -734,7 +749,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </div>
 
           {/* PROMPTER */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: `1px solid ${C.border}`, minWidth: 0 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: showDemoPanel ? `1px solid ${C.border}` : 'none', minWidth: 0 }}>
             {/* Seg header */}
             <div style={{ padding: '12px 24px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
               <div>
@@ -743,11 +758,11 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: C.text, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
                   <Editable key={`title-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.title`, v)} />
-                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
                     <Editable key={`titleI-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => saveEdit(`${segIdx}.titleItalic`, v)} />
                   </em></>}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginTop: 3 }}>
+                <div style={{ ...sans, fontSize: 14, color: C.muted, marginTop: 3 }}>
                   <Editable key={`sub-${segIdx}`} value={seg.subtitle} editMode={editMode} onSave={v => saveEdit(`${segIdx}.subtitle`, v)} />
                 </div>
                 <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
@@ -801,24 +816,47 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                       {(bl.type === 'scripted' || bl.type === 'bullets') && (
                         <>
                           <div style={{ width: 56, flexShrink: 0, paddingTop: 1 }}>
-                            {bl.speaker && (
-                              <div style={{ ...mono, fontSize: 9, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: spkColor(bl.speaker) }}>
-                                {SPEAKERS[bl.speaker]?.name}
-                              </div>
-                            )}
+                            {(() => {
+                              const sp = bl.speaker;
+                              if (!sp) return null;
+                              const color = spkColor(sp);
+                              return (
+                                <button
+                                  onClick={() => {
+                                    const order: readonly string[] = ['ABIE', 'MERI', 'BOTH'];
+                                    const cur = order.indexOf(sp);
+                                    const next = order[(cur + 1) % order.length] ?? 'ABIE';
+                                    saveEdit(`${blPath}.speaker`, next);
+                                  }}
+                                  title="Click to cycle: ABIE → MERI → BOTH"
+                                  style={{
+                                    ...mono, fontSize: 9, fontWeight: 500,
+                                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                                    color,
+                                    background: 'transparent',
+                                    border: `1px dashed ${color}50`,
+                                    borderRadius: 6,
+                                    padding: '3px 6px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = `${color}15`; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                                >
+                                  {SPEAKERS[sp]?.name}
+                                </button>
+                              );
+                            })()}
                           </div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5, color: C.muted }}>
-                              {bl.type === 'scripted' ? '✦ scripted' : '~ bullets'}
-                            </div>
                             {bl.type === 'scripted' ? (
                               <Editable
                                 key={`scr-${segIdx}-${bi}-${bli}`}
                                 tagName="div"
-                                value={(bl.text ?? '').replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                value={(bl.text ?? '').replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                 editMode={editMode}
-                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em [^>]*>/g, '<em>'))}
-                                style={{ ...serif, fontSize, lineHeight: 1.75, fontWeight: 400, color: C.text }}
+                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
+                                style={{ ...sans, fontSize, lineHeight: 1.75, fontWeight: 450, color: '#2A2520' }}
                               />
                             ) : (
                               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -827,10 +865,10 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                                     <span style={{ ...mono, fontSize: 12, color: C.primary, flexShrink: 0, paddingTop: 3 }}>~</span>
                                     <Editable
                                       key={`b-${segIdx}-${bi}-${bli}-${ii}`}
-                                      value={item.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                      value={item.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                       editMode={editMode}
-                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em [^>]*>/g, '<em>'))}
-                                      style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
+                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
+                                      style={{ ...sans, fontSize: fontSize - 2, lineHeight: 1.6, color: '#2A2520', fontWeight: 450 }}
                                     />
                                   </li>
                                 ))}
@@ -854,7 +892,8 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
             </div>
           </div>
 
-          {/* DEMO PANEL */}
+          {/* DEMO PANEL ~ collapsed by default · toggle from the top bar (◧/◨ button) */}
+          {showDemoPanel && (
           <div style={{ width: 420, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.surface }}>
             {/* Panel header */}
             <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -886,7 +925,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 24 }}>
                       <div style={{ fontSize: 28, opacity: 0.3 }}>↗</div>
-                      <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
+                      <div style={{ ...sans, fontSize: 15, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
                         Switch to compare, products,<br />or showcase for this segment
                       </div>
                     </div>
@@ -901,21 +940,21 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   state={compareState}
                   onRun={runCompare}
                   onReset={resetCompare}
-                  C={C} mono={mono} serif={serif}
+                  C={C} mono={mono} sans={sans} serif={serif}
                 />
               )}
               {mode === 'compare' && !activePreset && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...sans, fontSize: 15, color: C.muted }}>
                   No compare preset for this segment
                 </div>
               )}
 
               {/* Products */}
-              {mode === 'products' && <ProductsPanel C={C} mono={mono} serif={serif} />}
+              {mode === 'products' && <ProductsPanel C={C} mono={mono} sans={sans} serif={serif} />}
 
               {/* Showcase */}
               {mode === 'showcase' && (
-                <ShowcasePanel showTab={showTab} onTabChange={setShowTab} C={C} mono={mono} serif={serif} />
+                <ShowcasePanel showTab={showTab} onTabChange={setShowTab} C={C} mono={mono} sans={sans} serif={serif} />
               )}
 
               {/* Q&A */}
@@ -924,11 +963,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   qaList={qaList} qaInput={qaInput} inputRef={qaInputRef}
                   onInput={setQaInput} onAdd={addQA}
                   onVote={voteQA} onActive={toggleActiveQA} onDismiss={dismissQA}
-                  C={C} mono={mono} serif={serif}
+                  C={C} mono={mono} sans={sans} serif={serif}
                 />
               )}
             </div>
           </div>
+          )}
         </div>
       )}
 
@@ -940,11 +980,13 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
           fontSize={fontSize}
-          C={C} mono={mono} serif={serif} sans={sans}
+          segments={segments}
+          C={C} mono={mono} sans={sans} serif={serif}
           spkColor={spkColor}
           theme={theme}
           editMode={editMode}
           onSaveEdit={saveEdit}
+          showLiveQA={showLiveQA}
         />
       )}
     </div>
@@ -978,13 +1020,14 @@ function Btn({ children, onClick, primary, style, C }: {
 }
 
 // ── Compare Panel ─────────────────────────────────────────────────────────────
-function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
+function ComparePanel({ preset, state, onRun, onReset, C, mono, sans, serif }: {
   preset: ComparePreset;
   state: CompareState;
   onRun: () => void;
   onReset: () => void;
   C: Record<string, string>;
   mono: React.CSSProperties;
+  sans: React.CSSProperties;
   serif: React.CSSProperties;
 }) {
   const steps = ['Ready', 'Left runs', 'Right runs', 'Lands'];
@@ -1022,8 +1065,8 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
                 {col.tag}
               </div>
               <div style={{ fontSize: 11, fontWeight: 800, color: C.text, letterSpacing: '-0.01em', textTransform: 'uppercase' }}
-                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-style:italic;font-weight:400;color:${C.primary};text-transform:none">`) }} />
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
+                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary};text-transform:none">`) }} />
+              <div style={{ ...sans, fontSize: 13, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
             <div style={{ padding: '6px 12px', background: C.surface2, flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 3 }}>Prompt</div>
@@ -1033,8 +1076,8 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px' }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 7 }}>Response</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
-                {col.output || <span style={{ fontStyle: 'italic', opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
+                {col.output || <span style={{ opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
                 {((col.isLeft && state.step === 1) || (!col.isLeft && state.step === 2)) && !col.done && (
                   <span style={{ animation: 'blink 0.65s step-end infinite', color: C.primary }}>▋</span>
                 )}
@@ -1043,7 +1086,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             {col.done && (
               <div style={{ margin: '0 12px 10px', padding: '8px 12px', borderRadius: 7, border: `1px solid ${C.border}`, background: C.surface2 }}>
                 <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 4 }}>{col.annLbl}</div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
+                <div style={{ ...sans, fontSize: 13, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
               </div>
             )}
           </div>
@@ -1051,8 +1094,8 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
       </div>
       {state.step === 3 && (
         <div style={{ borderTop: `1px solid ${C.border}`, padding: '10px 14px', background: C.surface, flexShrink: 0 }}>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: 13, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
-            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+          <div style={{ ...sans, fontSize: 14, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
+            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }} />
         </div>
       )}
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
@@ -1061,6 +1104,45 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+// Real names from GHL + Skool community ~ scrolls in the segment 00 welcome feed
+const WELCOME_CITIES = [
+  '👋 Ella',
+  '✨ Paula',
+  '🌴 Jobell',
+  '☕ Kristen',
+  '🌊 Sofia',
+  '🍁 Dawn',
+  '🦋 Jacinta',
+  '🌅 Althea',
+  '⚡ Christina',
+  '🌸 Hazel',
+  '🎯 Angelica',
+  '🍷 Nora',
+  '🔥 Faye',
+  '💡 Julie',
+  '🌿 Erin',
+  '✦ Marga',
+  '🎨 Andresa',
+  '🚀 Brad',
+  '🌺 Aira',
+  '💫 Nathaly',
+  '🎵 Jean',
+  '🌟 Zeeshan',
+  '🦚 Mitzi',
+  '🎯 Akhil',
+  '🌙 Hani',
+  '⭐ Monica',
+  '🌻 Nina',
+  '🔮 Ingrid',
+  '🎪 April',
+  '💎 Gwen',
+  '🌊 Kyle',
+  '✨ Chelsea',
+  '🌴 Angel',
+  '☕ Rucha',
+  '🌸 Tala',
+];
+
 // VIP value stack ~ used in segment 07 audience view (the close)
 interface StackItem {
   name: string;
@@ -1088,6 +1170,8 @@ interface DoorOption {
   nextStep: string;
   cta: string;
   ctaUrl: string;
+  secondaryCta?: string;
+  secondaryCtaUrl?: string;
   highlight?: boolean;
 }
 const THREE_DOORS: DoorOption[] = [
@@ -1096,53 +1180,56 @@ const THREE_DOORS: DoorOption[] = [
     name: 'Free',
     italic: 'just try it',
     price: '€0',
-    pitch: 'Open Claude tonight. Try one demo from what you saw.',
-    bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
+    pitch: 'Open Claude tonight. Try one prompt from what you saw.',
+    bestFor: 'You\'re curious. Not ready to commit. Totally valid ~ tonight already moved you forward.',
     whatYouGet: [
-      "Free Skool tier ~ community access, no live sessions",
-      "The mindset shift you got tonight",
-      "Whatever you remember from this session",
+      "Free Skool community ~ 230+ already in",
+      "Tonight's freebie drop at midnight ~ every prompt and framework cleaned up",
+      "Abie's AI Playbooks ~ free and growing every week",
     ],
-    nextStep: 'Close this tab. Open claude.ai. Try one prompt.',
-    cta: 'Try Claude tonight',
-    ctaUrl: 'https://claude.ai/new',
+    nextStep: 'Join the free Skool tier, grab the playbooks, open Claude tonight.',
+    cta: 'Join free community',
+    ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
   },
   {
     label: 'Door 2',
-    name: 'VIP',
-    italic: '€47 ~ the map',
-    price: '€47',
-    pitch: "The recording, the skill library, 30 days inside our community.",
-    bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
+    name: 'Inner Circle',
+    italic: '€49/mo ~ accountability',
+    price: '€49/mo',
+    pitch: "Stay close. Monthly workshops, replay vault, 30% off every bootcamp.",
+    bestFor: "You want the ongoing support without the intensive. Or you want to join the bootcamp later with the discount locked.",
     whatYouGet: [
-      "Full replay + transcript ~ 30-day access (€97)",
-      "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
-      "VIP-only group follow-up ~ 45 min with Abie + Meri",
-      "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
-      "Early access to the upcoming Bootcamp",
-      "+ 14-day refund · no form · no questions",
+      "Monthly live workshops ~ new ones every month",
+      "Full replay vault ~ everything we've ever built",
+      "Vibe coding sessions ~ build real things together",
+      "30% off all future bootcamps ~ locked as long as you stay",
+      "Direct access to Abie & Meri",
     ],
-    nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
-    cta: 'Join VIP — €47',
-    ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
-    highlight: true,
+    nextStep: 'Rate locks tonight at €49/mo. Going to €97. Scan the QR or click below.',
+    cta: 'Join community ~ €49/mo',
+    ctaUrl: 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05',
+    secondaryCta: 'Annual ~ €399/yr (save 32%)',
+    secondaryCtaUrl: 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06',
   },
   {
     label: 'Door 3',
-    name: 'Custom',
-    italic: 'we build it',
-    price: 'Talk to us',
-    pitch: "We build the AI stack inside your business and place a trained VA inside your team.",
-    bestFor: "Founders who are booked-out. Need this done, not learned.",
+    name: 'Bootcamp',
+    italic: '€247 ~ tonight only',
+    price: '€247',
+    pitch: "One month. 9 live sessions. Four deliverables. AI running inside your business by Week 4.",
+    bestFor: "You're done waiting. You want the full transformation, not just the inspiration.",
     whatYouGet: [
-      "AI-Trained Ops Manager built for your business",
-      "Custom skills + connectors + scheduled runs",
-      "A trained VA placed inside your team",
-      "Monthly partnership ~ the Operate pillar",
+      "9 live sessions ~ Tuesdays & Thursdays, small groups",
+      "Week 1: AI foundations + first Claude Project live",
+      "Week 2: AI content engine built and running",
+      "Week 3: AI employees in your workflows",
+      "Week 4: custom dashboard + daily AI routine",
+      "VIP bundle included free ~ €397 value (custom prompts, 90-day community, priority DM access)",
     ],
-    nextStep: 'Book a free 30-min call at talentmucho.com/booking',
-    cta: 'Book free call',
-    ctaUrl: 'https://talentmucho.com/booking',
+    nextStep: 'Cohort 1 closes at midnight. €247 tonight ~ €397 next cohort. Link in chat.',
+    cta: 'Join Bootcamp ~ €247',
+    ctaUrl: 'https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07',
+    highlight: true,
   },
 ];
 
@@ -1304,7 +1391,15 @@ const CLAUDE_BUILDING_BLOCKS = [
   },
 ];
 
-// Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
+// Live demo options for the segment 04 spin wheel ~ demoed by TM AI Architects
+const LIVE_DEMOS = [
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousel', desc: 'Turn any idea, blog post, or voice note into a ready-to-post Instagram or Threads carousel ~ in your brand voice.' },
+  { icon: '⬛', name: 'Premium Dashboard & Command Centre', short: 'Dashboard', desc: 'Your custom AI home base ~ business metrics, task triage, and daily priorities in one place. No-code. Fully yours.' },
+  { icon: '◉', name: 'Profile Maker', short: 'Profile', desc: 'Drop in your background and let Claude write your LinkedIn, bio link, Instagram, and pitch deck intro ~ all consistent, all on-brand.' },
+  { icon: '▶', name: 'Video Editor', short: 'Video', desc: 'Script, trim, caption, and repurpose your videos with AI ~ from raw footage to polished content ready to post.' },
+];
+
+// Abie's actual stack ~ used in segment 06 showcase
 const ABIE_STACK = [
   { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
   { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
@@ -1385,28 +1480,37 @@ const CLAUDE_PRODUCTS: ClaudeProduct[] = [
   },
 ];
 
-function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties }) {
+function ProductsPanel({ C, mono, sans, serif }: { C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties }) {
   const products = CLAUDE_PRODUCTS;
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
-        The four <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
+        The four <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
         Same brain. Four doors. Pick the one that matches what you&apos;re trying to do.
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {products.map(p => (
-          <div key={p.icon} style={{ padding: '11px 13px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.surface2, display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+          <div key={p.icon} style={{ padding: '11px 13px', borderRadius: 9, border: `1px solid ${p.icon === '03' ? C.primary : C.border}`, background: C.surface2, display: 'flex', gap: 11, alignItems: 'flex-start' }}>
             <div style={{ width: 30, height: 30, flexShrink: 0, borderRadius: 7, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 900 }}>{p.icon}</div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{p.name}</div>
               <div style={{ ...mono, fontSize: 9, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5 }}>{p.tag}</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
               <div style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 5 }}>
                 Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
               </div>
             </div>
+            {p.icon === '03' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                <div style={{ background: '#FAF8F5', padding: 6, borderRadius: 8, border: `1.5px solid ${C.primary}` }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={60} height={60} alt="Download Claude Code" style={{ display: 'block' }} />
+                </div>
+                <div style={{ ...mono, fontSize: 8, color: C.primary, letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>Download</div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -1415,9 +1519,9 @@ function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: Re
 }
 
 // ── Showcase Panel ────────────────────────────────────────────────────────────
-function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
+function ShowcasePanel({ showTab, onTabChange, C, mono, sans, serif }: {
   showTab: ShowTab; onTabChange: (t: ShowTab) => void;
-  C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
   const abieItems = ABIE_STACK;
   const meriItems = [
@@ -1440,9 +1544,9 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
         ))}
       </div>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
-        {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
+        {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
         {showTab === 'abie' ? "Most days I don't open Gmail. I open my terminal." : "We don't replace VAs. We multiply what one VA can do."}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -1451,15 +1555,15 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
             <div style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 6, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 10, fontWeight: 900 }}>{item.icon}</div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 3 }}>{item.name}</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.5, color: C.muted }}>{item.desc}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.muted }}>{item.desc}</div>
             </div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...serif, fontStyle: 'italic', fontSize: 12, lineHeight: 1.55, textAlign: 'center' }}>
+      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...sans, fontSize: 14, lineHeight: 1.55, textAlign: 'center' }}>
         {showTab === 'abie'
-          ? <>Everyone should have <em style={{ color: C.text, fontStyle: 'italic' }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
-          : <>Same hours, more clients ~ <em style={{ color: C.text, fontStyle: 'italic' }}>or</em> same clients, less burnout.<br />The VA chooses.</>
+          ? <>Everyone should have <em style={{ color: C.text }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
+          : <>Same hours, more clients ~ <em style={{ color: C.text }}>or</em> same clients, less burnout.<br />The VA chooses.</>
         }
       </div>
     </div>
@@ -1467,11 +1571,11 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
 }
 
 // ── Q&A Panel ─────────────────────────────────────────────────────────────────
-function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, onDismiss, C, mono, serif }: {
+function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, onDismiss, C, mono, sans, serif }: {
   qaList: QAItem[]; qaInput: string; inputRef: React.RefObject<HTMLInputElement | null>;
   onInput: (v: string) => void; onAdd: () => void;
   onVote: (id: number, d: number) => void; onActive: (id: number) => void; onDismiss: (id: number) => void;
-  C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
   const live = qaList.filter(q => !q.answered).sort((a, b) => b.votes - a.votes);
   return (
@@ -1486,7 +1590,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px 14px' }}>
         {live.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10, opacity: 0.45 }}>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted }}>No questions yet</div>
+            <div style={{ ...sans, fontSize: 15, color: C.muted }}>No questions yet</div>
             <div style={{ ...mono, fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Meri pulls from chat</div>
           </div>
         ) : live.map(q => (
@@ -1496,7 +1600,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
               <div style={{ ...mono, fontSize: 11, fontWeight: 500, color: C.muted }}>{q.votes}</div>
               <button onClick={() => onVote(q.id, -1)} style={{ fontSize: 13, cursor: 'pointer', background: 'none', border: 'none', lineHeight: 1, padding: 2, opacity: 0.5, color: C.text }}>▼</button>
             </div>
-            <div style={{ ...serif, fontSize: 13, lineHeight: 1.5, color: C.text, flex: 1, paddingTop: 2 }}>{q.text}</div>
+            <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text, flex: 1, paddingTop: 2 }}>{q.text}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
               <button onClick={() => onActive(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: q.active ? C.primary : C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {q.active ? '✓ Live' : 'Go live'}
@@ -1507,6 +1611,618 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+
+// ── AILandscape ~ segment 02 audience view: what is AI + the major models ─────
+const AI_EXPLAINER = [
+  { label: 'You ask', desc: 'Type a question, paste a doc, drop in your email ~ anything' },
+  { label: 'It thinks', desc: 'Reads everything you gave it. Pulls from billions of pages it learned from' },
+  { label: 'It answers', desc: 'Writes back in seconds. In your tone. As long or short as you need' },
+  { label: 'You review', desc: 'Edit, refine, or ask it again. You stay in charge ~ it does the heavy lifting' },
+];
+
+const AI_WRAPPERS = [
+  { tool: 'Notion AI', uses: 'Claude', accent: '#d97706' },
+  { tool: 'Canva AI', uses: 'GPT + others', accent: '#10a37f' },
+  { tool: 'Perplexity', uses: 'Claude + GPT', accent: '#d97706' },
+  { tool: 'Cursor', uses: 'Claude + GPT', accent: '#d97706' },
+];
+
+const AI_MODELS = [
+  {
+    name: 'ChatGPT', maker: 'OpenAI', accent: '#10a37f',
+    vibe: 'The one everyone knows',
+    pricing: 'Free · $20/mo Plus',
+    superpower: 'Fast, general-purpose, great at brainstorming and creative writing',
+    bestFor: 'Quick answers, first drafts, coding help',
+    wow: 'Can browse the web, generate images, and analyze data ~ all in one conversation',
+  },
+  {
+    name: 'Gemini', maker: 'Google', accent: '#4285f4',
+    vibe: 'The Google-connected brain',
+    pricing: 'Free · $20/mo Advanced',
+    superpower: 'Deep integration with Gmail, Docs, Calendar, and Search',
+    bestFor: 'People who live in Google Workspace',
+    wow: 'Can search your entire email history and summarize what matters in seconds',
+  },
+  {
+    name: 'Claude', maker: 'Anthropic', accent: '#d97706', highlight: true,
+    vibe: 'The thinking partner',
+    pricing: 'Free · $20/mo Pro',
+    superpower: 'Asks questions back, reasons carefully, handles long documents',
+    bestFor: 'Business writing, strategy, complex tasks that need nuance',
+    wow: 'Can read a 200-page PDF in one go ~ and organize your computer while you sleep',
+  },
+  {
+    name: 'Copilot', maker: 'Microsoft', accent: '#0078d4',
+    vibe: 'The Office assistant',
+    pricing: '$30/mo · M365 add-on',
+    superpower: 'Built into Word, Excel, PowerPoint, and Teams',
+    bestFor: 'Corporate teams already paying for Microsoft 365',
+    wow: 'Can turn a rough email thread into a polished PowerPoint deck in 30 seconds',
+  },
+  {
+    name: 'Llama', maker: 'Meta', accent: '#0668E1',
+    vibe: 'The open-source one',
+    pricing: 'Free · self-hosted',
+    superpower: 'Free, customizable, runs on your own hardware',
+    bestFor: 'Developers and companies who want full control',
+    wow: 'Powers thousands of apps you use daily ~ without you even knowing',
+  },
+];
+
+function AILandscape({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const [revealed, setRevealed] = useState(0);
+  const [activeModel, setActiveModel] = useState<number | null>(null);
+  const [everClicked, setEverClicked] = useState(false);
+
+  useEffect(() => {
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealed(i);
+      if (i < 6) setTimeout(tick, 500);
+    };
+    const t = setTimeout(tick, 400);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleModelClick = (idx: number) => {
+    setActiveModel(prev => prev === idx ? null : idx);
+    if (!everClicked) setEverClicked(true);
+  };
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '0 auto 36px' }}>
+      {/* Section A ~ What is AI */}
+      <div style={{
+        padding: '28px 30px', borderRadius: 18,
+        background: C.surface, border: `1px solid ${C.border}`, marginBottom: 24,
+      }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          What is AI? ~ in 10 seconds
+        </div>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          No jargon. No PhD required.
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+          {AI_EXPLAINER.map((step, i) => (
+            <div key={step.label} style={{
+              padding: '20px 18px', borderRadius: 14,
+              background: `${C.primary}${i === 3 ? '18' : '08'}`,
+              border: `1px solid ${i === 3 ? `${C.primary}40` : C.border}`,
+              opacity: revealed >= i + 1 ? 1 : 0,
+              transform: revealed >= i + 1 ? 'translateY(0)' : 'translateY(16px)',
+              transition: `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+            }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 8 }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, marginBottom: 6, letterSpacing: '-0.01em' }}>
+                {step.label}
+              </div>
+              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.45 }}>
+                {step.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Section B ~ The AI Landscape */}
+      <div style={{
+        padding: '28px 30px', borderRadius: 18,
+        background: C.surface, border: `1px solid ${C.border}`,
+        opacity: revealed >= 5 ? 1 : 0,
+        transform: revealed >= 5 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          The AI landscape ~ 2025
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.7 }}>
+          click any model to explore
+        </div>
+
+        {/* Model cards grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: activeModel !== null ? 20 : 0 }}>
+          {AI_MODELS.map((model, i) => {
+            const isActive = activeModel === i;
+            const isHighlight = 'highlight' in model && model.highlight;
+            return (
+              <div
+                key={model.name}
+                onClick={() => handleModelClick(i)}
+                style={{
+                  padding: '18px 16px', borderRadius: 14, cursor: 'pointer',
+                  background: isActive ? C.text : isHighlight ? `${C.primary}10` : C.bg,
+                  border: `2px solid ${isActive ? C.text : isHighlight ? `${C.primary}50` : C.border}`,
+                  boxShadow: isActive ? `0 8px 24px -8px ${C.text}40` : 'none',
+                  transform: isActive ? 'translateY(-3px)' : 'translateY(0)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  opacity: revealed >= 5 ? 1 : 0,
+                }}
+              >
+                {isHighlight && (
+                  <div style={{
+                    position: 'absolute', top: -10, right: 12,
+                    ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
+                    background: C.primary, color: '#FAF8F5', padding: '3px 10px', borderRadius: 6,
+                  }}>
+                    Tonight&apos;s focus
+                  </div>
+                )}
+                <div style={{
+                  width: sz(10), height: sz(10), borderRadius: '50%',
+                  background: model.accent, marginBottom: 10,
+                  boxShadow: isActive ? `0 0 12px ${model.accent}` : 'none',
+                  transition: 'box-shadow 0.3s',
+                }} />
+                <div style={{ ...sans, fontSize: sz(17), fontWeight: 700, color: isActive ? '#FAF8F5' : C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
+                  {model.name}
+                </div>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, color: isActive ? 'rgba(250,248,245,0.5)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+                  {model.maker}
+                </div>
+                <div style={{ ...sans, fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4, marginBottom: 8 }}>
+                  {model.vibe}
+                </div>
+                <div style={{
+                  ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.08em',
+                  color: isActive ? 'rgba(250,248,245,0.85)' : model.accent,
+                  padding: '3px 8px', borderRadius: 6,
+                  background: isActive ? 'rgba(250,248,245,0.12)' : `${model.accent}12`,
+                  display: 'inline-block',
+                }}>
+                  {model.pricing}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Expanded detail card */}
+        {activeModel !== null && (() => {
+          const m = AI_MODELS[activeModel];
+          return (
+            <div style={{
+              padding: '24px 28px', borderRadius: 16,
+              background: C.text, color: '#FAF8F5',
+              animation: 'aiLandFadeIn 0.4s ease',
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    Superpower
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.superpower}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    Best for
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.bestFor}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    The wow factor
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.wow}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Wrapper reveal */}
+        {everClicked && (
+          <div style={{
+            marginTop: 22, padding: '22px 26px', borderRadius: 16,
+            background: `${C.primary}08`, border: `1px solid ${C.primary}20`,
+            animation: 'aiLandFadeIn 0.5s ease',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 6 }}>
+              The part nobody tells you
+            </div>
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, marginBottom: 16, lineHeight: 1.5 }}>
+              Most AI tools you&apos;ve seen? They&apos;re <em style={{ color: C.primary }}>wrappers</em>. Same brain underneath ~ just a different interface.
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              {AI_WRAPPERS.map(w => (
+                <div key={w.tool} style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '7px 14px', borderRadius: 10,
+                  background: C.bg, border: `1px solid ${C.border}`,
+                }}>
+                  <div style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: C.text }}>{w.tool}</div>
+                  <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.06em' }}>~</div>
+                  <div style={{
+                    ...mono, fontSize: sz(10), fontWeight: 700, color: w.accent,
+                    padding: '2px 8px', borderRadius: 6,
+                    background: `${w.accent}15`, letterSpacing: '0.04em',
+                  }}>
+                    {w.uses}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.55, fontWeight: 500 }}>
+              When you learn <em style={{ color: C.primary }}>the source</em> directly, you don&apos;t need the wrapper. You get more control, more power, and you stop paying for a pretty interface on top of the same intelligence.
+            </div>
+          </div>
+        )}
+
+        {/* How to start tonight */}
+        {everClicked && (
+          <div style={{
+            marginTop: 22, padding: '22px 26px', borderRadius: 16,
+            background: C.text, color: '#FAF8F5',
+            animation: 'aiLandFadeIn 0.5s ease',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 14 }}>
+              How to start tonight ~ literally 60 seconds
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              {[
+                { num: '01', title: 'Open claude.ai', desc: 'On your phone or laptop. No app needed.' },
+                { num: '02', title: 'Sign up free', desc: 'Email or Google. Takes 30 seconds.' },
+                { num: '03', title: 'Ask it anything', desc: 'Your real work. Watch what happens.' },
+              ].map(step => (
+                <div key={step.num} style={{
+                  padding: '14px 16px', borderRadius: 12,
+                  background: 'rgba(250,248,245,0.06)', border: '1px solid rgba(250,248,245,0.12)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 6 }}>
+                    {step.num}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: '#FAF8F5', marginBottom: 4 }}>
+                    {step.title}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.65)', lineHeight: 1.45 }}>
+                    {step.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Landing line */}
+        {everClicked && (
+          <div style={{
+            marginTop: 24, textAlign: 'center',
+            opacity: 1,
+            animation: 'aiLandFadeIn 0.6s ease',
+          }}>
+            <div style={{ ...sans, fontSize: sz(18), color: C.muted, lineHeight: 1.5 }}>
+              Now you know the players. Let&apos;s zoom in on the one that changes how you <em style={{ color: C.primary }}>work</em>.
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes aiLandFadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── LiveBuildGuide ~ segment 06 audience view: hands-on exercise ─────────────
+const HANDS_ON_STEPS = [
+  { num: '01', label: 'Scan', title: 'Get the prompts', desc: 'Go to abiemaxey.com/web-works' },
+  { num: '02', label: 'Build', title: 'Run it with Claude', desc: 'Pick a prompt. Abie runs hers on screen ~ you run yours.' },
+  { num: '03', label: 'Share', title: 'Show the room', desc: 'One person shares what they built.' },
+];
+
+function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const WEB_WORKS_URL = 'https://abiemaxey.com/web-works';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: sz(24) }}>
+
+      {/* Hero: your turn */}
+      <div style={{ borderRadius: sz(20), background: C.text, padding: `${sz(36)}px ${sz(40)}px`, display: 'grid', gridTemplateColumns: '1fr auto', gap: sz(40), alignItems: 'center', position: 'relative' as const, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute' as const, top: '-20%', right: '30%', width: '40%', height: '140%', background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'relative' as const }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
+            Your turn ~ 10 minutes
+          </div>
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: '#FAF8F5', lineHeight: 1.1, marginBottom: sz(14) }}>
+            We build together.<br />
+            <span style={{ color: C.primary }}>Right now.</span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.65)', lineHeight: 1.65, marginBottom: sz(22) }}>
+            Scan the QR. Pick a prompt from Web Works. Abie shares her screen and runs hers ~ you run yours at the same time.
+            <br /><br />
+            While Claude builds ~ feel free to step away, grab water, stretch. Come back and see what it made. We&apos;ll come back together in 10.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' as const, gap: sz(10) }}>
+            {HANDS_ON_STEPS.map((s) => (
+              <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 800, color: C.primary, background: 'rgba(196,154,108,0.15)', padding: `${sz(3)}px ${sz(9)}px`, borderRadius: 100, flexShrink: 0 }}>{s.num}</span>
+                <span style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: '#FAF8F5' }}>{s.title}</span>
+                <span style={{ ...sans, fontSize: sz(13), color: 'rgba(250,248,245,0.45)' }}>~ {s.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* QR codes ~ guide first, then web-works */}
+        <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(16), flexShrink: 0 }}>
+          {/* Guide QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Tonight&apos;s guide</div>
+            <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${C.primary}40` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://talentmucho.com/events/claude-for-business/guide')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(90)}
+                height={sz(90)}
+                alt="Tonight's guide"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              talentmucho.com/…/guide
+            </div>
+          </div>
+
+          {/* Web-works QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Get your prompts</div>
+            <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 24px -8px ${C.primary}50` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(WEB_WORKS_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(110)}
+                height={sz(110)}
+                alt="Scan for Web Works prompts"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              abiemaxey.com/web-works
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Timer + share back + Claude Code */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: sz(16) }}>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}` }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>Timer</div>
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 800, color: C.text, marginBottom: sz(6) }}>10 min</div>
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.55 }}>Build something real. Not perfect ~ real. Claude is doing the heavy lifting. You&apos;re steering.</div>
+        </div>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}` }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>Then</div>
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 800, color: C.text, marginBottom: sz(6) }}>Share back</div>
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.55 }}>One person from the room shares their screen or describes what they built. We see it together.</div>
+        </div>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', gap: sz(10) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>Missed the download?</div>
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(10), border: `1.5px solid ${C.primary}` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={sz(80)} height={sz(80)} alt="Download Claude" style={{ display: 'block' }} />
+          </div>
+          <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>claude.ai/download</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ── AIEmployeeLayers ~ segment 05 audience view: 4 capabilities + 4 levels ───
+const AI_CAPABILITIES = [
+  { num: '01', title: 'Knowledge', subtitle: 'THE BRAIN', body: 'What it knows about your business.', detail: 'Claude Project loaded with your playbook, ICP, voice, processes, customer data, brand guidelines.' },
+  { num: '02', title: 'Skills', subtitle: 'WHAT IT DOES', body: 'The prompts that execute the work.', detail: 'Call analysis, proposal writing, content repurposing, expense categorization.' },
+  { num: '03', title: 'Connectors', subtitle: 'WHERE IT REACHES', body: 'Notion, Gmail, Slack, your CRM, Drive.', detail: "The AI doesn't just talk ~ it works inside the tools you already use." },
+  { num: '04', title: 'Memory', subtitle: 'WHAT IT LEARNS', body: 'Every interaction trains it.', detail: 'Every correction sharpens it. The longer it works for you, the more valuable it becomes.' },
+];
+
+const AI_LEVELS = [
+  {
+    q: 'Q1', title: 'The Foundation', question: 'What do you do repetitively?', action: 'Save it as a skill.',
+    no: null,
+    yes: null,
+  },
+  {
+    q: 'Q2', title: 'Context?', question: 'Does this job need living context that changes over time?',
+    detail: 'ICP, brand voice, pricing, objection library, case studies, files, transcripts.',
+    no: { level: 1, name: 'CONTRACTOR', desc: 'Just a skill in chat.' },
+    yes: { level: 2, name: 'TRAINED EMPLOYEE', desc: '+ Brain. Skill running inside a workspace loaded with your context.' },
+  },
+  {
+    q: 'Q3', title: 'Tools?', question: 'Does it need to pull from ~ or push into ~ other tools?',
+    detail: 'Notion, Gmail, Slack, CRM, Drive, calendar.',
+    no: { level: 2, name: 'TRAINED EMPLOYEE', desc: 'Brain is enough.' },
+    yes: { level: 3, name: 'CONNECTED EMPLOYEE', desc: '+ Connectors. Reads from and writes to the apps you already use.' },
+  },
+  {
+    q: 'Q4', title: 'Autonomy?', question: 'Should ~ and could ~ this run without you?',
+    detail: 'Only after extensive testing at Level 3.',
+    no: { level: 3, name: 'CONNECTED EMPLOYEE', desc: 'You stay in the loop.' },
+    yes: { level: 4, name: 'AUTONOMOUS EMPLOYEE', desc: '+ Schedule. "It just ran."' },
+  },
+];
+
+function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const onDark = '#FAF8F5';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 36 }}>
+
+      {/* ── Section 1: The 4 Capabilities ── */}
+      <div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          An AI employee, in four layers
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>The 4 Capabilities of </span>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
+          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
+        </div>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          {AI_CAPABILITIES.map(cap => (
+            <div key={cap.num} style={{
+              padding: '24px 22px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}>
+              <div style={{ ...sans, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
+              </div>
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...sans, fontSize: sz(13), color: C.text, fontWeight: 600, lineHeight: 1.5, marginBottom: 4 }}>{cap.body}</div>
+                <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.5 }}>{cap.detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Section 2: The 4 Levels ladder ── */}
+      <div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Four questions. Each yes climbs one rung.
+        </div>
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 22 }}>
+          How to pick the right level <span style={{ color: C.primary, fontWeight: 500 }}>for the job.</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {AI_LEVELS.map((lvl, i) => (
+            <div key={lvl.q} style={{
+              padding: '22px 28px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 24,
+            }}>
+              {/* Left: Q number + title */}
+              <div style={{ flexShrink: 0, minWidth: sz(110) }}>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
+                <div style={{ ...sans, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
+              </div>
+
+              {/* Middle: Question + detail */}
+              <div style={{ flex: 1 }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.5 }}>
+                  {lvl.question} {i === 0 && <strong>Save it as a skill.</strong>}
+                </div>
+                {lvl.detail && (
+                  <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 4 }}>{lvl.detail}</div>
+                )}
+              </div>
+
+              {/* Right: NO/YES outcomes */}
+              {(lvl.no || lvl.yes) && (
+                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10, minWidth: sz(300) }}>
+                  {lvl.no && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.muted}20`, color: C.muted,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>NO · STAY</span>
+                      <div>
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
+                          LEVEL {lvl.no.level} · {lvl.no.name}
+                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.no.desc}</div>
+                      </div>
+                    </div>
+                  )}
+                  {lvl.yes && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>YES · CLIMB</span>
+                      <div>
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
+                          LEVEL {lvl.yes.level} · {lvl.yes.name}
+                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.yes.desc}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1561,7 +2277,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
         Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
       <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
@@ -1598,7 +2314,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
                 {b.name}
               </div>
-              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text, fontStyle: 'italic' }}>
+              <div style={{ ...sans, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
                 {b.desc}
               </div>
 
@@ -1637,7 +2353,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
                     </button>
                     {isExpanded && (
                       <div style={{
-                        ...serif, fontSize: sz(17), lineHeight: 1.6,
+                        ...sans, fontSize: sz(17), lineHeight: 1.6,
                         color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
                         marginTop: 10,
                         animation: 'fadeInUp 0.25s ease',
@@ -1702,9 +2418,9 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
       {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
       <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        A day with a Talent Mucho <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
+        A day with a Talent Mucho <em style={{ ...serif, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
         Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
         <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
@@ -1737,9 +2453,9 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               Talent Mucho ~ AI-Trained Ops Manager
             </div>
             <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
-              Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
+              Sarah <em style={{ ...serif, fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
             </div>
-            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8, fontStyle: 'italic' }}>
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8 }}>
               Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
@@ -1811,7 +2527,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
                     <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
                       {ev.title}
                     </div>
-                    <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                    <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                       {ev.oneLiner}
                     </div>
                   </div>
@@ -1849,7 +2565,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               ↳ This is the Operate pillar
             </div>
-            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, lineHeight: 1.5 }}>
               We build, train, and place these inside our clients&apos; businesses.
             </div>
           </div>
@@ -1882,11 +2598,11 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             </div>
           </div>
 
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
+          <div style={{ ...sans, fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
             {active.oneLiner}
           </div>
 
-          <div style={{ ...serif, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
+          <div style={{ ...sans, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
             {active.detail}
           </div>
 
@@ -1900,7 +2616,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
               Sample output ~
             </div>
-            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
+            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text }}>
               {active.sample}
             </div>
           </div>
@@ -2030,7 +2746,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
         What we demo live
       </div>
       <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
-        ↓ Pick someone in chat to spin · we demo whatever it lands on
+        ↓ Pick someone in chat to spin · our AI Architects demo whatever it lands on
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
@@ -2122,7 +2838,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
                 <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
                   Awaiting the spin
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
+                <div style={{ ...sans, fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
                   Wherever it lands, that&apos;s what we demo live.
                 </div>
               </div>
@@ -2139,7 +2855,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
               <div style={{ ...sans, fontSize: 36, fontWeight: 800, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
                 {items[winner].name}
               </div>
-              <div style={{ ...serif, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
+              <div style={{ ...sans, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
                 {items[winner].desc}
               </div>
             </div>
@@ -2196,6 +2912,177 @@ function SpinWheel({ items, C, mono, sans, serif }: {
   );
 }
 
+// ── LiveQAFeed ~ segment 07 audience view: the question queue audience sees ──
+// Pulls common pre-collected questions; presenter can flip through with the
+// arrows (or autoplay). Adds visceral 'live event' feel without needing a real
+// chat backend tonight.
+const SAMPLE_QUESTIONS = [
+  { theme: 'Pricing',        text: "Will Claude Pro be worth it for me as a solo founder?", from: "Marco, Berlin" },
+  { theme: 'Skills',         text: "How long does it take to build a custom skill like the carousel one?", from: "Lisa, Lisbon" },
+  { theme: 'Project setup',  text: "Should I have one Project per client or one big Project?", from: "Priya, Mumbai" },
+  { theme: 'Connectors',     text: "Can Claude really read my Gmail without me sending each email?", from: "Diego, Buenos Aires" },
+  { theme: 'For VAs',        text: "Is this going to replace my job or make me more valuable?", from: "Maria, Madrid" },
+  { theme: 'Implementation', text: "Where do I start tomorrow ~ I have so many tools already?", from: "Sophie, Paris" },
+  { theme: 'Time',           text: "Realistically, how many hours per week to set this up?", from: "Tom, Sydney" },
+  { theme: 'Costs',          text: "What's the actual monthly cost to run an AI employee?", from: "Anna, Toronto" },
+];
+
+function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [autoplay, setAutoplay] = useState(false);
+  const [answered, setAnswered] = useState<Set<number>>(new Set());
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const t = setInterval(() => {
+      setAnswered(prev => new Set([...prev, activeIdx]));
+      setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
+    }, 8000);
+    return () => clearInterval(t);
+  }, [autoplay, activeIdx]);
+
+  const current = SAMPLE_QUESTIONS[activeIdx]!;
+  const upNext = SAMPLE_QUESTIONS.slice(activeIdx + 1, activeIdx + 4);
+
+  function markAnsweredAndAdvance() {
+    setAnswered(prev => new Set([...prev, activeIdx]));
+    setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
+  }
+  function reset() {
+    setAnswered(new Set());
+    setActiveIdx(0);
+    setAutoplay(false);
+  }
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite' }} />
+            Live questions
+          </span>
+        </span>
+        <span style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {answered.size} of {SAMPLE_QUESTIONS.length} answered
+        </span>
+      </div>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+        Real questions from real people in the chat. Drop yours in ~ we&apos;ll get to it.
+      </div>
+
+      {/* Active question card */}
+      <div style={{
+        padding: '32px 36px',
+        borderRadius: 20,
+        background: C.text,
+        color: onDark,
+        boxShadow: `0 24px 48px -12px ${C.text}40`,
+        marginBottom: 18,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: -30, right: 22, ...serif, fontSize: sz(180), lineHeight: 1, color: C.primary, opacity: 0.18, userSelect: 'none' }}>"</div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary, ...mono, fontSize: sz(10), fontWeight: 800 }}>
+            {current.theme}
+          </span>
+          <span style={{ opacity: 0.5 }}>~ now answering</span>
+        </div>
+        <div style={{ ...serif, fontSize: sz(28), color: onDark, lineHeight: 1.35, marginBottom: 16, position: 'relative' }}>
+          &ldquo;{current.text}&rdquo;
+        </div>
+        <div style={{ ...mono, fontSize: sz(12), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.08em' }}>
+          ~ {current.from}
+        </div>
+      </div>
+
+      {/* Up next + controls */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20, alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Up next ~
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {upNext.map((q, i) => (
+              <div key={i} style={{
+                padding: '10px 14px',
+                borderRadius: 10,
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                display: 'flex', alignItems: 'center', gap: 10,
+                opacity: 1 - i * 0.2,
+              }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                  {q.theme}
+                </span>
+                <span style={{ ...sans, fontSize: sz(15), color: C.text }}>
+                  &ldquo;{q.text}&rdquo;
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
+          <button
+            onClick={markAnsweredAndAdvance}
+            style={{
+              padding: '12px 22px', borderRadius: 100,
+              ...mono, fontSize: sz(11), fontWeight: 800,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: C.primary,
+              color: C.text === '#2A2520' ? onDark : C.bg,
+              border: 'none',
+              boxShadow: `0 6px 16px -4px ${C.primary}55`,
+            }}
+          >
+            ✓ Answered, next →
+          </button>
+          <button
+            onClick={() => setAutoplay(a => !a)}
+            style={{
+              padding: '10px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: autoplay ? `${C.primary}20` : 'transparent',
+              color: C.primary,
+              border: `1px solid ${C.primary}`,
+            }}
+          >
+            {autoplay ? '⏸ Pause autoplay' : '▶ Auto-cycle'}
+          </button>
+          <button
+            onClick={reset}
+            style={{
+              padding: '8px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: 'transparent',
+              color: C.muted,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            ↺ Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── ValueStack ~ segment 07 audience view: the €47 math ─────────────────────
 function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
@@ -2207,20 +3094,57 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
   const totalNumeric = VIP_STACK.reduce((s, item) => s + (typeof item.value === 'number' ? item.value : 0), 0);
+  // Hide the prices initially. Click "Reveal the math" to show them with a stagger.
+  const [pricesRevealed, setPricesRevealed] = useState(false);
+  const [revealedItems, setRevealedItems] = useState(0);
+
+  useEffect(() => {
+    if (!pricesRevealed) { setRevealedItems(0); return; }
+    setRevealedItems(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealedItems(i);
+      if (i < VIP_STACK.length) setTimeout(tick, 280);
+    };
+    const initial = setTimeout(tick, 200);
+    return () => clearTimeout(initial);
+  }, [pricesRevealed]);
+
+  const allItemsRevealed = revealedItems >= VIP_STACK.length;
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        The €47 stack
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          The VIP stack
+        </span>
+        <button
+          onClick={() => setPricesRevealed(p => !p)}
+          style={{
+            ...mono, fontSize: sz(11), fontWeight: 700,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: pricesRevealed ? C.muted : (C.text === '#2A2520' ? onDark : C.bg),
+            background: pricesRevealed ? 'transparent' : C.primary,
+            border: `1px solid ${pricesRevealed ? C.border : C.primary}`,
+            borderRadius: 100,
+            padding: '6px 16px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          {pricesRevealed ? '↺ Hide the math' : '▸ Reveal the math'}
+        </button>
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
-        What&apos;s actually inside VIP. Honest values. Math doesn&apos;t lie.
+      <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 26, lineHeight: 1.5, fontWeight: 400 }}>
+        {pricesRevealed ? "Honest values. Math doesn't lie." : "Click reveal when you're ready to drop the math."}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 18 }}>
         {VIP_STACK.map((item, i) => {
           const isPriceless = item.value === 'priceless';
+          const showPrice = pricesRevealed && i < revealedItems;
           return (
             <div key={item.name} style={{
               display: 'grid',
@@ -2244,69 +3168,568 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
                   {item.name}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45, fontWeight: 400 }}>
                   {item.desc}
                 </div>
               </div>
               <div style={{
-                ...mono, fontSize: sz(16), fontWeight: 800, color: isPriceless ? C.primary : C.text,
+                ...mono, fontSize: sz(16), fontWeight: 800,
+                color: showPrice ? (isPriceless ? C.primary : C.text) : C.muted,
                 letterSpacing: '0.02em',
                 whiteSpace: 'nowrap',
+                opacity: showPrice ? 1 : 0.4,
+                transition: 'all 0.4s ease',
+                transform: showPrice ? 'translateY(0)' : 'translateY(4px)',
+                filter: showPrice ? 'none' : 'blur(6px)',
+                userSelect: showPrice ? 'auto' : 'none',
               }}>
-                {isPriceless ? 'priceless' : `€${item.value}`}
+                {showPrice ? (isPriceless ? 'priceless' : `€${item.value}`) : '€▒▒▒'}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Total + price reveal */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
-        padding: '24px 28px', borderRadius: 16,
-        background: C.text, color: onDark,
-        boxShadow: `0 18px 40px -14px ${C.text}40`,
-      }}>
-        <div>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
-            Real value if bought separately
+      {/* Total + price reveal ~ only shown after all per-item prices revealed */}
+      {allItemsRevealed && (
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
+          padding: '24px 28px', borderRadius: 16,
+          background: C.text, color: onDark,
+          boxShadow: `0 18px 40px -14px ${C.text}40`,
+          animation: 'fadeInUp 0.5s ease forwards',
+        }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Real value if bought separately
+            </div>
+            <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
+              €{totalNumeric}+
+            </div>
           </div>
-          <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
-            €{totalNumeric}+
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Tonight only
+            </div>
+            <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
+              €49
+            </div>
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
-            Tonight only
+      )}
+
+    </div>
+  );
+}
+
+// ── FreeGuideCTA ~ segment 08 closing remark: Skool QR + free guide drop ─────
+const SKOOL_FREE_URL = 'https://talentmucho.com/events/claude-for-business/guide';
+
+function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const onDark = '#FAF8F5';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
+      <div style={{
+        position: 'relative',
+        background: C.text,
+        color: onDark,
+        borderRadius: sz(24),
+        padding: `${sz(48)}px ${sz(44)}px`,
+        overflow: 'hidden',
+        boxShadow: `0 32px 64px -20px ${C.text}55`,
+      }}>
+        {/* Glow accent */}
+        <div style={{
+          position: 'absolute', top: '-30%', right: '-10%',
+          width: '50%', height: '160%',
+          background: `radial-gradient(ellipse, ${C.primary}40 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
+        {/* Grid pattern */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr auto', gap: sz(48), alignItems: 'center' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(14), display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ display: 'inline-block', width: sz(8), height: sz(8), borderRadius: '50%', background: C.primary, animation: 'pulse 1.6s ease-in-out infinite' }} />
+              Tonight only ~ free guide drop
+            </div>
+            <div style={{ ...serif, fontSize: sz(56), fontWeight: 300, color: onDark, letterSpacing: '-0.025em', lineHeight: 1.05, marginBottom: sz(18) }}>
+              Everything you saw tonight ~<br />
+              <span style={{ color: C.primary }}>turned into your starter playbook.</span>
+            </div>
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.78)', lineHeight: 1.55, maxWidth: sz(560) }}>
+              We're posting it inside Skool ~ for free ~ at midnight tonight. Every prompt, every framework, every demo we just ran. Cleaned up, copy-paste ready, and yours forever.
+            </div>
           </div>
-          <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
-            €47
+
+          {/* QR + scan instruction */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14) }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+              Scan to claim
+            </div>
+            <div style={{
+              background: '#FAF8F5',
+              padding: sz(14),
+              borderRadius: sz(16),
+              boxShadow: `0 16px 32px -10px ${C.primary}80`,
+              border: `2px solid ${C.primary}`,
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(220)}x${sz(220)}&data=${encodeURIComponent(SKOOL_FREE_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(200)}
+                height={sz(200)}
+                alt="Scan to join the free Skool community"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: onDark, letterSpacing: '0.02em', textAlign: 'center' }}>
+              Future Proof with AI
+            </div>
+            <div style={{ ...sans, fontSize: sz(11), color: 'rgba(250,248,245,0.55)', textAlign: 'center' }}>
+              Free tier · join in 30 seconds
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── BootcampPreview ~ segment 08: AI Business Bootcamp overview ──────────────
+const BOOTCAMP_WEEKS = [
+  {
+    week: 'Week 1',
+    title: 'Knowing Claude',
+    color: '#C4A882',
+    deliverable: '3 configured Claude.ai Projects loaded with your docs, business context, and brand voice.',
+  },
+  {
+    week: 'Week 2',
+    title: 'Delegating to Claude',
+    color: '#7D6B5A',
+    deliverable: '1 named AI employee in Cowork, briefed and tested against real scenarios from your business.',
+  },
+  {
+    week: 'Week 3',
+    title: 'Building with Claude',
+    color: '#5A7A6B',
+    deliverable: '1 custom business dashboard built with Claude Code. No coding experience needed.',
+  },
+  {
+    week: 'Week 4',
+    title: 'Living with Claude',
+    color: '#6B5A7A',
+    deliverable: 'A written daily Claude routine: 3 specific moments in your workday where Claude is open and ready.',
+  },
+];
+
+const BOOTCAMP_VIP_PERKS = [
+  { title: 'Small groups', desc: 'Live sessions capped so everyone gets airtime and real feedback' },
+  { title: 'Custom prompt buildout', desc: 'Prompts written specifically for your business and niche' },
+  { title: '90-day community access', desc: '3x the standard 30-day access to the Skool community' },
+  { title: 'Priority DM support', desc: 'Direct access to the instructor throughout the full bootcamp' },
+];
+
+const ROI_ROWS = [
+  { task: 'Emails and DM replies',      before: '3 hrs/wk',   after: '45 min/wk',  saved: 'Save 2h 15m' },
+  { task: 'Weekly content creation',    before: '4 hrs/wk',   after: '1 hr/wk',    saved: 'Save 3h' },
+  { task: 'Client proposals & quotes',  before: '2 hrs/wk',   after: '25 min/wk',  saved: 'Save 1h 35m' },
+  { task: 'Customer FAQ and replies',   before: '1.5 hrs/wk', after: '20 min/wk',  saved: 'Save 1h 10m' },
+  { task: 'Research and planning',      before: '2 hrs/wk',   after: '30 min/wk',  saved: 'Save 1h 30m' },
+];
+
+function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  const dark = '#2A2120';
+  const onDark = '#FAF8F5';
+  const [roiOpen, setRoiOpen] = useState(false);
+  return (
+    <div style={{ marginTop: sz(48) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: sz(28), gap: sz(24) }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Talent Mucho · AI Business Bootcamp
+          </div>
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            One month. Three tools.
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginTop: sz(2), marginBottom: sz(10) }}>
+            A business that runs differently.
+          </div>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.5 }}>
+            9 sessions · 27 hrs live instruction · Tuesdays &amp; Thursdays · June 2026
+          </div>
+        </div>
+        {/* Stat pills */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10), flexShrink: 0 }}>
+          {[
+            { val: '9', label: 'sessions total' },
+            { val: '€9.15', label: 'per hour' },
+            { val: '< 1 wk', label: 'to break even' },
+          ].map(s => (
+            <div key={s.label} style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: dark, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(20), fontWeight: 800, color: C.primary, letterSpacing: '-0.01em', lineHeight: 1 }}>{s.val}</div>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 600, color: onDark, opacity: 0.6, letterSpacing: '0.14em', textTransform: 'uppercase' as const, marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4 week cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(14), marginBottom: sz(20) }}>
+        {BOOTCAMP_WEEKS.map((w) => (
+          <div key={w.week} style={{
+            borderRadius: sz(14),
+            overflow: 'hidden',
+            border: `1px solid ${C.border}`,
+            background: C.surface,
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            <div style={{ background: w.color, padding: `${sz(16)}px ${sz(18)}px` }}>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
+                {w.week}
+              </div>
+              <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: '#FAF8F5', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+                {w.title}
+              </div>
+            </div>
+            <div style={{ padding: `${sz(14)}px ${sz(16)}px`, flex: 1 }}>
+              <div style={{ ...sans, fontSize: sz(13), color: C.text, lineHeight: 1.5 }}>
+                {w.deliverable}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Schedule ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden', background: C.surface }}>
+        <div style={{ padding: `${sz(14)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>June 2026 Schedule</span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>Tuesdays & Thursdays · 10 AM EDT · 3 hrs each</span>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto', gap: `${sz(8)}px ${sz(20)}px`, padding: `${sz(14)}px ${sz(20)}px`, alignItems: 'center' }}>
+          {[
+            { session: 'Kickoff',  date: 'Tue Jun 2',  topic: 'Welcome, orientation, Claude.ai setup' },
+            { session: 'W1 · S1', date: 'Thu Jun 5',  topic: 'The interface, Projects, your first conversation' },
+            { session: 'W1 · S2', date: 'Tue Jun 10', topic: 'Custom instructions, file uploads' },
+            { session: 'W2 · S3', date: 'Thu Jun 12', topic: 'AI employees ~ what Cowork makes real' },
+            { session: 'W2 · S4', date: 'Tue Jun 17', topic: 'Build and test your first AI employee live' },
+            { session: 'W3 · S5', date: 'Thu Jun 19', topic: 'Claude Code ~ your first build' },
+            { session: 'W3 · S6', date: 'Tue Jun 24', topic: 'Build your business dashboard' },
+            { session: 'W4 · S7', date: 'Thu Jun 26', topic: 'Your full Claude stack working together' },
+            { session: 'W4 · S8', date: 'Tue Jul 1',  topic: 'Showcases, Q&A, and graduation' },
+          ].map((r, i) => (
+            <>
+              <div key={`s${i}`} style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: i === 0 ? C.primary : C.muted, letterSpacing: '0.1em', whiteSpace: 'nowrap' as const }}>{r.session}</div>
+              <div key={`d${i}`} style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: C.text, whiteSpace: 'nowrap' as const }}>{r.date}</div>
+              <div key={`t${i}`} style={{ ...sans, fontSize: sz(13), color: C.muted }}>{r.topic}</div>
+              <div key={`tz${i}`} style={{ ...mono, fontSize: sz(10), color: C.muted, whiteSpace: 'nowrap' as const }}>4–7 PM CEST</div>
+            </>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Collapsible ROI table ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+        <button
+          onClick={() => setRoiOpen(o => !o)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: `${sz(14)}px ${sz(20)}px`,
+            background: C.surface, border: 'none', cursor: 'pointer',
+            borderBottom: roiOpen ? `1px solid ${C.border}` : 'none',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>
+              Where the hours come back
+            </span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>~9.5 hrs/week · €1,140/month returned</span>
+          </div>
+          <span style={{ ...mono, fontSize: sz(13), color: C.muted, transition: 'transform 0.2s', display: 'inline-block', transform: roiOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+        </button>
+
+        {roiOpen && (
+          <div style={{ background: C.bg }}>
+            {/* Column headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12), padding: `${sz(10)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, background: C.surface2 }}>
+              {['Task', 'Before Claude', 'With Claude', 'Saved'].map(h => (
+                <div key={h} style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: C.muted }}>{h}</div>
+              ))}
+            </div>
+            {ROI_ROWS.map((r, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+                padding: `${sz(12)}px ${sz(20)}px`,
+                background: i % 2 === 0 ? C.bg : C.surface,
+                borderBottom: i < ROI_ROWS.length - 1 ? `1px solid ${C.border}` : 'none',
+                alignItems: 'center',
+              }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.text }}>{r.task}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.muted, whiteSpace: 'nowrap' as const }}>{r.before}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.text, whiteSpace: 'nowrap' as const }}>{r.after}</div>
+                <div style={{ ...sans, fontSize: sz(13), fontStyle: 'italic', color: C.primary, whiteSpace: 'nowrap' as const, fontWeight: 600 }}>{r.saved}</div>
+              </div>
+            ))}
+            {/* Total row */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+              padding: `${sz(14)}px ${sz(20)}px`,
+              background: dark,
+            }}>
+              <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: onDark }}>Total saved per week</div>
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.primary, fontStyle: 'italic', whiteSpace: 'nowrap' as const }}>~9.5 hrs</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Early bird offer */}
+      <div style={{ borderRadius: sz(18), background: dark, padding: `${sz(24)}px ${sz(28)}px`, position: 'relative' as const, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute' as const, inset: 0, pointerEvents: 'none', backgroundImage: 'repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px)' }} />
+        <div style={{ position: 'relative' as const }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>
+            Cohort 1 founding price · Tonight only · Cohort 2 opens at €397
+          </div>
+          <div style={{ ...sans, fontSize: sz(26), fontWeight: 700, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(4) }}>
+            €247 tonight. €397 next cohort.
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginBottom: sz(18) }}>
+            Plus get the €397 VIP package free ~ tonight only.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(12), marginBottom: sz(20) }}>
+            {BOOTCAMP_VIP_PERKS.map(p => (
+              <div key={p.title} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: sz(10), padding: `${sz(14)}px ${sz(16)}px`, borderBottom: `2px solid ${C.primary}40` }}>
+                <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: onDark, marginBottom: sz(6) }}>{p.title}</div>
+                <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.6)', lineHeight: 1.4 }}>{p.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), padding: `${sz(14)}px ${sz(20)}px`, borderRadius: sz(10), background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(255,255,255,0.1)` }}>
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Cohort 1 price</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}><span style={{ color: C.primary }}>€247</span></div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>cohort 2 opens at €397</div>
+            </div>
+            <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>VIP upgrade</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: C.primary }}>€397 <span style={{ fontStyle: 'italic', fontWeight: 400 }}>free</span></div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>included at no extra cost</div>
+            </div>
+            <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Total value</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}>€644</div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>for the price of €247</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), marginTop: sz(16) }}>
+            {/* QR code */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8), flexShrink: 0 }}>
+              <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 8px 20px -6px ${C.primary}50` }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(100)}
+                  height={sz(100)}
+                  alt="Scan to join Bootcamp Cohort 1"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                Scan to join
+              </div>
+            </div>
+            <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', lineHeight: 1.6 }}>
+              ● Cohort 1 closes tonight at midnight. €247 is the founding price ~ Cohort 2 opens at €397.<br />
+              The VIP upgrade (€397 free tonight) returns to full price after midnight.
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 14-day guarantee badge */}
-      <div style={{
-        marginTop: 14,
-        padding: '14px 22px',
-        borderRadius: 100,
-        background: `${C.primary}15`,
-        border: `1px solid ${C.primary}40`,
-        display: 'flex', alignItems: 'center', gap: 14,
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          width: sz(28), height: sz(28),
-          borderRadius: '50%',
-          background: C.primary, color: C.text,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          ...mono, fontSize: sz(14), fontWeight: 800,
-        }}>✓</div>
-        <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-          14-day refund
+    </div>
+  );
+}
+
+// ── SkoolJoinCard ~ segment 08 audience view: premium membership CTA ────────
+const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
+const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
+
+function QRBlock({ url, label, sublabel, size, C, mono, sans, serif }: {
+  url: string; label: string; sublabel: string; size: number;
+  C: Palette; mono: object; sans: object; serif: object;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size * 0.08, flexShrink: 0 }}>
+      <div style={{ ...mono, fontSize: size * 0.07, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+        {label}
+      </div>
+      <div style={{ background: '#FFFFFF', padding: size * 0.075, borderRadius: size * 0.1, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.text}08` }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=2A2520&bgcolor=ffffff&margin=0`}
+          alt={label}
+          width={size}
+          height={size}
+          style={{ display: 'block' }}
+        />
+      </div>
+      <div style={{ ...sans, fontSize: size * 0.07, color: C.primary, fontWeight: 600 }}>
+        {sublabel}
+      </div>
+    </div>
+  );
+}
+
+const BONUS_NUGGETS = [
+  {
+    icon: '✉️',
+    title: 'The 15-min email trick',
+    desc: 'Paste your last 5 sent emails into Claude. Ask it to write your next 10 in your exact voice. Done.',
+  },
+  {
+    icon: '🃏',
+    title: 'Build your first skill card',
+    desc: 'Pick one task you repeat every week. Describe it to Claude step by step. Ask it to turn it into a reusable skill prompt.',
+  },
+  {
+    icon: '🧠',
+    title: 'The brain dump → action plan',
+    desc: 'Paste your messy notes, voice memo transcript, or scattered ideas. Ask Claude: "Turn this into a structured action plan with priorities."',
+  },
+  {
+    icon: '🪪',
+    title: 'Write your system prompt',
+    desc: 'Tell Claude who you are, what you do, and how you communicate. Ask it to write a system prompt you paste at the start of every session.',
+  },
+  {
+    icon: '📅',
+    title: 'The Friday review ritual',
+    desc: 'Every Friday: give Claude your wins, blocks, and open loops. Ask: "What patterns do you see? What should I prioritize Monday?"',
+  },
+];
+
+function BonusSlide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  return (
+    <div style={{ marginTop: sz(40) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: sz(14), marginBottom: sz(24) }}>
+        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, padding: `${sz(4)}px ${sz(12)}px`, borderRadius: 100, border: `1px solid ${C.primary}`, background: C.primary + '15' }}>
+          🎁 Bonus
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.text }}>
-          No form. No questions. The only thing you risk is showing up.
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+      </div>
+
+      <div style={{ ...sans, fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
+        Five things to do this week.
+      </div>
+      <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(24), lineHeight: 1.5 }}>
+        No setup needed. No paid tools. Just Claude and 15 minutes.
+      </div>
+
+      {/* Nugget grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(14) }}>
+        {BONUS_NUGGETS.map((n, i) => (
+          <div
+            key={i}
+            style={{
+              padding: `${sz(20)}px ${sz(22)}px`,
+              borderRadius: 14,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              gridColumn: i === 4 ? 'span 2' : undefined,
+            }}
+          >
+            <div style={{ fontSize: sz(22), marginBottom: sz(8) }}>{n.icon}</div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{n.title}</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.55 }}>{n.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: sz(20), textAlign: 'center' }}>
+        ✦ These are in your workbook ~ take them home tonight
+      </div>
+    </div>
+  );
+}
+
+function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  const qrSize = sz(140);
+  return (
+    <div style={{ marginTop: sz(40), padding: `${sz(32)}px ${sz(36)}px`, borderRadius: 18, background: C.surface, border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: sz(40) }}>
+
+      {/* QR codes side by side */}
+      <div style={{ display: 'flex', gap: sz(24), flexShrink: 0 }}>
+        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
+        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+      {/* Right: details */}
+      <div style={{ flex: 1 }}>
+        <div style={{ ...sans, fontSize: sz(13), color: C.muted, fontStyle: 'italic', marginBottom: sz(10) }}>
+          Not ready for the bootcamp? Join for accountability.
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6) }}>
+          Premium membership
+        </div>
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(6) }}>
+          Talent Mucho
+        </div>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: sz(20) }}>
+          Live workshops · Vault access · Inner circle · Vibe coding sessions
+        </div>
+
+        {/* Pricing row */}
+        <div style={{ display: 'flex', gap: sz(14), alignItems: 'center', marginBottom: sz(20) }}>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.border}`, background: C.bg }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: 2 }}>Monthly</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€49 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/mo</span></div>
+          </div>
+          <div style={{ ...mono, fontSize: sz(12), color: C.muted }}>or</div>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.primary + '15' }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.primary, marginBottom: 2 }}>Annual · save 32%</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€399 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/yr</span></div>
+          </div>
+        </div>
+
+        <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: sz(6) }}>
+          ✦ Price goes to €97/mo soon ~ lock in €49 tonight
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          Not happy? Message us directly ~ we'll refund you.
         </div>
       </div>
     </div>
@@ -2331,7 +3754,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Three doors out
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
       </div>
 
@@ -2376,13 +3799,13 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
                 {door.name}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
+              <div style={{ ...sans, fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
                 ~ {door.italic}
               </div>
               <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
                 {door.pitch}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+              <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
                 <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
                 {door.bestFor}
               </div>
@@ -2390,7 +3813,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
               {/* What you get list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18, flex: 1 }}>
                 {door.whatYouGet.map((item, ii) => (
-                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
+                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
                     <span style={{ ...mono, fontSize: sz(12), color: C.primary, flexShrink: 0, paddingTop: 2 }}>~</span>
                     <span>{item}</span>
                   </div>
@@ -2402,7 +3825,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Next step ~
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
+                <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
                   {door.nextStep}
                 </div>
                 <a
@@ -2421,10 +3844,51 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                     background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
                     color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
                     border: 'none',
+                    marginBottom: door.secondaryCta ? sz(10) : 0,
                   }}
                 >
                   {door.cta} →
                 </a>
+                {door.secondaryCta && door.secondaryCtaUrl && (
+                  <a
+                    href={door.secondaryCtaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                      display: 'block',
+                      padding: `${sz(12)}px ${sz(20)}px`,
+                      borderRadius: 100,
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      ...mono, fontSize: sz(11), fontWeight: 700,
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      background: 'transparent',
+                      color: C.primary,
+                      border: `1.5px solid ${C.primary}`,
+                    }}
+                  >
+                    {door.secondaryCta} →
+                  </a>
+                )}
+                {/* QR for all doors */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: sz(16) }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(6) }}>
+                    <div style={{ background: '#ffffff', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${door.highlight ? C.primary : C.border}` }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(door.ctaUrl)}&margin=0&color=2A2520&bgcolor=ffffff`}
+                        width={sz(80)}
+                        height={sz(80)}
+                        alt={`Scan for ${door.name}`}
+                        style={{ display: 'block' }}
+                      />
+                    </div>
+                    <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                      Scan to join
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           );
@@ -2434,19 +3898,1435 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
   );
 }
 
+// ── WelcomeInteractive ~ segment 00 audience view: countdown + agenda + cities
+const EVENT_START_LOCAL = '2026-05-01T18:00:00-04:00'; // May 1st 6 PM EST (EDT) = May 2nd 12 AM Madrid
+function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSecs }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+  segments: Segment[];
+  timerSecs: number;
+}) {
+  const [now, setNow] = useState(Date.now());
+  const [cityIdx, setCityIdx] = useState(0);
+  const [revealedPromises, setRevealedPromises] = useState(0);
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+  const MENTI_URL = 'menti.talentmucho.com/join';
+  const MENTI_CODE = 'VDIEGH';
+
+  // Tick every second for the countdown
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Cycle through cities every 2.5s
+  useEffect(() => {
+    const t = setInterval(() => setCityIdx(i => (i + 1) % WELCOME_CITIES.length), 2500);
+    return () => clearInterval(t);
+  }, []);
+
+  // Stagger the promise checklist on mount
+  useEffect(() => {
+    setRevealedPromises(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealedPromises(i);
+      if (i < 3) setTimeout(tick, 800);
+    };
+    const initial = setTimeout(tick, 600);
+    return () => clearTimeout(initial);
+  }, []);
+
+  const eventStartMs = new Date(EVENT_START_LOCAL).getTime();
+  const msToEvent = eventStartMs - now;
+  const isLive = msToEvent <= 0;
+
+  // Pre-event countdown
+  const days    = Math.max(0, Math.floor(msToEvent / 86400000));
+  const hours   = Math.max(0, Math.floor((msToEvent % 86400000) / 3600000));
+  const minutes = Math.max(0, Math.floor((msToEvent % 3600000) / 60000));
+  const seconds = Math.max(0, Math.floor((msToEvent % 60000) / 1000));
+
+  // Live time remaining (workshop is 2 hours)
+  const fmtLiveTime = (s: number) => {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  };
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+      {/* ── Countdown / Live clock ── */}
+      <div style={{
+        background: C.text,
+        color: onDark,
+        borderRadius: 24,
+        padding: '40px 36px',
+        marginBottom: 36,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: `0 28px 56px -16px ${C.text}40`,
+      }}>
+        {/* Glow background */}
+        <div style={{
+          position: 'absolute', top: '-50%', left: '-20%',
+          width: '60%', height: '180%',
+          background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+              {isLive ? (
+                <>
+                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite', boxShadow: '0 0 16px #ff5e5e' }} />
+                  Live now
+                </>
+              ) : (
+                <>
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                  We go live in
+                </>
+              )}
+            </div>
+            {isLive ? (
+              <>
+                <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: onDark, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
+                  {fmtLiveTime(timerSecs)}
+                </div>
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
+                  Workshop time remaining
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: sz(14), flexWrap: 'wrap' }}>
+                  {[
+                    { val: days, label: 'days' },
+                    { val: hours, label: 'hours' },
+                    { val: minutes, label: 'min' },
+                    { val: seconds, label: 'sec' },
+                  ].map((u, i) => (
+                    <div key={u.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: sz(72) }}>
+                      <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: i === 3 ? C.primary : onDark, letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                        {String(u.val).padStart(2, '0')}
+                      </div>
+                      <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 6 }}>
+                        {u.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
+                  May 1st · 6 PM EST · grab a drink, get comfy
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Live cities feed */}
+          <div style={{
+            minWidth: 280,
+            padding: '18px 22px',
+            borderRadius: 14,
+            background: 'rgba(250,248,245,0.06)',
+            border: `1px solid rgba(250,248,245,0.12)`,
+            position: 'relative',
+          }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
+              Drop your city in chat
+            </div>
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
+              We&apos;re from everywhere tonight ~
+            </div>
+            <div style={{ minHeight: sz(28), display: 'flex', alignItems: 'center' }}>
+              <div
+                key={cityIdx}
+                style={{
+                  ...sans, fontSize: sz(18), fontWeight: 600, color: onDark, letterSpacing: '-0.01em',
+                  animation: 'fadeInUp 0.4s ease',
+                }}
+              >
+                {WELCOME_CITIES[cityIdx]}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mentimeter join card ── */}
+      <div style={{
+        marginBottom: 26,
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: sz(52),
+      }}>
+        {/* Left: QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+            Scan to join
+          </div>
+          <div style={{
+            background: '#FFFFFF',
+            padding: sz(12),
+            borderRadius: sz(16),
+            border: `1px solid ${C.border}`,
+            boxShadow: `0 4px 24px ${C.text}08`,
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
+              alt="QR code to join Mentimeter"
+              width={sz(160)}
+              height={sz(160)}
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
+            {MENTI_URL}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+        {/* Right: code + URL + button */}
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
+            Enter code at
+          </div>
+          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(14), letterSpacing: '-0.01em' }}>
+            {MENTI_URL}
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: sz(10), padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: `${C.primary}15`, border: `1px dashed ${C.primary}60`, marginBottom: sz(20) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.muted }}>
+              Code
+            </span>
+            <span style={{ ...mono, fontSize: sz(22), fontWeight: 800, color: C.primary, letterSpacing: '0.18em' }}>
+              {MENTI_CODE}
+            </span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: sz(8),
+            padding: `${sz(13)}px ${sz(32)}px`,
+            borderRadius: 100,
+            background: '#7C6B5A',
+            color: '#FAF8F5',
+            ...sans,
+            fontSize: sz(15),
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            cursor: 'default',
+          }}>
+            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
+            Start Session
+          </div>
+        </div>
+      </div>
+
+      {/* ── Two-column: Promise checklist + Agenda ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26 }}>
+
+        {/* Pain points from real community members */}
+        {(() => {
+          const realPains = communityData.members
+            .filter((m: { painPoint: string }) => m.painPoint && m.painPoint.length > 10 && m.painPoint !== '.')
+            .slice(0, 6);
+          return (
+            <div style={{
+              padding: '28px 30px',
+              borderRadius: 18,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+            }}>
+              <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                What you told us
+              </div>
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5, fontWeight: 400 }}>
+                Real answers from your onboarding ~ this is why we&apos;re here.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {realPains.map((m: { firstName: string; painPoint: string; painCategory: string }, i: number) => {
+                  const visible = i < revealedPromises + 3;
+                  return (
+                    <div key={i} style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 14,
+                      padding: '14px 16px',
+                      borderRadius: 12,
+                      background: `${C.primary}08`,
+                      border: `1px solid ${C.border}`,
+                      opacity: visible ? 1 : 0.3,
+                      transform: visible ? 'translateY(0)' : 'translateY(6px)',
+                      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}>
+                      <div style={{
+                        width: sz(28), height: sz(28), flexShrink: 0,
+                        borderRadius: '50%',
+                        background: C.primary,
+                        color: C.text === '#2A2520' ? onDark : C.bg,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        ...mono, fontSize: sz(11), fontWeight: 800,
+                      }}>
+                        {m.firstName.charAt(0)}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45, fontWeight: 400 }}>
+                          &ldquo;{m.painPoint}&rdquo;
+                        </div>
+                        <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+                          {m.firstName} ~ {m.painCategory}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Agenda */}
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Tonight&apos;s agenda
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+            Two hours. Nine beats. No filler.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {segments.map((s) => (
+              <div key={s.id} style={{
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr auto',
+                gap: 12,
+                alignItems: 'center',
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: s.id === 0 ? `${C.primary}15` : 'transparent',
+                border: `1px solid ${s.id === 0 ? `${C.primary}40` : 'transparent'}`,
+              }}>
+                <div style={{
+                  width: sz(28), height: sz(28), flexShrink: 0,
+                  borderRadius: '50%',
+                  background: s.id === 0 ? C.primary : `${C.muted}15`,
+                  color: s.id === 0 ? (C.text === '#2A2520' ? onDark : C.bg) : C.muted,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                }}>{s.num}</div>
+                <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>
+                  {s.title}{s.titleItalic && <> <span style={{ ...sans, fontWeight: 500, color: C.text }}>{s.titleItalic}</span></>}
+                </div>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 600, color: C.muted, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
+                  {s.duration}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Skool QR + "Tonight's workshop is built for you" ── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'auto 1fr', gap: sz(36),
+        alignItems: 'center',
+        padding: '32px 36px',
+        borderRadius: 22,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        marginTop: 26,
+      }}>
+        {/* QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+            Join free
+          </div>
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 28px -10px ${C.primary}40` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(180)}x${sz(180)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+              width={sz(160)}
+              height={sz(160)}
+              alt="Scan to join the Skool community"
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...sans, fontSize: sz(11), fontWeight: 600, color: C.text, letterSpacing: '0.02em' }}>
+            Future Proof with AI
+          </div>
+        </div>
+
+        {/* Right: built for you message */}
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
+            Why we&apos;re here
+          </div>
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
+            Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
+            Stick around till the end ~ there&apos;s a freebie waiting for everyone who stays. ;)
+          </div>
+        </div>
+      </div>
+
+      {/* ── Housekeeping ── */}
+      <div style={{
+        marginTop: 26,
+        padding: '28px 30px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(20), display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Before we start
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(14) }}>
+          {[
+            { icon: '🎙', label: 'Mute yourself', desc: 'Stay muted unless we call on you ~ reduces background noise for everyone.' },
+            { icon: '💬', label: 'Use the chat', desc: 'Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.' },
+            { icon: '📹', label: 'Camera on if you can', desc: 'We love seeing faces ~ helps us read the room and connect with you.' },
+            { icon: '📝', label: 'Take notes', desc: 'Open a doc or grab a notebook ~ you\'ll want to capture your ideas as we go.' },
+            { icon: '🚽', label: 'Bathroom break', desc: 'We\'ll pause halfway through ~ hold tight until then if you can.' },
+            { icon: '🏁', label: 'Stay till the end', desc: 'We save the most actionable stuff for last ~ worth it, we promise.' },
+          ].map(item => (
+            <div key={item.label} style={{
+              display: 'flex',
+              gap: sz(14),
+              padding: `${sz(16)}px ${sz(18)}px`,
+              borderRadius: sz(12),
+              background: `${C.primary}06`,
+              border: `1px solid ${C.border}`,
+              alignItems: 'flex-start',
+            }}>
+              <div style={{ fontSize: sz(22), lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{item.icon}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: C.text, marginBottom: sz(4), letterSpacing: '-0.01em' }}>{item.label}</div>
+                <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.15); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── LocationCloud ~ real-time word cloud of audience locations (segment 00) ──
+function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const [locations, setLocations] = useState<Record<string, number>>({});
+  const [fresh, setFresh] = useState<Set<string>>(new Set());
+
+  const mergeLocation = useCallback((text: string, existing: Record<string, number>) => {
+    const loc = text.trim().replace(/[^\p{L}\p{N}\s,.-]/gu, '').replace(/\s+/g, ' ');
+    if (!loc || loc.length < 2) return { updated: existing, added: '' };
+    const key = loc.charAt(0).toUpperCase() + loc.slice(1);
+    const updated = { ...existing, [key]: (existing[key] || 0) + 1 };
+    return { updated, added: existing[key] ? '' : key };
+  }, []);
+
+  const channelId = useRef(`loc-cloud-00-${Date.now()}`);
+  useEffect(() => {
+    let cancelled = false;
+    const init = async () => {
+      const { supabase } = await import('@/lib/supabase-browser');
+      const { data: rows } = await supabase
+        .from('workbook_responses')
+        .select('response_text')
+        .eq('segment_num', '00');
+      if (!cancelled && rows) {
+        let freq: Record<string, number> = {};
+        for (const r of rows) {
+          const { updated } = mergeLocation(r.response_text, freq);
+          freq = updated;
+        }
+        setLocations(freq);
+      }
+      if (cancelled) return () => {};
+      const ch = supabase
+        .channel(channelId.current)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: 'segment_num=eq.00' },
+          (payload: { new: { response_text: string } }) => {
+            if (cancelled) return;
+            setLocations(prev => {
+              const { updated, added } = mergeLocation(payload.new.response_text, prev);
+              if (added) {
+                setFresh(new Set([added]));
+                setTimeout(() => setFresh(new Set()), 2000);
+              }
+              return updated;
+            });
+          }
+        )
+        .subscribe();
+      return () => { cancelled = true; supabase.removeChannel(ch); };
+    };
+    let cleanup: (() => void) | undefined;
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
+    return () => { cancelled = true; cleanup?.(); };
+  }, [mergeLocation]);
+
+  const sorted = Object.entries(locations).sort((a, b) => b[1] - a[1]).slice(0, 60);
+  const maxFreq = sorted[0]?.[1] || 1;
+  const brandColors = [C.primary, C.text, C.muted, C.primaryHover ?? C.primary];
+
+  if (sorted.length === 0) return null;
+
+  return (
+    <div style={{
+      maxWidth: 1280, margin: '26px auto 0',
+      padding: '28px 30px', borderRadius: 18,
+      background: C.surface, border: `1px solid ${C.border}`,
+    }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Where you&apos;re joining from
+      </div>
+      <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+        {sorted.reduce((s, [, n]) => s + n, 0)} response{sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? 's' : ''} from {sorted.length} location{sorted.length !== 1 ? 's' : ''} ~ updating live
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'baseline', minHeight: sz(60) }}>
+        {sorted.map(([loc, freq], i) => {
+          const ratio = freq / maxFreq;
+          const size = sz(15 + Math.round(ratio * 30));
+          const isNew = fresh.has(loc);
+          return (
+            <span key={loc} style={{
+              ...sans, fontSize: size,
+              fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
+              color: brandColors[i % brandColors.length],
+              opacity: 0.45 + ratio * 0.55,
+              transition: 'all 0.5s ease',
+              animation: isNew ? 'locFadeIn 0.6s ease' : undefined,
+              lineHeight: 1.4,
+            }}>
+              {loc}
+            </span>
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes locFadeIn {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── OriginIntro ~ segment 01 audience view: meet Abie + Meri ────────────────
+const HOSTS = [
+  {
+    name: 'Abie',
+    accent: 'Maxey',
+    role: "The Tech Chameleon who's all over the place",
+    avatar: 'A',
+    flag: '🇵🇭 → 🌍 → 🇪🇸',
+    location: 'Davao → Madrid',
+    story: [
+      "Throughout my tech career I was placed in several roles ~ analyst, architect, engineer, manager. <em>Always adapting.</em>",
+      "Same as a digital nomad ~ country to country, no roots. <em>A chameleon in every sense.</em>",
+      "Then I found my love in AI ~ and finally found a base in Spain. <em>My build era.</em>",
+    ],
+    links: [
+      { handle: 'abiemaxey.com', url: 'https://abiemaxey.com' },
+      { handle: 'happyvoyager.com', url: 'https://happyvoyager.com' },
+    ],
+  },
+  {
+    name: 'Meri',
+    accent: 'Gee',
+    role: 'The marketer who burned out',
+    avatar: 'M',
+    flag: '🇵🇭 → 🌍 → 🇪🇸',
+    location: 'Balkans now ~ Madrid soon',
+    story: [
+      "Marketing + business, not tech. Built my agency from scratch.",
+      "Burned out managing people, personalities, deadlines. <em>It was exhausting.</em>",
+      "ChatGPT made me curious. <em>Claude changed everything.</em> Less staff. More output. Better results.",
+    ],
+    links: [
+      { handle: 'advancedvirtualstaff.com', url: 'https://advancedvirtualstaff.com' },
+    ],
+  },
+];
+
+function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative' }}>
+      {/* Decorative sticker */}
+      <div style={{
+        position: 'absolute',
+        top: -20, right: 0,
+        transform: 'rotate(8deg)',
+        zIndex: 1,
+        pointerEvents: 'none',
+        animation: 'floatSticker 4s ease-in-out infinite',
+      }}>
+        <img
+          src="/assets/stickers/ok.png"
+          alt=""
+          style={{ width: sz(96), height: 'auto', filter: `drop-shadow(0 8px 16px ${C.text}25)` }}
+        />
+      </div>
+
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Meet your hosts
+      </div>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
+        Two very different stories. One business. <span style={{ color: C.primary, fontWeight: 600 }}>Operators, not coaches.</span>
+      </div>
+
+      {/* Two host cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22 }}>
+        {HOSTS.map(host => (
+          <div key={host.name} style={{
+            position: 'relative',
+            padding: '32px 32px 28px',
+            borderRadius: 22,
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            overflow: 'hidden',
+          }}>
+            {/* Subtle accent */}
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: '100%', height: 4,
+              background: C.primary,
+            }} />
+
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20 }}>
+              <div style={{
+                width: sz(72), height: sz(72), flexShrink: 0,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryHover} 100%)`,
+                color: C.text === '#2A2520' ? onDark : C.bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...sans, fontSize: sz(34), fontWeight: 800,
+                boxShadow: `0 8px 20px -6px ${C.primary}55`,
+              }}>{host.avatar}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+                  {host.name}{' '}
+                  <em style={{ ...serif, fontWeight: 400, color: C.primary }}>{host.accent}</em>
+                </div>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>
+                  {host.role}
+                </div>
+              </div>
+            </div>
+
+            {/* Location chip */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: `${C.muted}15`, marginBottom: 16 }}>
+              <span style={{ fontSize: sz(13) }}>{host.flag}</span>
+              <span style={{ ...mono, fontSize: sz(11), color: C.text, letterSpacing: '0.06em' }}>{host.location}</span>
+            </div>
+
+            {/* Story lines */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+              {host.story.map((line, i) => (
+                <div
+                  key={i}
+                  style={{ ...sans, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
+                  dangerouslySetInnerHTML={{ __html: line.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }}
+                />
+              ))}
+            </div>
+
+            {/* Handles */}
+            <div style={{
+              display: 'flex', flexWrap: 'wrap', gap: '8px 18px',
+              paddingTop: 14, width: '100%',
+              borderTop: `1px solid ${C.border}`,
+            }}>
+              {host.links.map(link => (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    ...mono, fontSize: sz(11), fontWeight: 700,
+                    color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase',
+                    textDecoration: 'none',
+                  }}
+                >
+                  ↳ {link.handle}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Together: Talent Mucho ~ combined forces + mission ── */}
+      <div style={{ marginTop: 36 }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Together: Talent Mucho
+        </div>
+
+        {/* Equation visual */}
+        <div style={{
+          padding: '26px 28px', borderRadius: 18,
+          background: C.surface, border: `1px solid ${C.border}`,
+          marginBottom: 18,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap',
+        }}>
+          {[
+            { label: 'Tech', sub: 'Abie', tone: 'soft' as const },
+            { op: '+' },
+            { label: 'Business', sub: 'Meri', tone: 'soft' as const },
+            { op: '+' },
+            { label: 'AI', sub: 'Claude', tone: 'soft' as const },
+            { op: '=' },
+            { label: 'Superpowers', sub: 'Talent Mucho', tone: 'highlight' as const },
+          ].map((part, i) => {
+            if ('op' in part) {
+              return (
+                <div key={`op-${i}`} style={{
+                  ...sans, fontSize: sz(28), fontWeight: 300, color: C.muted, letterSpacing: '-0.02em',
+                }}>{part.op}</div>
+              );
+            }
+            const isHighlight = part.tone === 'highlight';
+            return (
+              <div key={part.label} style={{
+                flex: 1, minWidth: 130,
+                padding: '18px 18px', borderRadius: 14,
+                background: isHighlight ? C.primary : C.bg,
+                border: `1px solid ${isHighlight ? C.primary : C.border}`,
+                color: isHighlight ? '#FAF8F5' : C.text,
+                textAlign: 'center',
+                boxShadow: isHighlight ? `0 8px 24px -10px ${C.primary}80` : 'none',
+              }}>
+                <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 4 }}>
+                  {part.label}
+                </div>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: isHighlight ? 0.85 : 0.55 }}>
+                  {part.sub}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* How we met card */}
+        <div style={{
+          padding: '22px 26px', borderRadius: 18,
+          background: C.surface, border: `1px solid ${C.border}`,
+          marginBottom: 18,
+          display: 'flex', alignItems: 'flex-start', gap: 18,
+        }}>
+          <div style={{ fontSize: sz(28), lineHeight: 1, flexShrink: 0 }}>🤝</div>
+          <div>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
+              How we met
+            </div>
+            <div style={{ ...sans, fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
+              Meri found Abie on YouTube. They decided to meet in Barcelona ~ strangers from the internet.
+              Abie&apos;s thread went viral. People thought she was getting trafficked. <em style={{ color: C.primary }}>1 million views.</em>
+            </div>
+            <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginTop: 8 }}>
+              And here we are ~ building Talent Mucho.
+            </div>
+          </div>
+        </div>
+
+        {/* Narrative card */}
+        <div style={{
+          padding: '28px 30px', borderRadius: 18,
+          background: C.text, color: '#FAF8F5',
+          marginBottom: 18,
+        }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 14 }}>
+            Why we&apos;re here
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ ...sans, fontSize: sz(20), color: '#FAF8F5', lineHeight: 1.45 }}>
+              AI isn&apos;t new. The hype isn&apos;t new. <em style={{ color: C.primary }}>But most of you are still on the sidelines.</em>
+            </div>
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
+              The ones cashing in right now? Developers. Tech operators. They can plug-and-play ~ <em style={{ color: C.primary }}>and they also face the biggest replacement risk.</em>
+            </div>
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
+              We sit at the intersection. <em style={{ color: C.primary }}>Tech + business + AI.</em> That&apos;s why we built Talent Mucho.
+            </div>
+            <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: '#FAF8F5', lineHeight: 1.5, marginTop: 4 }}>
+              Our mission: get you <em style={{ color: C.primary }}>the same superpowers</em> ~ without needing to be a developer.
+            </div>
+          </div>
+        </div>
+
+        {/* Three pillars */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {[
+            { label: 'Educate', desc: 'Workshops, hands-on training, team adoption', tonight: true },
+            { label: 'Build', desc: 'Websites, automations, AI systems your business runs on' },
+            { label: 'Operate', desc: 'AI-trained VAs and engineers placed inside your business' },
+          ].map(p => {
+            const isTonight = 'tonight' in p && p.tonight;
+            return (
+              <div key={p.label} style={{
+                padding: '20px 20px', borderRadius: 14,
+                background: isTonight ? `${C.primary}10` : C.surface,
+                border: `1px solid ${isTonight ? `${C.primary}40` : C.border}`,
+                position: 'relative',
+              }}>
+                {isTonight && (
+                  <div style={{
+                    position: 'absolute', top: -10, right: 14,
+                    ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
+                    background: C.primary, color: '#FAF8F5', padding: '3px 10px', borderRadius: 6,
+                  }}>
+                    Tonight
+                  </div>
+                )}
+                <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 6 }}>
+                  {p.label}
+                </div>
+                <div style={{ ...sans, fontSize: sz(14), color: C.muted, lineHeight: 1.5 }}>
+                  {p.desc}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes floatSticker {
+          0%, 100% { transform: rotate(8deg) translateY(0); }
+          50% { transform: rotate(8deg) translateY(-8px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── CommunityPulse ~ animated data viz for audience engagement ────────────────
+
+function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties; scale?: number;
+}) {
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+  const [revealed, setRevealed] = useState(0);
+  const [animCount, setAnimCount] = useState(0);
+  const [activePain, setActivePain] = useState<number | null>(null);
+
+  const stats = communityData.stats as {
+    total: number; ghlOnly: number; skoolOnly: number; both: number;
+    byPainCategory: Record<string, number>;
+    byAILevel: Record<string, number>;
+  };
+  const painEntries = Object.entries(stats.byPainCategory)
+    .filter(
+      ([key, count]) =>
+        !["No Answer", "Unspecified", "Other"].includes(key) && count > 0,
+    )
+    .sort((left, right) => right[1] - left[1]);
+  const aiEntries = Object.entries(stats.byAILevel)
+    .filter(([key, count]) => key !== "Unknown" && count > 0)
+    .sort((left, right) => right[1] - left[1]);
+  const painTotal = painEntries.reduce((sum, [, count]) => sum + count, 0);
+  const painMax = Math.max(...painEntries.map(([, count]) => count), 1);
+  const aiTotal = aiEntries.reduce((sum, [, count]) => sum + count, 0);
+  const painColors = [
+    C.primary,
+    onDark,
+    `${C.primary}80`,
+    `${C.primary}60`,
+    `${C.primary}40`,
+    `${C.primary}20`,
+  ];
+
+  useEffect(() => {
+    setRevealed(0); setAnimCount(0);
+    let i = 0;
+    const tick = () => { i += 1; setRevealed(i); if (i < 3) setTimeout(tick, 600); };
+    setTimeout(tick, 400);
+    let cur = 0; const target = stats.total; const step = Math.ceil(target / 60);
+    const counter = setInterval(() => { cur = Math.min(cur + step, target); setAnimCount(cur); if (cur >= target) clearInterval(counter); }, 30);
+    return () => clearInterval(counter);
+  }, [stats.total]);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
+
+      {/* ── Hero stat: total members ── */}
+      <div style={{
+        background: C.text, color: onDark, borderRadius: sz(24), padding: `${sz(40)}px ${sz(36)}px`,
+        marginBottom: sz(28), position: 'relative', overflow: 'hidden',
+        boxShadow: `0 28px 56px -16px ${C.text}40`,
+        opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        {/* Grid overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+        }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
+              Our Skool community ~ right now
+            </div>
+            <div style={{ ...serif, fontSize: sz(80), fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: onDark }}>
+              236
+            </div>
+            <div style={{ ...mono, fontSize: sz(12), letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.5)', marginTop: sz(8) }}>
+              members and growing
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(28) }}>
+            {/* Mini donut */}
+            <svg width={sz(140)} height={sz(140)} style={{ transform: 'rotate(-90deg)' }}>
+              {(() => {
+                const r = sz(52); const sw = sz(16); const cx = sz(70); const cy = sz(70);
+                const circ = 2 * Math.PI * r;
+                const segs = [
+                  { val: stats.ghlOnly, color: C.primary },
+                  { val: stats.both, color: onDark },
+                  { val: stats.skoolOnly, color: `${C.primary}60` },
+                ];
+                let cum = 0;
+                return segs.map((s, i) => {
+                  const pct = s.val / stats.total;
+                  const offset = circ * (1 - pct);
+                  const rot = cum * 360;
+                  cum += pct;
+                  return (
+                    <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
+                      strokeDasharray={`${circ}`} strokeDashoffset={offset} strokeLinecap="round"
+                      style={{ transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%', transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                    />
+                  );
+                });
+              })()}
+            </svg>
+
+            {/* QR to join Skool free */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>
+                Join free
+              </div>
+              <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), boxShadow: `0 8px 20px -8px ${C.text}40` }}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(140)}x${sz(140)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(120)}
+                  height={sz(120)}
+                  alt="Scan to join the Skool community"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...sans, fontSize: sz(10), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.04em' }}>
+                Future Proof with AI
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── Pain points ~ animated bars ── */}
+      <div style={{
+        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+        border: `1px solid ${C.border}`, marginBottom: sz(28),
+        opacity: revealed >= 2 ? 1 : 0, transform: revealed >= 2 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+          <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
+          What keeps them up at night
+        </div>
+        <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
+          Self-reported pain points from Skool onboarding
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10) }}>
+          {painEntries.map(([key, count], i) => {
+            const pct = (count / painMax) * 100;
+            const isActive = activePain === i;
+            return (
+              <div
+                key={key}
+                onClick={() => setActivePain(isActive ? null : i)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: sz(4) }}>
+                  <span style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: isActive ? C.primary : C.text }}>{key}</span>
+                  <span style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em' }}>
+                    {count} <span style={{ opacity: 0.5 }}>({((count / painTotal) * 100).toFixed(0)}%)</span>
+                  </span>
+                </div>
+                <div style={{ height: sz(8), borderRadius: sz(4), background: `${C.surface2}`, overflow: 'hidden', position: 'relative' }}>
+                  <div style={{
+                    height: '100%', borderRadius: sz(4),
+                    background: painColors[i] || C.primary,
+                    width: revealed >= 2 ? `${pct}%` : '0%',
+                    transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.1}s`,
+                  }} />
+                </div>
+                {isActive && (
+                  <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
+                    {count} members need help with {key.toLowerCase()} ~ prime mentoring opportunity
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── AI experience distribution ── */}
+      <div style={{
+        display: 'none',
+        gridTemplateColumns: '1fr 1fr', gap: sz(20),
+        opacity: revealed >= 3 ? 1 : 0, transform: revealed >= 3 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        {/* AI level breakdown */}
+        <div style={{
+          background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+            <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
+            AI experience levels
+          </div>
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
+            Where they are on their AI journey
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: sz(12) }}>
+            {aiEntries.map(([level, count], i) => {
+              const pct = aiTotal > 0 ? (count / aiTotal) * 100 : 0;
+              return (
+                <div key={level} style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+                  <div style={{ width: sz(100), ...sans, fontSize: sz(13), fontWeight: 500, color: C.text, flexShrink: 0 }}>
+                    {level}
+                  </div>
+                  <div style={{ flex: 1, height: sz(6), borderRadius: sz(3), background: C.surface2, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', borderRadius: sz(3), background: C.primary,
+                      width: revealed >= 3 ? `${pct}%` : '0%',
+                      transition: `width 1s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.12}s`,
+                    }} />
+                  </div>
+                  <div style={{ ...mono, fontSize: sz(12), color: C.muted, width: sz(40), textAlign: 'right' as const }}>
+                    {count}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Key insight card */}
+        <div style={{
+          background: C.text, color: onDark, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+          position: 'relative', overflow: 'hidden',
+          boxShadow: `0 16px 32px -10px ${C.text}30`,
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+          }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+              <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
+              The opportunity
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: sz(20) }}>
+              <div>
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
+                  {((stats.ghlOnly / (stats.ghlOnly + stats.both)) * 100).toFixed(0)}%
+                </div>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                  of your GHL leads haven&apos;t joined Skool yet
+                </div>
+              </div>
+
+              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
+
+              <div>
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
+                  {painEntries[0]?.[0]}
+                </div>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                  is the #1 pain point ~ {painEntries[0]?.[1]} members need help here
+                </div>
+              </div>
+
+              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
+
+              <div>
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
+                  {aiEntries[0]?.[0]}
+                </div>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                  is the most common AI level ~ {aiEntries[0]?.[1]} members
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mentor track recommendation ~ data-driven */}
+      <div style={{
+        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+        border: `1px solid ${C.border}`,
+        opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+          <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
+          Tonight&apos;s workshop is built for you
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(14) }}>
+          {[
+            { track: 'The Curious Beginner', letter: 'A', pct: '~30%', desc: 'No biz yet, never used AI. We\'ll teach "What is Claude?" with zero jargon.', color: `${C.primary}20` },
+            { track: 'The Hustler', letter: 'B', pct: '~38%', desc: 'Side biz, beginner AI. Email templates, content batching, DM scripts.', color: `${C.primary}30` },
+            { track: 'The Operator', letter: 'C', pct: '~18%', desc: 'Uses Claude regularly. SOPs, report gen, data analysis.', color: `${C.primary}40` },
+            { track: 'The Builder', letter: 'D', pct: '~9%', desc: 'Technical users. Claude API, agents, MCP, automations.', color: `${C.primary}50` },
+          ].map(t => (
+            <div key={t.letter} style={{
+              padding: `${sz(20)}px ${sz(18)}px`, borderRadius: sz(14),
+              background: t.color, border: `1px solid ${C.border}`,
+              transition: 'transform 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: sz(8), marginBottom: sz(10) }}>
+                <span style={{
+                  width: sz(24), height: sz(24), borderRadius: sz(6),
+                  background: C.primary, color: onDark,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                }}>{t.letter}</span>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{t.pct}</span>
+              </div>
+              <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{t.track}</div>
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.5 }}>{t.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Live Responses ~ real-time word cloud + poll chart via Supabase Realtime ──
+function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
+  segmentNum: string;
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+
+  // Word cloud state (from workbook_responses)
+  const [wordFreq, setWordFreq] = useState<Record<string, number>>({});
+  const [newWords, setNewWords] = useState<Set<string>>(new Set());
+
+  // Poll state (from poll_responses)
+  const [pollVotes, setPollVotes] = useState<Record<string, number>>({});
+
+  // Extract words from a response text and merge into frequency map
+  const mergeWords = useCallback((text: string, existing: Record<string, number>) => {
+    const updated = { ...existing };
+    const added: string[] = [];
+    const words = text
+      .toLowerCase()
+      .replace(/[^a-z0-9À-ɏ\s]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2);
+    for (const w of words) {
+      if (!updated[w]) added.push(w);
+      updated[w] = (updated[w] || 0) + 1;
+    }
+    return { updated, added };
+  }, []);
+
+  const wbChId = useRef(`wb-${segmentNum}-${Date.now()}`);
+  const pollChId = useRef(`poll-${segmentNum}-${Date.now()}`);
+  useEffect(() => {
+    let cancelled = false;
+
+    const init = async () => {
+      const { supabase } = await import('@/lib/supabase-browser');
+
+      const { data: wbRows } = await supabase
+        .from('workbook_responses')
+        .select('response_text')
+        .eq('segment_num', segmentNum);
+
+      if (!cancelled && wbRows) {
+        let freq: Record<string, number> = {};
+        for (const row of wbRows) {
+          const { updated } = mergeWords(row.response_text, freq);
+          freq = updated;
+        }
+        setWordFreq(freq);
+      }
+
+      const { data: pollRows } = await supabase
+        .from('poll_responses')
+        .select('choice_label')
+        .eq('segment_num', segmentNum);
+
+      if (!cancelled && pollRows) {
+        const votes: Record<string, number> = {};
+        for (const row of pollRows) {
+          votes[row.choice_label] = (votes[row.choice_label] || 0) + 1;
+        }
+        setPollVotes(votes);
+      }
+
+      if (cancelled) return () => {};
+
+      const wbChannel = supabase
+        .channel(wbChId.current)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: `segment_num=eq.${segmentNum}` },
+          (payload: { new: { response_text: string } }) => {
+            if (cancelled) return;
+            setWordFreq(prev => {
+              const { updated, added } = mergeWords(payload.new.response_text, prev);
+              if (added.length) {
+                setNewWords(new Set(added));
+                setTimeout(() => setNewWords(new Set()), 2000);
+              }
+              return updated;
+            });
+          }
+        )
+        .subscribe();
+
+      const pollChannel = supabase
+        .channel(pollChId.current)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'poll_responses', filter: `segment_num=eq.${segmentNum}` },
+          (payload: { new: { choice_label: string } }) => {
+            if (cancelled) return;
+            setPollVotes(prev => ({
+              ...prev,
+              [payload.new.choice_label]: (prev[payload.new.choice_label] || 0) + 1,
+            }));
+          }
+        )
+        .subscribe();
+
+      return () => {
+        cancelled = true;
+        supabase.removeChannel(wbChannel);
+        supabase.removeChannel(pollChannel);
+      };
+    };
+
+    let cleanup: (() => void) | undefined;
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
+    return () => { cancelled = true; cleanup?.(); };
+  }, [segmentNum, mergeWords]);
+
+  // Derive sorted words for the cloud
+  const sortedWords = Object.entries(wordFreq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 80);
+  const maxFreq = sortedWords[0]?.[1] || 1;
+
+  // Derive sorted poll options
+  const sortedPoll = Object.entries(pollVotes).sort((a, b) => b[1] - a[1]);
+  const totalVotes = sortedPoll.reduce((s, [, v]) => s + v, 0) || 1;
+  const maxVotes = sortedPoll[0]?.[1] || 1;
+
+  const brandColors = [C.primary, C.text, C.muted, C.primaryHover ?? C.primary];
+  const hasWords = sortedWords.length > 0;
+  const hasPoll = sortedPoll.length > 0;
+
+  if (!hasWords && !hasPoll) return null;
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Word cloud */}
+      {hasWords && (
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Live word cloud
+          </div>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+            Words from your workbook responses ~ updating in real time
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', alignItems: 'baseline', minHeight: sz(60) }}>
+            {sortedWords.map(([word, freq], i) => {
+              const ratio = freq / maxFreq;
+              const size = sz(14 + Math.round(ratio * 28));
+              const colorIdx = i % brandColors.length;
+              const isNew = newWords.has(word);
+              return (
+                <span
+                  key={word}
+                  style={{
+                    ...sans,
+                    fontSize: size,
+                    fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
+                    color: brandColors[colorIdx],
+                    opacity: 0.4 + ratio * 0.6,
+                    transition: 'all 0.5s ease',
+                    animation: isNew ? 'lrFadeIn 0.6s ease' : undefined,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {word}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Poll bar chart ~ hidden for now */}
+      {false && hasPoll && (
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Live poll results
+          </div>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+            {totalVotes} vote{totalVotes !== 1 ? 's' : ''} so far
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {sortedPoll.map(([option, votes]) => {
+              const pct = Math.round((votes / totalVotes) * 100);
+              const barWidth = Math.max(2, (votes / maxVotes) * 100);
+              return (
+                <div key={option}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                    <span style={{ ...sans, fontSize: sz(14), fontWeight: 600, color: C.text }}>{option}</span>
+                    <span style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.06em' }}>{pct}% ({votes})</span>
+                  </div>
+                  <div style={{
+                    height: sz(22),
+                    borderRadius: sz(6),
+                    background: `${C.primary}15`,
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${barWidth}%`,
+                      borderRadius: sz(6),
+                      background: C.primary,
+                      transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes lrFadeIn {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit, showLiveQA }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
   fontSize: number; // top-bar slider value (14~30, default 19)
+  segments: Segment[]; // full agenda, used by segment 00 welcome
   C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
   editMode: boolean;
   onSaveEdit: (path: string, value: string) => void;
+  showLiveQA: boolean;
 }) {
   // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
   const audScale = fontSize / 19;
@@ -2495,17 +5375,17 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   const brandSub = 'CLAUDE FOR BUSINESS';
   const footerLink = 'talentmucho.com';
 
-  // Themed em rendering for body copy
-  const emRender = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
-  const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+  // Strip em tags ~ no italics in slides
+  const emRender = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
+  const emOnDark = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
 
   return (
-    <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
+    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
       {/* Subtle texture overlay */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.5, background: `radial-gradient(ellipse at top, ${C.primary}15 0%, transparent 60%), radial-gradient(ellipse at bottom right, ${C.peach} 0%, transparent 50%)` }} />
 
       {/* ── HERO TOP STRIP ── */}
-      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, position: 'relative', zIndex: 2 }}>
+      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 800, color: C.text }}>
             {theme === 'tm' ? 'tm' : 'am'}
@@ -2522,17 +5402,17 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       </div>
 
       {/* ── HERO TITLE BAND ── */}
-      <div style={{ flexShrink: 0, padding: '52px 48px 38px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ padding: '32px 48px 24px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ ...mono, fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span style={{ display: 'inline-block', width: 32, height: 1, background: C.primary }} />
+          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 24, height: 1, background: C.primary }} />
             Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(64px, 9vw, 128px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, color: C.text, margin: 0, ...sans }}>
+          <h1 style={{ fontSize: 'clamp(22px, 2.8vw, 38px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1, color: C.text, margin: 0, ...sans }}>
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
-            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
               <Editable key={`av-ti-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.titleItalic`, v)} />
             </em></>}
           </h1>
@@ -2553,9 +5433,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       </div>
 
       {/* ── BODY ── */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
-        {/* Standard body grid hidden when the segment uses the compare panel ~ the side-by-side comparison takes that real estate instead */}
-        <div style={{ display: seg.panel === 'compare' ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+      <div style={{ flex: 1, padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
+        {/* Standard body grid hidden when:
+            - segment uses compare panel (side-by-side comparison takes the real estate)
+            - segment is the welcome (countdown + agenda take over)
+            - segment is origins (host intro cards take over) */}
+        <div style={{ display: (seg.panel === 'compare' || seg.num === '00' || seg.num === '01') ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
 
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -2578,7 +5461,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 value={emRender(seg.audWhatBody)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontSize: 26, lineHeight: 1.6, color: C.text, opacity: 0.9 }}
+                style={{ ...sans, fontSize: 22, lineHeight: 1.6, color: C.text, opacity: 0.9, fontWeight: 400 }}
               />
             </div>
           </div>
@@ -2595,7 +5478,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 position: 'relative', overflow: 'hidden',
               }}>
                 {/* Decorative quote mark */}
-                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, userSelect: 'none' }}>"</div>
 
                 <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
                   <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
@@ -2607,7 +5490,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                   value={emOnDark(seg.audTakeaway)}
                   editMode={editMode}
                   onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                  style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
+                  style={{ ...sans, fontSize: 24, lineHeight: 1.45, color: onDark, position: 'relative', fontWeight: 400 }}
                 />
               </div>
             )}
@@ -2638,7 +5521,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
                         <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                           {row.claude}
-                          <span style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+                          <span style={{ ...sans, fontSize: 15, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
                             ~ {row.desc}
                           </span>
                         </div>
@@ -2671,7 +5554,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 </div>
                 <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
+                <div style={{ ...serif, fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
                   Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
@@ -2708,6 +5591,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           </div>
         </div>
 
+        {/* ── AI Landscape ~ what is AI + major models (segment 02, before compare panel) ── */}
+        {seg.num === '02' && (
+          <AILandscape C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
         {/* ── ChatGPT vs Claude side-by-side ~ shows when segment uses the compare panel ── */}
         {seg.panel === 'compare' && seg.panelData && COMPARE_PRESETS[seg.panelData] && (() => {
           const p = COMPARE_PRESETS[seg.panelData];
@@ -2722,7 +5610,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+              <div style={{ ...sans, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
                 {p.scenario}
               </div>
 
@@ -2772,8 +5660,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                           marginBottom: 12,
                         }}>{col.tag}</div>
                         <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
-                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-style:italic;font-weight:400;color:${C.primary}">`) }} />
-                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-weight:400;color:${C.primary}">`) }} />
+                        <div style={{ ...sans, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
                           {col.why}
                         </div>
                       </div>
@@ -2793,7 +5681,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
                           {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
                         </div>
-                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                        <div style={{ ...sans, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
                           {col.answer}
                         </div>
                       </div>
@@ -2805,7 +5693,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                             Step 2 · Claude offers a selection
                           </div>
                           {p.rightBridge && (
-                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14, fontStyle: 'italic' }}>
+                            <div style={{ ...sans, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
                               {p.rightBridge}
                             </div>
                           )}
@@ -2837,7 +5725,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                                     </div>
                                   </div>
                                   {isSelected && (
-                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                    <div style={{ ...sans, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                                       {draft.body}
                                     </div>
                                   )}
@@ -2858,7 +5746,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                           {col.annLbl}
                         </div>
-                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                        <div style={{ ...sans, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
                           {col.annTxt}
                         </div>
                       </div>
@@ -2912,8 +5800,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 borderRadius: 14,
                 textAlign: 'center',
               }}>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
-                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+                <div style={{ ...serif, fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
+                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};">`) }} />
               </div>
             </div>
           );
@@ -2921,20 +5809,56 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
 
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
         {seg.num === '04' && (
-          <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+          <SpinWheel items={LIVE_DEMOS} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
-        {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
-        {seg.num === '05' && (
-          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-        )}
-
-        {/* ── The close ~ Value Stack + Three Doors ~ shows on segment 07 (Q&A + next step) ── */}
-        {seg.num === '07' && (
+        {/* ── Welcome interactive ~ countdown + agenda + cities + location cloud (segment 00) ── */}
+        {seg.num === '00' && (
           <>
-            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <WelcomeInteractive C={C} mono={mono} sans={sans} serif={serif} scale={audScale} segments={segments} timerSecs={timerSecs} />
+            <LocationCloud C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <CommunityPulse C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
+        )}
+
+        {/* ── Origin intros ~ meet Abie + Meri (segment 01) ── */}
+        {seg.num === '01' && (
+          <OriginIntro C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── AI Employee layers + Ops Manager day ~ segment 05 (AI employees) ── */}
+        {seg.num === '05' && (
+          <>
+            <AIEmployeeLayers C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+          </>
+        )}
+
+        {/* ── Live build process ~ segment 06 (hands-on) ── */}
+        {seg.num === '06' && (
+          <LiveBuildGuide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── Q&A live feed ~ segment 07 ── */}
+        {seg.num === '07' && showLiveQA && (
+          <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── Next step ~ Value Stack + Bootcamp + Three Doors ~ segment 08 ── */}
+        {seg.num === '08' && (
+          <>
+            <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+          </>
+        )}
+
+        {/* ── Live responses from audience workbook ~ word cloud + poll chart ── */}
+        {seg.num !== '01' && seg.beats.some(b => b.blocks.some(bl => bl.type === 'workbook' || bl.type === 'poll')) && (
+          <LiveResponses segmentNum={seg.num} C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
@@ -2993,6 +5917,15 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                           Best for ~ <span style={{ color: isActive ? onDark : C.text, fontWeight: 700 }}>{p.best}</span>
                         </div>
                       </div>
+                      {p.icon === '03' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                          <div style={{ background: '#FAF8F5', padding: 8, borderRadius: 10, border: `1.5px solid ${C.primary}` }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={80} height={80} alt="Download Claude" style={{ display: 'block' }} />
+                          </div>
+                          <div style={{ ...mono, fontSize: 9, color: isActive ? 'rgba(250,248,245,0.6)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'center' }}>Download</div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Simulation log (only when active) */}
