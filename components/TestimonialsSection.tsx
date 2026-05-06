@@ -8,75 +8,77 @@ type Testimonial = {
   quote: string;
 };
 
+// Names anonymised to first name + last initial pending explicit consent.
+// When a member confirms via DM/email, restore their full name here.
 const testimonials: Testimonial[] = [
   {
-    name: "Shane Morales",
-    role: "Attendee",
+    name: "Shane M.",
+    role: "May 1 Attendee",
     image: "SM",
     quote:
       "Yaaaay I'll wait for that! I definitely want to learn how to modify my own Sarah.",
   },
   {
-    name: "Camille Oriel",
-    role: "Attendee",
+    name: "Camille O.",
+    role: "May 1 Attendee",
     image: "CO",
     quote:
       "Thanks for this Abie and Meri. I really learned a lot and want to keep learning. Looking forward to 2nd session!",
   },
   {
-    name: "Kristen Cascano",
-    role: "Attendee",
+    name: "Kristen C.",
+    role: "May 1 Attendee",
     image: "KC",
     quote:
       "So brilliant! These lessons could change lives, super worth it as an upskilling, can't wait to learn more.",
   },
   {
-    name: "Andre Swartz",
-    role: "Attendee",
+    name: "Andre S.",
+    role: "May 1 Attendee",
     image: "AS",
     quote: "Thank you Abie & Meri!",
   },
   {
-    name: "Atasha Balbis",
-    role: "Attendee",
+    name: "Atasha B.",
+    role: "May 1 Attendee",
     image: "AB",
     quote:
       "TBH, this is the first time I attend for AI session. I am looking forward for the next session. I want to learn more. Thank you guys.",
   },
   {
     name: "Nat",
-    role: "Attendee",
+    role: "May 1 Attendee",
     image: "N",
     quote: "You guys are awesome!",
   },
   {
-    name: "Ernie Pascual",
-    role: "Attendee",
+    name: "Ernie P.",
+    role: "May 1 Attendee",
     image: "EP",
     quote: "thnk you guys for organizing this session",
   },
   {
     name: "Nica",
-    role: "Attendee",
+    role: "May 1 Attendee",
     image: "N",
     quote:
       "The amount of effort you guys are putting in to offer this for free. WOW! Thank you.",
   },
   {
-    name: "Apple Cuenca",
-    role: "Attendee",
+    name: "Apple C.",
+    role: "May 1 Attendee",
     image: "AC",
     quote: "2nd session please",
   },
   {
-    name: "Norife Ramales",
-    role: "Attendee",
+    name: "Norife R.",
+    role: "May 1 Attendee",
     image: "NR",
     quote: "You're great coaches!!!",
   },
   {
-    name: "Pia Verona",
-    role: "Attendee",
+    name: "Pia V.",
+    role: "May 1 Attendee",
     image: "PV",
     quote: "i honestly can't believe this free. thank you so much guys",
   },
