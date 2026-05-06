@@ -1184,7 +1184,7 @@ const THREE_DOORS: DoorOption[] = [
     pitch: 'Open Claude tonight. Try one prompt from what you saw.',
     bestFor: 'You\'re curious. Not ready to commit. Totally valid ~ tonight already moved you forward.',
     whatYouGet: [
-      "Free Skool community ~ 230+ already in",
+      "Free Skool community ~ 300+ already in",
       "Tonight's freebie drop at midnight ~ every prompt and framework cleaned up",
       "Abie's AI Playbooks ~ free and growing every week",
     ],
@@ -1197,10 +1197,10 @@ const THREE_DOORS: DoorOption[] = [
     name: 'Inner Circle',
     italic: '€49/mo ~ accountability',
     price: '€49/mo',
-    pitch: "Stay close. Monthly workshops, replay vault, 30% off every bootcamp.",
+    pitch: "Stay close. Weekly group calls, replay vault, 30% off every bootcamp.",
     bestFor: "You want the ongoing support without the intensive. Or you want to join the bootcamp later with the discount locked.",
     whatYouGet: [
-      "Monthly live workshops ~ new ones every month",
+      "Weekly live group calls ~ starts Tue Jun 2",
       "Full replay vault ~ everything we've ever built",
       "Vibe coding sessions ~ build real things together",
       "30% off all future bootcamps ~ locked as long as you stay",
