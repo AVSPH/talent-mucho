@@ -107,7 +107,7 @@ export default function WallOfLoveSection() {
       <div className="section-container relative z-10 w-full">
         <div className="mx-auto max-w-6xl text-center mb-16 md:mb-24">
           <p className="text-clay-500 text-xs font-semibold uppercase tracking-[0.25em] mb-4">
-            What Clients Say
+            AI Training Feedback
           </p>
           <h2
             className="text-charcoal-900 mb-6 leading-[1.1]"
@@ -117,11 +117,11 @@ export default function WallOfLoveSection() {
               fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
             }}
           >
-            Real results from real founders.
+            Voices from the May 1 AI Training Zoom.
           </h2>
           <p className="text-taupe-500 text-lg max-w-2xl mx-auto leading-relaxed">
-            These are people who were exactly where you are ~ and decided to
-            stop doing it all themselves.
+            These testimonials are from attendees who joined the live training
+            session.
           </p>
         </div>
 
@@ -133,35 +133,37 @@ export default function WallOfLoveSection() {
                   key={index}
                   className="border border-beige-200/50 shadow-sm hover:shadow-md transition-shadow rounded-2xl"
                 >
-                  <CardContent className="grid grid-cols-[auto_1fr] gap-4 pt-6 bg-white rounded-2xl">
-                    <Avatar className="size-10 border border-beige-200/50">
-                      <AvatarImage
-                        alt={name}
-                        src={image}
-                        loading="lazy"
-                        width="120"
-                        height="120"
-                      />
-                      <AvatarFallback className="bg-clay-50/50 text-clay-600">
-                        {image}
-                      </AvatarFallback>
-                    </Avatar>
+                  <CardContent className="pt-6 bg-white rounded-2xl">
+                    <div className="grid grid-cols-[auto_1fr] gap-4">
+                      <Avatar className="size-10 border border-beige-200/50">
+                        <AvatarImage
+                          alt={name}
+                          src={image}
+                          loading="lazy"
+                          width="120"
+                          height="120"
+                        />
+                        <AvatarFallback className="bg-clay-50/50 text-clay-600">
+                          {image}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    <div>
-                      <h3 className="font-semibold text-charcoal-900">
-                        {name}
-                      </h3>
+                      <div>
+                        <h3 className="font-semibold text-charcoal-900">
+                          {name}
+                        </h3>
 
-                      <span className="text-taupe-400 block text-xs font-medium tracking-wide mt-0.5">
-                        {role}
-                      </span>
-
-                      <blockquote className="mt-4">
-                        <p className="text-taupe-500 text-sm leading-relaxed">
-                          &ldquo;{quote}&rdquo;
-                        </p>
-                      </blockquote>
+                        <span className="text-taupe-400 block text-xs font-medium tracking-wide mt-0.5">
+                          {role}
+                        </span>
+                      </div>
                     </div>
+
+                    <blockquote className="mt-4">
+                      <p className="text-taupe-500 text-sm leading-relaxed">
+                        &ldquo;{quote}&rdquo;
+                      </p>
+                    </blockquote>
                   </CardContent>
                 </Card>
               ))}
