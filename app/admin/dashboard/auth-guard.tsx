@@ -1,13 +1,7 @@
 "use client";
 
-import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const ALLOWED_EMAILS = ["hello@abiemaxey.com", "hello@talentmucho.com"];
 
@@ -17,20 +11,15 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      if (!data.session) {
-        router.replace("/admin/login");
-        return;
-      }
-      const email = data.session.user.email ?? "";
-      if (ALLOWED_EMAILS.includes(email)) {
-        setStatus("ok");
-      } else {
-        setDeniedEmail(email);
-        setStatus("denied");
-        await supabase.auth.signOut();
-      }
-    });
+    const email = sessionStorage.getItem("admin_auth") ?? "";
+    if (ALLOWED_EMAILS.includes(email)) {
+      setStatus("ok");
+    } else if (email) {
+      setDeniedEmail(email);
+      setStatus("denied");
+    } else {
+      router.replace("/admin/login");
+    }
   }, [router]);
 
   if (status === "loading") {
@@ -45,7 +34,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#2A2520", color: "rgba(250,248,245,0.4)", fontFamily: "var(--font-manrope)", fontSize: 14, flexDirection: "column", gap: 8 }}>
         <p style={{ margin: 0, color: "#e07070" }}>Access denied</p>
-        <p style={{ margin: 0, fontSize: 12 }}>{deniedEmail} is not an authorized admin</p>
+        <p style={{ margin: 0, fontSize: 12 }}>{deniedEmail} is not authorized</p>
         <a href="/admin/login" style={{ marginTop: 8, fontSize: 12, color: "#C4A882", textDecoration: "underline" }}>Back to login</a>
       </div>
     );
