@@ -35,7 +35,6 @@ export const metadata: Metadata = {
 };
 
 const STRIPE_URL = "https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07";
-const STRIPE_INSTALLMENT_URL = "https://buy.stripe.com/fZu28lgd868PeSJ5xH73G08";
 
 const weeks = [
   {
@@ -658,39 +657,12 @@ export default function BootcampPage() {
                 You'll be asked for your email, country, phone (for priority DM access), and one
                 quick question: <em>what do you most want to build in Cohort 1?</em>
               </p>
+              <p className="text-center text-[11px] text-clay-500 font-medium mt-3">
+                Klarna · Pay in 3 available at checkout
+              </p>
             </div>
 
-            {/* Installment plan */}
-            <div className="mt-6 bg-white border-2 border-dashed border-clay-500/40 rounded-2xl px-6 py-5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-clay-500/10 flex items-center justify-center shrink-0 mt-0.5 text-clay-500">
-                    <Zap className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-charcoal-900 mb-0.5">
-                      Need to split it? Pay in 2.
-                    </p>
-                    <p className="text-xs text-taupe-400 font-light leading-relaxed">
-                      <span className="font-semibold text-espresso-800">€148.50 × 2 months</span> ~
-                      same Cohort 1 access, billed monthly. Auto-cancels after the 2nd payment.
-                    </p>
-                  </div>
-                </div>
-                <a
-                  href={STRIPE_INSTALLMENT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cta="bootcamp-installment"
-                  className="inline-flex items-center gap-2 bg-white border border-clay-500 text-clay-500 hover:bg-clay-500 hover:text-beige-50 font-medium text-sm px-5 py-2.5 rounded-full transition-colors duration-200 shrink-0"
-                >
-                  Choose installment plan
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-
-            <div className="mt-6 bg-beige-100 border border-beige-200 rounded-xl px-5 py-4 flex items-start gap-3">
+            <div className="mt-8 bg-beige-100 border border-beige-200 rounded-xl px-5 py-4 flex items-start gap-3">
               <Zap className="w-5 h-5 text-clay-500 shrink-0 mt-0.5" />
               <p className="text-xs text-taupe-400 font-light leading-relaxed">
                 <span className="font-semibold text-espresso-800">Founding cohort note:</span>{" "}
