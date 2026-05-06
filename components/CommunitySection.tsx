@@ -20,7 +20,7 @@ export default function CommunitySection() {
                         <div className="inline-flex items-center gap-2 bg-clay-500/15 border border-clay-500/30 rounded-full px-4 py-2 mb-6">
                             <span className="w-2 h-2 rounded-full bg-clay-500 animate-pulse shrink-0" />
                             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-clay-500">
-                                230+ members · Live on Skool
+                                300+ members · Live on Skool
                             </span>
                         </div>
 

@@ -1184,7 +1184,7 @@ const THREE_DOORS: DoorOption[] = [
     pitch: 'Open Claude tonight. Try one prompt from what you saw.',
     bestFor: 'You\'re curious. Not ready to commit. Totally valid ~ tonight already moved you forward.',
     whatYouGet: [
-      "Free Skool community ~ 230+ already in",
+      "Free Skool community ~ 300+ already in",
       "Tonight's freebie drop at midnight ~ every prompt and framework cleaned up",
       "Abie's AI Playbooks ~ free and growing every week",
     ],
