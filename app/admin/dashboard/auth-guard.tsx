@@ -3,18 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const ALLOWED_EMAILS = ["hello@abiemaxey.com"];
-
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<"loading" | "authenticated" | "denied">(
-    "loading",
-  );
+  const [status, setStatus] = useState<"loading" | "ok" | "denied">("loading");
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("admin_auth");
-    if (stored && ALLOWED_EMAILS.includes(stored)) {
-      setStatus("authenticated");
+    const pin = sessionStorage.getItem("admin_pin_auth");
+    if (pin === "ok") {
+      setStatus("ok");
     } else {
       router.replace("/admin/login");
     }
@@ -22,41 +18,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (status === "loading") {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#F5F0E8",
-          fontFamily: "var(--font-manrope), sans-serif",
-          color: "#7D6B5A",
-          fontSize: 15,
-        }}
-      >
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#2A2520", color: "rgba(250,248,245,0.4)", fontFamily: "var(--font-manrope)", fontSize: 14 }}>
         Loading...
       </div>
     );
   }
 
-  if (status === "denied") {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#F5F0E8",
-          fontFamily: "var(--font-manrope), sans-serif",
-          color: "#2A2520",
-          fontSize: 15,
-        }}
-      >
-        Access denied
-      </div>
-    );
-  }
+  if (status === "denied") return null;
 
   return <>{children}</>;
 }
