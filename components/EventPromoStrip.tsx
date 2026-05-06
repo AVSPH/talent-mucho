@@ -12,19 +12,19 @@ export default function EventPromoStrip() {
                         </div>
                         <div>
                             <p className="font-semibold text-white text-sm">
-                                10 spots · Free Live Training: Getting Started with AI
+                                Cohort 1 ~ AI Business Bootcamp · €247 founding price
                             </p>
                             <p className="text-white/70 text-xs flex items-center gap-1.5 mt-0.5">
                                 <Calendar className="w-3 h-3" />
-                                May 1, 2026 · For women who want to learn AI but don&apos;t know where to start
+                                Starts June 2, 2026 · 9 live sessions · VIP bundle included free
                             </p>
                         </div>
                     </div>
                     <Link
-                        href="/events/claude-for-business"
+                        href="/events/bootcamp"
                         className="inline-flex items-center gap-2 bg-white text-clay-600 font-semibold text-sm px-6 py-2.5 rounded-full hover:bg-beige-50 transition-colors shrink-0"
                     >
-                        Reserve Free Spot
+                        Join Cohort 1
                         <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>

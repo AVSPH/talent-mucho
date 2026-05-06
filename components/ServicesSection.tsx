@@ -81,7 +81,7 @@ const services = [
         spanClass: "lg:col-span-12",
         className: "bg-white",
         features: ["Claude AI Mastery", "Workflow Automation", "Live Coaching Sessions", "Productivity Systems"],
-        href: "/events/claude-for-business"
+        href: "/events/bootcamp"
     }
 ];
 

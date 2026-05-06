@@ -34,14 +34,14 @@ export default function Hero() {
           <div className="text-left order-2 lg:order-1">
             {/* Event Callout */}
             <a
-              href="/events/claude-for-business"
+              href="/events/bootcamp"
               className="inline-flex items-center gap-3 bg-white border border-clay-200 rounded-full px-4 py-2 mb-6 shadow-sm hover:shadow-md hover:border-clay-400 transition-all duration-300 group animate-fade-in"
             >
               <span className="bg-clay-500 text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
-                Free Event
+                Cohort 1
               </span>
               <span className="text-espresso-800 text-sm font-medium">
-                10 spots · AI Training for Women · May 1
+                AI Business Bootcamp · €247 · Starts June 2
               </span>
               <ArrowRight className="w-3.5 h-3.5 text-clay-500 group-hover:translate-x-1 transition-transform" />
             </a>
@@ -86,10 +86,10 @@ export default function Hero() {
                 Get Your Free VA Match
               </a>
               <a
-                href="/events/claude-for-business"
+                href="/events/bootcamp"
                 className="btn-secondary"
               >
-                Join Live Event
+                Join the Bootcamp
               </a>
             </div>
           </div>
