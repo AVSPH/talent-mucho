@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "Welcome to the inner circle. Here's everything you need to know before May 1.",
 };
 
-const PAID_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
+const PAID_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7";
 
 type WhatNextItem = {
   step: string;

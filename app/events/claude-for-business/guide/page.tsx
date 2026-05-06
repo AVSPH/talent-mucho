@@ -592,12 +592,12 @@ export default function EventGuidePage() {
                   <div className="bg-[#FAF8F5] p-2.5 rounded-xl border border-clay-500/30">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
                       width={72} height={72} alt="Join the free Skool community" className="block"
                     />
                   </div>
                   <a
-                    href="https://www.skool.com/future-proof-with-ai-4339"
+                    href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-charcoal-900 hover:bg-charcoal-800 text-beige-50 font-semibold text-sm px-7 py-3 rounded-full transition-all duration-200"

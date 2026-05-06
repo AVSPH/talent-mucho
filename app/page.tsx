@@ -12,16 +12,18 @@ import WhyUsSection from "../components/WhyUsSection";
 import CommunitySection from "../components/CommunitySection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import BlogSection from "../components/BlogSection";
+import BootcampClosingCTA from "../components/BootcampClosingCTA";
 import CTASection from "../components/CTASection";
 export default function Home() {
   return (
     <>
       <main>
         <Hero />
+        <EducateBuildOperate />
         <CommunitySection />
         <ClientsSection />
+        <TestimonialsSection />
         <ChallengeSection />
-        <EducateBuildOperate />
         <WhoWeAreSection />
         <WebsiteServiceSection />
         <ServicesSection />
@@ -29,8 +31,8 @@ export default function Home() {
         <BenefitsSection />
         <ProcessSection />
         <WhyUsSection />
-        <TestimonialsSection />
         {/* <BlogSection /> */}
+        <BootcampClosingCTA />
       </main>
     </>
   );

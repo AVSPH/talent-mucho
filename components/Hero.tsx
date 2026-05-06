@@ -53,26 +53,27 @@ export default function Hero() {
 
             {/* Main Headline */}
             <h1 className="mb-6 animate-fade-in-up">
-              You Didn&apos;t Start a Business to Do Everything Yourself.
+              Run AI inside your business
+              <br />
+              <em className="italic text-clay-500" style={{ fontStyle: "italic" }}>~ live, in 4 weeks.</em>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              You built something real. Now let&apos;s make sure it doesn&apos;t run you into the ground. We bring in the right people, set up the systems, and actually teach you how AI fits into your business ~ not the jargon, the real stuff.
+            <p className="text-lg md:text-xl text-espresso-800 max-w-xl mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
+              Cohort 1 of the AI Business Bootcamp starts <span className="font-semibold text-charcoal-900">Tuesday, June 2</span>. Nine live sessions, four real deliverables you keep, small-group mentorship from operators who run their own AI stacks every day.
             </p>
 
-            {/* Bullet Points */}
+            {/* Bullet Points ~ bootcamp deliverables */}
             <ul className="space-y-3 mb-10 opacity-0 animate-fade-in-up animation-delay-300">
               {[
-                "AI-Trained Virtual Assistants & Engineers",
-                "Websites, Systems & Automation",
-                "Social Media, SEO & GEO",
-                "AI & Tech Training for Teams & Companies",
-                "One partner. One strategy. Real results.",
+                "Week 1 ~ 3 Claude Projects loaded with your business",
+                "Week 2 ~ 1 AI employee in your workflows",
+                "Week 3 ~ Custom dashboard built with Claude Code",
+                "Week 4 ~ A daily AI routine that compounds",
               ].map((item, index) => (
                 <li key={index} className="flex items-start gap-3 text-espresso-800">
-                  <CheckCircle className="w-6 h-6 text-clay-500 flex-shrink-0 mt-0.5" />
-                  <span className={`text-lg font-medium ${index === 4 ? "font-bold text-charcoal-900" : ""}`}>{item}</span>
+                  <CheckCircle className="w-5 h-5 text-clay-500 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg font-medium">{item}</span>
                 </li>
               ))}
             </ul>
@@ -80,18 +81,28 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-4 opacity-0 animate-fade-in-up animation-delay-400">
               <a
-                href="/booking"
+                href="/events/bootcamp"
                 className="btn-primary"
               >
-                Get Your Free VA Match
+                Join Cohort 1 ~ €247
               </a>
               <a
-                href="/events/bootcamp"
+                href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-secondary"
               >
-                Join the Bootcamp
+                Warm up free
               </a>
             </div>
+
+            {/* Tertiary: services audience */}
+            <p className="text-sm text-taupe-400 font-light mt-6 opacity-0 animate-fade-in-up animation-delay-500">
+              Need a VA, engineer, or website built instead?{" "}
+              <a href="/booking" className="text-clay-500 hover:text-clay-600 font-medium underline-offset-4 hover:underline">
+                Book a call →
+              </a>
+            </p>
           </div>
 
           {/* Right Column - Image with Floating Cards */}

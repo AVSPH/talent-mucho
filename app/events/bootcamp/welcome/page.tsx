@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const INSIDE_URL = "/events/bootcamp/inside";
-const FREE_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
+const FREE_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7";
 const PIN = "2028";
 
 const schedule = [

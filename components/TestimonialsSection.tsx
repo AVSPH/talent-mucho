@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -171,6 +173,20 @@ export default function WallOfLoveSection() {
               ))}
             </div>
           ))}
+        </div>
+
+        {/* Past events link */}
+        <div className="mt-14 md:mt-16 text-center">
+          <p className="text-taupe-500 text-sm font-light italic mb-4">
+            These voices came from our May 1 free workshop.
+          </p>
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 text-clay-500 hover:text-clay-600 font-medium text-sm transition-colors"
+          >
+            See all past events
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </section>
