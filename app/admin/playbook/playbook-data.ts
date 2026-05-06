@@ -1,3 +1,135 @@
+export interface AgendaBlock {
+  time: string;
+  label: string;
+  duration: string;
+  type: "build" | "sell" | "buffer" | "open";
+}
+
+export interface Objection {
+  objection: string;
+  response: string;
+}
+
+export interface SalesSession {
+  title: string;
+  date: string;
+  totalMin: number;
+  tagline: string;
+  agenda: AgendaBlock[];
+  roles: { abie: string; mary: string };
+  preBuild: string[];
+  buildSteps: { step: string; script: string; tip?: string }[];
+  transitionScript: string;
+  pitchPoints: string[];
+  objections: Objection[];
+  closingScript: string;
+  urgencyMechanics: string[];
+}
+
+export const FREE_SESSION: SalesSession = {
+  title: "Free Live Build: Build Your AI Business Assistant",
+  date: "Fri, May 9",
+  totalMin: 120,
+  tagline: "They came for a free build. They leave buying the bootcamp.",
+  agenda: [
+    { time: "0:00", label: "Welcome + frame the session", duration: "5 min", type: "buffer" },
+    { time: "0:05", label: "Show the FINISHED thing first", duration: "7 min", type: "build" },
+    { time: "0:12", label: "Live build together — Claude Project", duration: "33 min", type: "build" },
+    { time: "0:45", label: "3 students share + rescue live", duration: "15 min", type: "open" },
+    { time: "1:00", label: "\"Here's what the bootcamp adds\" — the story", duration: "20 min", type: "sell" },
+    { time: "1:20", label: "Objection Q&A", duration: "20 min", type: "open" },
+    { time: "1:40", label: "Closing + link goes live", duration: "20 min", type: "sell" },
+  ],
+  roles: {
+    abie: "Teach, demo, run the pitch and closing. You're the face of the room.",
+    mary: "Chat wrangler — answer tech questions, flag people who are stuck, track who says 'I'm in' or drops the bootcamp link in chat. Drop the Skool link at 1:00 and the Stripe link at 1:40.",
+  },
+  preBuild: [
+    "Tell attendees to open claude.ai before the session — free account is fine",
+    "Prepare 3 example businesses you'll reference: a coach, an e-commerce brand, and a service provider",
+    "Have your own Claude Project open as a 'finished' demo to show at 0:05",
+    "Mary: have the Stripe bootcamp link ready to drop in chat at exactly 1:40",
+    "Prepare a slide or screen with: '9 sessions · 4 real deliverables · €247 founding price' to share at 1:00",
+  ],
+  buildSteps: [
+    {
+      step: "Show the finished thing FIRST (7 min — do this BEFORE teaching anything)",
+      script: "\"Before we build, I want to show you where we're going. This is my Claude Project — I call her my Operations Assistant. Watch this.\" [Send a live prompt: 'Draft a follow-up email to a client who hasn't replied in 2 weeks. Warm but direct. 3 sentences.'] [Show the output.] \"8 seconds. In my exact tone. That's what you'll have built before we hit the hour mark. Let's go.\"",
+      tip: "The demo has to feel effortless. Do not explain HOW it works yet. Just show it working. The mystery creates appetite.",
+    },
+    {
+      step: "Create a Claude Project (5 min)",
+      script: "\"Everyone open claude.ai. Top left — Projects. New Project. Name it after your business or call it Operations Assistant. That's it. You've created your first Project.\" [Pause and let them do it.] Mary: watch chat for anyone who can't find Projects.",
+      tip: "Go slow here. Most will be on mobile or have never opened Projects. Wait for 'done' signals in chat.",
+    },
+    {
+      step: "Write custom instructions (10 min)",
+      script: "\"Now we tell it who you are. Click 'Set instructions' or 'Custom instructions'. Copy this with me:\" [Type live, narrate as you go]: 'You are my AI business assistant. I run [their business type]. My clients are [describe]. My tone is warm, direct, and never corporate. Always draft in first person. Never use words like synergy or leverage.' [Ask 3 people to share what they typed. Praise specifically.]",
+      tip: "Make this feel personal. Say 'Replace [their business type] with YOUR business right now.' Don't let them copy yours word for word — customisation is the point.",
+    },
+    {
+      step: "Upload 2 documents (8 min)",
+      script: "\"Now we feed it your business. Upload any 2 of these: your services page, your FAQ, or one past client email. PDF, Word doc, or paste the text directly. [Pause 3 min to let them do it.] The more you give it, the more it sounds like YOU.\"",
+      tip: "Many won't have docs ready. Tell them: 'If you have nothing ready, paste your Instagram bio and your last email to a client. That's enough for today.'",
+    },
+    {
+      step: "Test 3 live prompts together (10 min)",
+      script: "\"Your assistant is ready. Let's put her to work.\" [Run each prompt live, narrate the output, let them run the same in theirs.] Prompt 1: 'Draft a follow-up to a client who hasn't replied in 2 weeks.' Prompt 2: 'Write 3 social captions about [current relevant topic] in my voice.' Prompt 3: 'Help me prep for a sales call with a [type of client].' [Ask 3 people to screenshot and paste their Prompt 3 output in chat.]",
+      tip: "The third prompt is the money moment — they realise it knows their business. That's when eyes go wide. Don't rush past it.",
+    },
+    {
+      step: "Showcase — 3 students share (15 min)",
+      script: "\"Before we talk about what's next — 3 of you, share your screen for 90 seconds each. Show us what you built and one output you loved.\" [After each share, say something specific about their output. Not 'great job' — something real like 'that email tone is really you.'",
+      tip: "The person who struggles to share makes others think 'I need more help'. The person who nails it makes others jealous. Both convert. Let both happen.",
+    },
+  ],
+  transitionScript: "\"You just built your first AI business assistant in 30 minutes. On your own, from scratch. And you only have claude.ai — a free account. Here's what I want to tell you: that's Week 1 of our bootcamp. One Project. But the bootcamp goes three weeks deeper than what you just did. Week 2: your AI employee has file access — it can open your folders, organise your inbox, execute tasks on your computer. Week 3: you tell Claude Code what to build and it writes the software. You'll leave Week 3 with a custom dashboard for your business that you built yourself. Week 4: all three tools work together in a daily routine that runs while you sleep. €247. 9 live sessions. 4 deliverables you keep. The founding price closes after this cohort. I want to show you exactly what's inside.\"",
+  pitchPoints: [
+    "\"What you just built is Week 1, Session 1. We have 8 more sessions after that.\"",
+    "\"Week 2 is where this gets real — Cowork gives your assistant hands. It can access your files, your folders, your inbox.\"",
+    "\"Week 3, you build with Claude Code. No coding background. You describe it, Claude builds it. You leave with software you made.\"",
+    "\"Week 4 is integration — the whole stack working together. Projects + AI employee + dashboard + a daily 10-minute routine.\"",
+    "\"€247 is the founding price. Cohort 2 opens at €397. This is the only time this price exists.\"",
+    "\"Small group. Live. Abie and I are in every session. You can ask anything.\"",
+    "\"You keep everything — all deliverables, all session recordings, the vault.\"",
+  ],
+  objections: [
+    {
+      objection: "I can figure this out myself",
+      response: "\"You just spent 30 minutes with a guide to build one Project. Week 3 is Claude Code in a terminal. Week 2 is Cowork with file permissions. You could figure it all out — it'll take you 6 months of trial and error. We compress it into 4 weeks, live, with us in the room.\"",
+    },
+    {
+      objection: "€247 is a lot for me right now",
+      response: "\"I hear you. What would one hour of your time be worth if Claude was handling your inbox triage, your client follow-ups, and your content drafts? €247 is less than one consulting session. And you get 27 hours of live instruction plus everything you build.\"",
+    },
+    {
+      objection: "I need to think about it",
+      response: "\"Totally fair. What I'll say is: the founding price closes tonight. Cohort 2 is €397 with no extra benefit — just a higher price. If you're a yes in a week, you're a yes today at a better price. Sleep on it, but the link closes at midnight.\"",
+    },
+    {
+      objection: "I'm not technical enough",
+      response: "\"You just built an AI business assistant in 30 minutes and you'd never done it before. That IS technical. We go slow in Week 3 — terminal step by step, Mary in the chat the whole time. If you can type in English, you can follow this bootcamp.\"",
+    },
+    {
+      objection: "I'm not sure I have time for 9 sessions",
+      response: "\"Sessions are Tuesday and Thursday, 4–7 PM CEST. Recordings go up within 24 hours. You can miss one session and still complete every deliverable. And the daily commitment between sessions is 15–30 minutes. Most of our students say it actually saves them time by Week 3.\"",
+    },
+    {
+      objection: "Does this work if I'm not in Europe?",
+      response: "\"Time zones: 4–7 PM CEST is 10 AM New York, 7 AM LA, 10 PM Manila, midnight Dubai. We have students in [PH/Africa/wherever relevant]. Recordings are there if you ever miss a session.\"",
+    },
+  ],
+  closingScript: "\"The link is going live right now. Mary is dropping it in chat. €247, founding price, closes tonight at midnight. After that we move to €397 for Cohort 2. [Pause.] If you're in this room right now, you're the kind of person who shows up for a free build on a Friday. That's exactly who this bootcamp is for. We'd love to have you in the room on June 2. The link is in chat. See you there.\"",
+  urgencyMechanics: [
+    "Mary drops the Stripe link in chat at exactly 1:40 — not before. Scarcity works better when the moment is earned.",
+    "Say 'founding price closes tonight at midnight' at least 3 times in the last 20 minutes. Repetition is not annoying — it's helpful.",
+    "After dropping the link, go silent for 10 seconds. Don't fill the silence. Let people click.",
+    "If someone says 'I'm in' in chat, say their name out loud: 'Welcome, [Name] — see you June 2.' Social proof in real time.",
+    "Last 5 minutes: 'For everyone still on the fence — I'll stay in the room for 5 more minutes to answer anything privately.'",
+    "After the session ends: Mary sends a follow-up message in Skool/chat with the link and '24 hours left at founding price.'",
+  ],
+};
+
 export interface SessionNote {
   num: string;
   date: string;
