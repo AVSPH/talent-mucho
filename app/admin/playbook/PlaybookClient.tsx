@@ -308,56 +308,62 @@ export default function PlaybookClient() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--font-manrope), sans-serif" }}>
-      {/* Top nav */}
-      <div style={{ borderBottom: `1px solid ${C.border}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <a href="/admin/dashboard" style={{ fontSize: 12, color: C.muted, textDecoration: "none" }}>← Dashboard</a>
-          <span style={{ color: C.border }}>|</span>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: C.clay, margin: 0 }}>Instructor Playbook</p>
+    <div style={{ display: "flex", minHeight: "100vh", background: C.bg, fontFamily: "var(--font-manrope), sans-serif" }}>
+      {/* Playbook sidebar */}
+      <div style={{ width: 260, flexShrink: 0, borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column" }}>
+        {/* Tab toggle */}
+        <div style={{ padding: "16px 14px 12px", borderBottom: `1px solid ${C.border}` }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: C.clay, margin: "0 0 10px" }}>
+            Instructor Playbook
+          </p>
+          <div style={{ display: "flex", gap: 6 }}>
+            {(["sales", "bootcamp"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{
+                  flex: 1,
+                  padding: "6px 0",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  background: tab === t ? "rgba(196,168,130,0.12)" : "transparent",
+                  border: `1px solid ${tab === t ? C.clay + "50" : C.border}`,
+                  borderRadius: 6,
+                  color: tab === t ? C.clay : C.muted,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  fontFamily: "var(--font-manrope), sans-serif",
+                }}
+              >
+                {t === "sales" ? "Sales" : "Sessions"}
+              </button>
+            ))}
+          </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button style={tabStyle("sales")} onClick={() => setTab("sales")}>Sales Events</button>
-          <button style={tabStyle("bootcamp")} onClick={() => setTab("bootcamp")}>Bootcamp Sessions</button>
-        </div>
-      </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", minHeight: "calc(100vh - 57px)" }}>
-        {/* Sidebar */}
-        <div style={{ borderRight: `1px solid ${C.border}`, padding: "24px 16px", overflowY: "auto" }}>
+        {/* Session list */}
+        <div style={{ flex: 1, padding: "14px 10px", overflowY: "auto" }}>
           {tab === "sales" ? (
             <>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: C.dim, margin: "0 0 12px 4px" }}>Live Events</p>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: C.dim, margin: "0 0 8px 4px" }}>Live Events</p>
               <SessionCard label={FREE_SESSION.title} sub={FREE_SESSION.date} active={true} onClick={() => {}} />
             </>
           ) : (
             <>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: C.dim, margin: "0 0 12px 4px" }}>Sessions</p>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: C.dim, margin: "0 0 8px 4px" }}>Sessions</p>
               {PLAYBOOK.map((s, i) => (
                 <SessionCard key={i} label={`${s.num} · ${s.title}`} sub={s.date} active={active === i} onClick={() => setActive(i)} />
               ))}
             </>
           )}
-
-          <div style={{ marginTop: 24, padding: "0 4px" }}>
-            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: C.dim, margin: "0 0 10px" }}>Quick links</p>
-            {[
-              { label: "Members curriculum", href: "/events/bootcamp/inside" },
-              { label: "Bootcamp page", href: "/events/bootcamp" },
-              { label: "Skool community", href: "https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7" },
-            ].map(l => (
-              <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer"
-                style={{ display: "block", fontSize: 12, color: C.muted, textDecoration: "none", marginBottom: 8, padding: "6px 8px", borderRadius: 6, border: "1px solid transparent" }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = C.border)}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
-                {l.label} →
-              </a>
-            ))}
-          </div>
         </div>
+      </div>
 
-        {/* Main content */}
-        <div style={{ padding: "32px 40px", overflowY: "auto", maxWidth: 820 }}>
+      {/* Main content */}
+      <div style={{ flex: 1, minWidth: 0, padding: "32px 40px", overflowY: "auto" }}>
+        <div style={{ maxWidth: 800 }}>
           {tab === "sales" ? <SalesDetail s={FREE_SESSION} /> : <SessionDetail s={PLAYBOOK[active]} />}
         </div>
       </div>

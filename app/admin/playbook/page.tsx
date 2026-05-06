@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import AuthGuard from "../dashboard/auth-guard";
+import AdminShell from "../AdminShell";
 import PlaybookClient from "./PlaybookClient";
 
 export const metadata: Metadata = {
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 export default function PlaybookPage() {
   return (
     <AuthGuard>
-      <PlaybookClient />
+      <AdminShell>
+        <PlaybookClient />
+      </AdminShell>
     </AuthGuard>
   );
 }
