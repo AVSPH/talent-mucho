@@ -9,12 +9,12 @@ import {
 export const metadata: Metadata = {
   title: "The Talent Mucho Community",
   description:
-    "Two doors into the Talent Mucho community. Free Skool tier with replays + vault. Premium membership at €49/mo with weekly calls (starts June 2), monthly workshops, and 30% off every bootcamp.",
+    "Two doors into the Talent Mucho community. Free Skool tier with replays + vault. Premium membership at €49/mo with weekly calls (starts June 2), vibe coding sessions, and 30% off every bootcamp.",
   alternates: { canonical: "/community" },
   openGraph: {
     title: "The Talent Mucho Community",
     description:
-      "Free replays + vault, or premium membership at €49/mo with weekly calls, monthly workshops, and 30% off every bootcamp.",
+      "Free replays + vault, or premium membership at €49/mo with weekly calls, vibe coding, and 30% off every bootcamp.",
     url: "/community",
     type: "website",
     images: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "The Talent Mucho Community",
-    description: "Free or €49/mo · weekly calls, monthly workshops, 30% off every bootcamp.",
+    description: "Free or €49/mo · weekly calls, vibe coding, 30% off every bootcamp.",
     images: ["/assets/website-samples/hero_image.png"],
   },
 };
@@ -70,11 +70,6 @@ const premiumPerks = [
     highlight: true,
   },
   {
-    icon: <Hammer className="w-4 h-4" />,
-    title: "Monthly live workshops",
-    desc: "One deep-dive workshop every month. Topics chosen by the community.",
-  },
-  {
     icon: <Video className="w-4 h-4" />,
     title: "Premium vault",
     desc: "Every replay, every workshop, every prompt we've ever built. Searchable, organised, yours.",
@@ -102,7 +97,6 @@ const compareRows = [
   { feature: "Public AI playbooks", free: true, premium: true },
   { feature: "Community feed access", free: true, premium: true },
   { feature: "Weekly live group calls (starts Jun 2)", free: false, premium: true },
-  { feature: "Monthly workshops", free: false, premium: true },
   { feature: "Full premium vault", free: false, premium: true },
   { feature: "Vibe coding sessions", free: false, premium: true },
   { feature: "30% off every bootcamp", free: false, premium: true },
