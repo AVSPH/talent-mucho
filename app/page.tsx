@@ -18,21 +18,19 @@ export default function Home() {
   return (
     <>
       <main>
-        <Hero />
-        <EducateBuildOperate />
-        <CommunitySection />
-        <ClientsSection />
-        <TestimonialsSection />
-        <ChallengeSection />
-        <WhoWeAreSection />
-        <WebsiteServiceSection />
-        <ServicesSection />
-        {/* <EventPromoStrip /> */}
-        <BenefitsSection />
-        <ProcessSection />
-        <WhyUsSection />
-        {/* <BlogSection /> */}
-        <BootcampClosingCTA />
+        <Hero />              {/* L */}
+        <CommunitySection />  {/* D */}
+        <EducateBuildOperate /> {/* L */}
+        <ClientsSection />    {/* D */}
+        <TestimonialsSection /> {/* L */}
+        <ChallengeSection />  {/* D */}
+        <BenefitsSection />   {/* L */}
+        <WhoWeAreSection />   {/* D */}
+        <ServicesSection />   {/* L */}
+        <WebsiteServiceSection /> {/* D */}
+        <WhyUsSection />      {/* L */}
+        <ProcessSection />    {/* D */}
+        <BootcampClosingCTA /> {/* L */}
       </main>
     </>
   );

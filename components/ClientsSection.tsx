@@ -9,9 +9,9 @@ export default function ClientsSection() {
     ];
 
     return (
-        <section className="py-14 bg-beige-100 border-y border-beige-200 overflow-hidden border-none">
+        <section className="py-14 bg-charcoal-900 border-y border-white/10 overflow-hidden border-none">
             <div className="section-container">
-                <p className="text-center text-taupe-400 text-xs font-semibold uppercase tracking-[0.25em] mb-8">
+                <p className="text-center text-beige-300/60 text-xs font-semibold uppercase tracking-[0.25em] mb-8">
                     Trusted by builders worldwide
                 </p>
 
@@ -20,14 +20,14 @@ export default function ClientsSection() {
                     {clients.map((client, i) => (
                         <span
                             key={i}
-                            className="px-5 py-2.5 bg-white border border-beige-300 rounded-full text-espresso-800 text-sm font-medium hover:border-clay-500 hover:text-clay-500 hover:shadow-sm transition-all duration-300 cursor-default"
+                            className="px-5 py-2.5 bg-espresso-800/40 border border-white/10 rounded-full text-beige-200 text-sm font-medium hover:border-clay-500 hover:text-clay-500 hover:shadow-sm transition-all duration-300 cursor-default"
                         >
                             {client}
                         </span>
                     ))}
                 </div>
 
-                <p className="mt-10 text-center text-taupe-400 text-base italic max-w-xl mx-auto leading-relaxed" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.2rem" }}>
+                <p className="mt-10 text-center text-beige-200/60 text-base italic max-w-xl mx-auto leading-relaxed" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.2rem" }}>
                     &ldquo;If you&apos;re juggling everything yourself, we're here for you.
                 </p>
             </div>
