@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         "/services/personal-branding",
         "/services/virtual-assistants",
         "/services/websites",
+        "/events",
         "/events/bootcamp",
         "/community",
     ];
