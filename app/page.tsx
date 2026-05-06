@@ -23,11 +23,11 @@ export default function Home() {
         <WhoWeAreSection />
         <WebsiteServiceSection />
         <ServicesSection />
-        <EventPromoStrip />
+        {/* <EventPromoStrip /> */}
         <BenefitsSection />
         <ProcessSection />
         <WhyUsSection />
-        {/* <TestimonialsSection /> */}
+        <TestimonialsSection />
         <BlogSection />
       </main>
     </>
