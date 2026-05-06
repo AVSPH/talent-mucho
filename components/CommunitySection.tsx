@@ -34,8 +34,8 @@ export default function CommunitySection() {
                             Learn AI <em className="italic text-clay-500">in the room</em>, not alone.
                         </h2>
                         <p className="text-beige-200 font-light leading-relaxed text-lg max-w-2xl mx-auto">
-                            Two ways to learn with us right now: join the free community for replays
-                            and the vault, or come build live with Cohort 1 of the bootcamp.
+                            Lurk in the free community first ~ then come build live with Cohort 1 of the bootcamp.
+                            Replays, vault, and Abie&apos;s playbooks while you decide.
                         </p>
                     </div>
 
@@ -47,14 +47,14 @@ export default function CommunitySection() {
                                     <Users className="w-5 h-5" />
                                 </div>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-beige-300/60">
-                                    Free · Skool
+                                    Step 1 · Free · Skool
                                 </span>
                             </div>
                             <p
                                 className="text-3xl font-light text-beige-50 mb-2"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                             >
-                                Free <em className="italic text-beige-200/60">community</em>
+                                Warm up <em className="italic text-beige-200/60">free</em>
                             </p>
                             <p className="text-2xl font-light text-clay-500 mb-4"
                                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
@@ -63,10 +63,10 @@ export default function CommunitySection() {
                             </p>
                             <ul className="flex flex-col gap-2 mb-6 flex-1">
                                 {[
-                                    "Free replays from every public event",
-                                    "Free vault ~ prompts and frameworks",
-                                    "Abie's growing AI Playbooks library",
-                                    "First in line when premium opens",
+                                    "Replays from every public event",
+                                    "Free prompt + playbook vault",
+                                    "Lurk, scroll, get the lay of the land",
+                                    "First to hear when Cohort 2 opens",
                                 ].map((item) => (
                                     <li key={item} className="flex items-start gap-2 text-sm text-beige-200 font-light leading-relaxed">
                                         <span className="text-clay-500 mt-1.5 text-[8px]">●</span>
@@ -88,7 +88,7 @@ export default function CommunitySection() {
                         {/* Bootcamp */}
                         <div className="bg-clay-500/10 border border-clay-500/40 rounded-2xl p-7 flex flex-col relative">
                             <span className="absolute -top-2.5 left-7 bg-clay-500 text-beige-50 text-[9px] font-bold uppercase tracking-[0.18em] px-2.5 py-1 rounded-full">
-                                Cohort 1 · Founding price
+                                Step 2 · Cohort 1 · Founding price
                             </span>
                             <div className="flex items-start justify-between mb-5">
                                 <div className="w-11 h-11 rounded-xl bg-clay-500/20 flex items-center justify-center text-clay-500">
@@ -133,20 +133,6 @@ export default function CommunitySection() {
                         </div>
                     </div>
 
-                    {/* Premium teaser */}
-                    <div className="mt-10 bg-espresso-800/40 border border-white/5 rounded-2xl px-6 md:px-8 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <p className="text-sm text-beige-300 font-light leading-relaxed">
-                            <span className="font-semibold text-beige-50">Premium membership opens July 2026</span>{" "}
-                            ~ after Cohort 1 graduates. Join the free community to get first access.
-                        </p>
-                        <Link
-                            href="/community"
-                            className="text-sm font-medium text-clay-500 hover:text-beige-50 transition-colors shrink-0 inline-flex items-center gap-1.5"
-                        >
-                            Read more
-                            <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                    </div>
                 </div>
             </div>
         </section>
