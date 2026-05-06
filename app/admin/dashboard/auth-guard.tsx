@@ -1,39 +1,41 @@
 "use client";
 
+import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const ALLOWED_EMAILS = ["hello@abiemaxey.com"];
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const ALLOWED_EMAILS = ["hello@abiemaxey.com", "hello@talentmucho.com"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<"loading" | "authenticated" | "denied">(
-    "loading",
-  );
+  const [status, setStatus] = useState<"loading" | "ok" | "denied">("loading");
+  const [deniedEmail, setDeniedEmail] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("admin_auth");
-    if (stored && ALLOWED_EMAILS.includes(stored)) {
-      setStatus("authenticated");
-    } else {
-      router.replace("/admin/login");
-    }
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) {
+        router.replace("/admin/login");
+        return;
+      }
+      const email = data.session.user.email ?? "";
+      if (ALLOWED_EMAILS.includes(email)) {
+        setStatus("ok");
+      } else {
+        setDeniedEmail(email);
+        setStatus("denied");
+        await supabase.auth.signOut();
+      }
+    });
   }, [router]);
 
   if (status === "loading") {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#F5F0E8",
-          fontFamily: "var(--font-manrope), sans-serif",
-          color: "#7D6B5A",
-          fontSize: 15,
-        }}
-      >
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#2A2520", color: "rgba(250,248,245,0.4)", fontFamily: "var(--font-manrope)", fontSize: 14 }}>
         Loading...
       </div>
     );
@@ -41,19 +43,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (status === "denied") {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#F5F0E8",
-          fontFamily: "var(--font-manrope), sans-serif",
-          color: "#2A2520",
-          fontSize: 15,
-        }}
-      >
-        Access denied
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#2A2520", color: "rgba(250,248,245,0.4)", fontFamily: "var(--font-manrope)", fontSize: 14, flexDirection: "column", gap: 8 }}>
+        <p style={{ margin: 0, color: "#e07070" }}>Access denied</p>
+        <p style={{ margin: 0, fontSize: 12 }}>{deniedEmail} is not an authorized admin</p>
+        <a href="/admin/login" style={{ marginTop: 8, fontSize: 12, color: "#C4A882", textDecoration: "underline" }}>Back to login</a>
       </div>
     );
   }
