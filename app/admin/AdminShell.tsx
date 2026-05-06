@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
   BookOpen,
@@ -11,6 +12,11 @@ import {
   CalendarDays,
 } from "lucide-react";
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 const C = {
   nav: "#1E1B18",
   border: "rgba(250,248,245,0.07)",
@@ -20,7 +26,10 @@ const C = {
   active: "rgba(196,168,130,0.10)",
 };
 
-const NAV = [
+type NavItem = { icon: React.ElementType; label: string; href: string; external?: boolean };
+type NavSection = { label: string; items: NavItem[] };
+
+const NAV: NavSection[] = [
   {
     label: "Main",
     items: [
@@ -48,8 +57,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
 
-  function signOut() {
-    sessionStorage.removeItem("admin_pin_auth");
+  async function signOut() {
+    await supabase.auth.signOut();
     router.replace("/admin/login");
   }
 

@@ -1,19 +1,26 @@
 "use client";
 
+import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<"loading" | "ok" | "denied">("loading");
   const router = useRouter();
 
   useEffect(() => {
-    const pin = sessionStorage.getItem("admin_pin_auth");
-    if (pin === "ok") {
-      setStatus("ok");
-    } else {
-      router.replace("/admin/login");
-    }
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setStatus("ok");
+      } else {
+        router.replace("/admin/login");
+      }
+    });
   }, [router]);
 
   if (status === "loading") {
