@@ -18,6 +18,7 @@ export default function Home() {
     <>
       <main>
         <Hero />
+        <CommunitySection />
         <ClientsSection />
         <ChallengeSection />
         <EducateBuildOperate />
@@ -28,7 +29,6 @@ export default function Home() {
         <BenefitsSection />
         <ProcessSection />
         <WhyUsSection />
-        <CommunitySection />
         <TestimonialsSection />
         <BlogSection />
       </main>
