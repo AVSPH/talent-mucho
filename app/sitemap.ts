@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         "/services/virtual-assistants",
         "/services/websites",
         "/events/bootcamp",
+        "/community",
     ];
 
     const staticPages: MetadataRoute.Sitemap = routes.map((route) => ({
