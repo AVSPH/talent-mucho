@@ -202,6 +202,33 @@ Keep it lean. One piece per day max. I want to execute this, not admire it.`,
     result: 'A full content week from 5 rough ideas. Run this every Sunday ~ batch the writing in one session.',
     time: '10 min/week',
   },
+  {
+    num: 'D5',
+    icon: '📊',
+    title: 'Ops dashboard',
+    why: "Your business in one page, every week. Paste your current situation and Claude turns it into a structured ops snapshot ~ what's moving, what's stuck, and what needs you today.",
+    prompt: `Here's where my business stands right now. Read it all before responding.
+
+[paste your current projects, client updates, pending tasks, and anything on your mind ~ rough is fine]
+
+Build me a one-page ops dashboard:
+
+THIS WEEK'S PRIORITIES
+~ Top 3 things that must move forward. One line on why each one matters.
+
+CLIENTS TO FOLLOW UP
+~ Who needs a message, a deliverable, or a check-in. Flag anything overdue.
+
+QUICK WINS (under 10 min)
+~ Small tasks I can knock off today that will clear my head.
+
+BLOCKED / WAITING ON OTHERS
+~ What can't move until someone else acts. What should I chase?
+
+Keep it scannable. No paragraphs. I want to read this in 2 minutes and know exactly what to do.`,
+    result: 'Your weekly ops snapshot, ready in 5 minutes. Run this every Monday morning before you open your inbox.',
+    time: '5 min/week',
+  },
 ];
 
 export default function EventGuidePage() {
