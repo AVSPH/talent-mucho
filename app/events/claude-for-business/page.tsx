@@ -1,25 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense } from "react";
 import {
-  Calendar, Clock, Video, Star, Mail, FileText, Share2,
+  Calendar, Clock, Video, Star, FileText, Share2,
   RefreshCw, BarChart2, Search, ArrowRight, MapPin, Users,
+  Play, Mail, CheckCircle,
 } from "lucide-react";
-import RegisterForm from "./RegisterForm";
 
 export const metadata: Metadata = {
   title: "Claude AI for Business Owners | Talent Mucho",
   description:
-    "A hands-on Zoom session covering Claude Chat, Code, and Cowork. Three tools that can transform how you run your business. Free live event on May 1, 2026.",
+    "A hands-on Zoom session covering Claude Chat, Code, and Cowork. 500 registered · 54 attended live. Watch the replay.",
 };
+
+// ── Update these when links are available ──────────────────────────────────
+const REPLAY_URL = ""; // paste Loom / YouTube URL here
+const BOOTCAMP_URL = "/events/bootcamp";
 
 const agendaItems = [
   {
     num: "01",
     title: "Stop Using AI Like Google",
     tool: "Claude Chat",
-    desc: "Most people use Claude like a search bar. We show you how to use it as a real thinking partner ~ for emails, client communication, content, decisions, and everything in between. You will leave seeing your whole operation differently.",
+    desc: "Most people use Claude like a search bar. We show you how to use it as a real thinking partner ~ for emails, client communication, content, decisions, and everything in between.",
   },
   {
     num: "02",
@@ -31,7 +34,7 @@ const agendaItems = [
     num: "03",
     title: "AI That Actually Lives in Your Workflow",
     tool: "Claude Cowork",
-    desc: "This is where it gets real. Claude Cowork works with your files, tasks, and day-to-day operations directly ~ not as a tab you open occasionally, but as something that runs alongside how you already work.",
+    desc: "Claude Cowork works with your files, tasks, and day-to-day operations directly ~ not as a tab you open occasionally, but as something that runs alongside how you already work.",
   },
   {
     num: "04",
@@ -85,25 +88,52 @@ const audiencePills = [
   "Anyone curious about AI",
 ];
 
-const walkAways = [
-  "Finally understand what AI actually is ~ and what it can do for you",
-  "Get hands-on with Claude in a small group setting, no experience needed",
-  "Walk away with a clear starting point, not more overwhelm",
-];
-
 export default function ClaudeEventPage() {
   return (
     <>
       {/* ══════════════════════════════════════
-          HERO — light · form lives in the hero so visitors can sign up immediately
+          SESSION COMPLETE BANNER
       ══════════════════════════════════════ */}
-      <section id="register" className="pt-20 pb-16 md:pt-28 md:pb-24 bg-beige-50">
+      <div className="bg-charcoal-900 border-b border-clay-500/20 py-3">
+        <div className="section-container">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center sm:text-left">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-clay-500 shrink-0" />
+              <span className="text-beige-100 text-sm font-medium">
+                Session complete · May 1, 2026
+              </span>
+            </div>
+            <span className="hidden sm:block text-beige-100/20">·</span>
+            <span className="text-beige-300 text-sm font-light">
+              500 registered · <span className="text-clay-500 font-medium">54 attended live</span>
+            </span>
+            {REPLAY_URL && (
+              <>
+                <span className="hidden sm:block text-beige-100/20">·</span>
+                <a
+                  href={REPLAY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-clay-500 hover:text-clay-400 text-sm font-semibold transition-colors"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  Watch replay
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════
+          HERO — post-event
+      ══════════════════════════════════════ */}
+      <section className="pt-20 pb-16 md:pt-28 md:pb-24 bg-beige-50">
         <div className="section-container">
           <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-start max-w-7xl mx-auto">
 
-            {/* ── LEFT: hero pitch ── */}
+            {/* ── LEFT ── */}
             <div>
-              {/* Host signature */}
               <div className="flex items-center gap-4 mb-8">
                 <Image
                   src="/assets/website-samples/hero_image.png"
@@ -122,11 +152,11 @@ export default function ClaudeEventPage() {
                 </div>
               </div>
 
-              {/* Live badge */}
+              {/* Badge — session complete */}
               <div className="inline-flex items-center gap-2 bg-white border border-beige-300 rounded-full px-4 py-2 mb-7">
-                <span className="w-2 h-2 rounded-full bg-[#2D8CFF] animate-pulse shrink-0" />
+                <CheckCircle className="w-3.5 h-3.5 text-clay-500 shrink-0" />
                 <span className="text-xs font-semibold uppercase tracking-[0.18em] text-espresso-800">
-                  Free Live Zoom Event · May 1, 2026
+                  Session Complete · May 1, 2026
                 </span>
               </div>
 
@@ -149,30 +179,17 @@ export default function ClaudeEventPage() {
               </p>
 
               <p className="text-base md:text-lg text-espresso-800 font-light leading-relaxed mb-8 max-w-xl">
-                A growing community of business owners, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
+                500 people registered. 54 joined live. The session covered Claude Chat, Code, and Cowork ~ real tools, real business tasks, no theory.
               </p>
 
-              {/* Walk-away bullets */}
-              <ul className="flex flex-col gap-3 mb-8">
-                {walkAways.map((item) => (
-                  <li key={item} className="flex items-start gap-3 max-w-xl">
-                    <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <span className="text-sm text-espresso-800 font-light leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Meta chips */}
-              <div className="flex flex-wrap gap-2.5 mb-8">
+              {/* Stats row */}
+              <div className="flex flex-wrap gap-3 mb-8">
                 {[
+                  { icon: <Users className="w-3.5 h-3.5" />, label: "500 registered" },
+                  { icon: <CheckCircle className="w-3.5 h-3.5" />, label: "54 attended live" },
                   { icon: <Calendar className="w-3.5 h-3.5" />, label: "May 1, 2026" },
-                  { icon: <Clock className="w-3.5 h-3.5" />, label: "6 to 8 PM EST" },
-                  { icon: <Video className="w-3.5 h-3.5" />, label: "Live on Zoom" },
-                  { icon: <Star className="w-3.5 h-3.5" />, label: "Free to attend" },
+                  { icon: <Clock className="w-3.5 h-3.5" />, label: "2 hours" },
+                  { icon: <Star className="w-3.5 h-3.5" />, label: "Free to watch" },
                 ].map(({ icon, label }) => (
                   <span
                     key={label}
@@ -184,52 +201,76 @@ export default function ClaudeEventPage() {
                 ))}
               </div>
 
-              {/* Secondary actions ~ small text links so the primary CTA is clearly the form */}
               <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm items-center">
                 <Link
-                  href="#learn"
+                  href="#replay"
                   className="text-clay-500 hover:text-clay-600 font-medium transition-colors inline-flex items-center gap-1"
                 >
-                  See the agenda
+                  Watch the replay
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-beige-300">·</span>
-                <a
-                  href="#community"
+                <Link
+                  href={BOOTCAMP_URL}
                   className="text-charcoal-900/70 hover:text-charcoal-900 font-medium transition-colors inline-flex items-center gap-1.5"
                 >
                   <span className="inline-flex items-center gap-1 bg-clay-500/10 border border-clay-500/30 rounded-full px-2 py-0.5 text-[11px] font-semibold text-clay-500 uppercase tracking-[0.1em]">
-                    🔥 200+ in &lt; 1 week
+                    New
                   </span>
-                  See our Skool
-                </a>
+                  Join the bootcamp
+                </Link>
               </div>
             </div>
 
-            {/* ── RIGHT: signup form (sticky on desktop so it stays in view as you scroll the pitch) ── */}
+            {/* ── RIGHT: post-event card ── */}
             <div className="lg:sticky lg:top-24 self-start w-full">
               <div className="bg-white border border-beige-200 rounded-2xl p-7 md:p-8 shadow-elegant">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500">Reserve your spot</span>
-                  <span className="text-beige-300">·</span>
-                  <span className="text-xs uppercase tracking-[0.18em] text-taupe-400">Free · 30 sec</span>
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircle className="w-4 h-4 text-clay-500" />
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500">Session complete</span>
                 </div>
                 <p
                   className="text-2xl md:text-3xl font-light text-charcoal-900 mb-2 leading-tight"
                   style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                 >
-                  Save your spot.
+                  Registration is closed.
                 </p>
                 <p className="text-sm text-taupe-400 font-light mb-6 leading-relaxed">
-                  272+ already in. Free to attend ~ Zoom link emailed before the event.
+                  This event has passed. 54 people joined us live on May 1st.
                 </p>
-                <Suspense fallback={null}>
-                  <RegisterForm />
-                </Suspense>
-                <div className="mt-5 pt-5 border-t border-beige-200 flex items-start gap-2.5">
-                  <span className="text-base mt-0.5">📬</span>
-                  <p className="text-xs text-taupe-400 font-light leading-relaxed">
-                    <span className="font-semibold text-espresso-800">Heads up:</span> our confirmation sometimes lands in spam ~ check there and mark us safe so you don&apos;t miss the Zoom link.
+
+                {/* Replay CTA */}
+                <div id="replay" className="mb-5">
+                  {REPLAY_URL ? (
+                    <a
+                      href={REPLAY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 bg-charcoal-900 hover:bg-charcoal-800 text-beige-50 font-medium text-sm px-6 py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <Play className="w-4 h-4" />
+                      Watch the replay
+                    </a>
+                  ) : (
+                    <div className="w-full flex items-center justify-center gap-2 bg-charcoal-900/10 border border-charcoal-900/10 text-charcoal-900/40 text-sm px-6 py-3.5 rounded-xl cursor-default select-none">
+                      <Play className="w-4 h-4" />
+                      Replay coming soon
+                    </div>
+                  )}
+                </div>
+
+                {/* Bootcamp CTA */}
+                <Link
+                  href={BOOTCAMP_URL}
+                  className="w-full flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm px-6 py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  Join the 4-week bootcamp
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                <div className="mt-5 pt-5 border-t border-beige-200">
+                  <p className="text-xs text-taupe-400 font-light leading-relaxed text-center">
+                    Want the full experience? The bootcamp starts June 2 ~ 9 live sessions, 4 deliverables, your AI version built from scratch.
                   </p>
                 </div>
               </div>
@@ -240,10 +281,153 @@ export default function ClaudeEventPage() {
       </section>
 
       {/* ══════════════════════════════════════
-          SKOOL COMMUNITY — light · highlight the momentum
+          REPLAY — dark · featured
+      ══════════════════════════════════════ */}
+      <section className="py-16 md:py-20 bg-charcoal-900 border-y border-white/5">
+        <div className="section-container">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-clay-500/10 border border-clay-500/30 rounded-full px-4 py-2 mb-6">
+              <Play className="w-3.5 h-3.5 text-clay-500" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-clay-500">Now available</span>
+            </div>
+            <h2
+              className="text-4xl md:text-5xl font-light text-beige-50 mb-4 leading-tight"
+              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+            >
+              Missed it live?{" "}
+              <em className="italic text-clay-500">Watch the replay.</em>
+            </h2>
+            <p className="text-beige-300 font-light text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
+              The full 2-hour session ~ Claude Chat, Code, and Cowork, shown live on real business tasks. 54 people were in the room. Now you can be too.
+            </p>
+
+            {/* Video placeholder / embed */}
+            <div className="relative bg-espresso-800 border border-white/10 rounded-2xl overflow-hidden mb-8 aspect-video max-w-3xl mx-auto flex items-center justify-center">
+              {REPLAY_URL ? (
+                <iframe
+                  src={REPLAY_URL}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-4 p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-clay-500/20 flex items-center justify-center">
+                    <Play className="w-7 h-7 text-clay-500" />
+                  </div>
+                  <p className="text-beige-300 font-light text-sm">Replay uploading ~ check back shortly</p>
+                </div>
+              )}
+            </div>
+
+            {REPLAY_URL ? (
+              <a
+                href={REPLAY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-8 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <Play className="w-4 h-4" />
+                Watch the full replay
+              </a>
+            ) : (
+              <p className="text-beige-300/60 text-sm font-light italic">Replay link coming soon</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          BOOTCAMP FEATURE — light
+      ══════════════════════════════════════ */}
+      <section className="py-16 md:py-24 bg-beige-50 border-b border-beige-200">
+        <div className="section-container">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-clay-500/10 border border-clay-500/30 rounded-full px-4 py-2 mb-6">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-clay-500">What&apos;s next</span>
+                </div>
+                <h2
+                  className="text-4xl md:text-5xl font-light text-charcoal-900 mb-5 leading-tight"
+                  style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                >
+                  Ready to go{" "}
+                  <em className="italic text-clay-500">deeper?</em>
+                </h2>
+                <p className="text-espresso-800 font-light text-lg leading-relaxed mb-8">
+                  The free session was the intro. The bootcamp is where you actually build ~ your voice, your ops, your AI employee, your dashboard. Live with us over 4 weeks.
+                </p>
+
+                <ul className="flex flex-col gap-4 mb-8">
+                  {[
+                    "Claude trained on your voice, your offers, your clients",
+                    "1 AI employee in Cowork handling real work in your business",
+                    "1 custom dashboard built with Claude Code ~ no prior coding",
+                    "A Claude stack that thinks and works like you ~ 24/7",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                      <span className="text-sm text-espresso-800 font-light leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={BOOTCAMP_URL}
+                  className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-8 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  See the bootcamp
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              <div className="bg-charcoal-900 rounded-3xl p-8 text-left">
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-clay-500 mb-6">Cohort 1 · Jun 2 – Jul 1</p>
+                {[
+                  { week: "Week 1", title: "Your Claude Projects", desc: "Voice, ops, clients ~ Claude trained on your actual business" },
+                  { week: "Week 2", title: "Your AI Employee", desc: "Cowork with file access ~ it executes tasks while you sleep" },
+                  { week: "Week 3", title: "Claude Code", desc: "Describe it in English ~ Claude builds the software" },
+                  { week: "Week 4", title: "The Full Stack", desc: "Everything running together in under 10 minutes a day" },
+                ].map((item, i) => (
+                  <div
+                    key={item.week}
+                    className={`flex gap-4 items-start ${i < 3 ? "mb-6 pb-6 border-b border-white/5" : ""}`}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-clay-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-xs font-bold text-clay-500">{i + 1}</span>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-beige-300/50 mb-0.5">{item.week}</p>
+                      <p className="font-medium text-beige-50 text-sm mb-0.5">{item.title}</p>
+                      <p className="text-xs text-beige-300 font-light leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-6 pt-6 border-t border-white/5 text-center">
+                  <p className="text-beige-300/60 text-xs font-light mb-1">Founding price</p>
+                  <p
+                    className="text-3xl font-light text-beige-50"
+                    style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                  >
+                    €247
+                  </p>
+                  <p className="text-clay-500 text-xs font-medium mt-1">9 live sessions · 4 deliverables</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          COMMUNITY — light
       ══════════════════════════════════════ */}
       <section id="community" className="py-14 md:py-20 bg-beige-100 border-y border-beige-200 relative overflow-hidden">
-        {/* Soft accent glow behind the card */}
         <div className="absolute inset-0 pointer-events-none opacity-50">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-clay-500/15 rounded-full blur-[120px]" />
         </div>
@@ -253,27 +437,25 @@ export default function ClaudeEventPage() {
             <div className="bg-white border border-clay-500/30 rounded-3xl shadow-elegant overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-8 md:gap-12 items-center p-8 md:p-12">
 
-                {/* ── Big stat ── */}
                 <div className="text-center md:text-left flex-shrink-0">
                   <div className="inline-flex items-center gap-2 bg-clay-500/10 border border-clay-500/30 rounded-full px-3 py-1 mb-4">
                     <span className="text-base">🔥</span>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-clay-500">Going fast</span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-clay-500">And growing</span>
                   </div>
                   <div
                     className="text-7xl md:text-8xl font-light text-charcoal-900 leading-none"
                     style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                   >
-                    <em className="italic text-clay-500">200+</em>
+                    <em className="italic text-clay-500">500+</em>
                   </div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-taupe-400 mt-2">
                     members
                   </p>
                   <p className="text-xs text-clay-500 italic mt-1 font-light">
-                    in less than a week
+                    and still growing daily
                   </p>
                 </div>
 
-                {/* ── Pitch ── */}
                 <div className="text-center md:text-left">
                   <p className="text-xs font-bold uppercase tracking-[0.22em] text-clay-500 mb-3">
                     Join our community
@@ -282,13 +464,12 @@ export default function ClaudeEventPage() {
                     className="text-3xl md:text-4xl font-light text-charcoal-900 mb-4 leading-tight"
                     style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                   >
-                    The room is <em className="italic text-clay-500">already filling up.</em>
+                    500 people said yes. <em className="italic text-clay-500">Will you?</em>
                   </h2>
                   <p className="text-espresso-800 font-light leading-relaxed text-base mb-5">
-                    Our Skool community went from zero to 200+ members in under 7 days. Founders, VAs, freelancers, and curious operators ~ all figuring out AI together. <span className="text-clay-500 font-medium">Free to join.</span>
+                    Our Skool community passed 500 members. Founders, VAs, freelancers, and operators ~ all building with AI together. <span className="text-clay-500 font-medium">Free to join.</span>
                   </p>
 
-                  {/* Member avatars (visual social proof) */}
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
                       {['🌴', '☕', '🌸', '🍷', '⚡'].map((emoji, i) => (
@@ -300,16 +481,15 @@ export default function ClaudeEventPage() {
                         </div>
                       ))}
                       <div className="w-9 h-9 rounded-full bg-clay-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                        +195
+                        +495
                       </div>
                     </div>
                     <p className="text-xs text-taupe-400 font-light italic">
-                      and counting, every hour
+                      and counting, every day
                     </p>
                   </div>
                 </div>
 
-                {/* ── CTA ── */}
                 <div className="flex justify-center md:justify-end flex-shrink-0">
                   <a
                     href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
@@ -351,10 +531,9 @@ export default function ClaudeEventPage() {
             ))}
           </div>
           <p className="text-beige-300 font-light text-sm max-w-md mx-auto mb-10">
-            If you run a business ~ or you&apos;re building one ~ and AI still feels like something you&apos;re supposed to figure out, this is your session.
+            If you run a business ~ or you&apos;re building one ~ and AI still feels like something you&apos;re supposed to figure out, this was your session. The replay is free.
           </p>
 
-          {/* Reframe callout */}
           <div className="max-w-2xl mx-auto bg-espresso-800/60 border border-clay-500/20 rounded-2xl px-8 py-7 text-left">
             <p className="text-beige-300/60 text-xs font-bold uppercase tracking-[0.2em] mb-3">Wait ~ not a business owner?</p>
             <p className="text-beige-50 text-lg font-light leading-relaxed mb-3"
@@ -362,50 +541,7 @@ export default function ClaudeEventPage() {
               Actually ~ you are.
             </p>
             <p className="text-beige-200/70 text-sm font-light leading-relaxed">
-              If you manage a household, freelance on the side, handle your own schedule and income, or support your family financially ~ you&apos;re already running a business. You just haven&apos;t called it that yet. This session is for you too.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          STARTING POINT — light
-      ══════════════════════════════════════ */}
-      <section className="py-16 bg-beige-100 border-y border-beige-200">
-        <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-clay-500 text-xs font-semibold uppercase tracking-[0.25em] mb-5">
-              This is for you if
-            </p>
-            <h2
-              className="text-4xl md:text-5xl font-light text-charcoal-900 mb-10 leading-tight"
-              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
-            >
-              You&apos;ve been saying &ldquo;I need to learn AI&rdquo; for months.
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
-              {[
-                {
-                  label: "You keep seeing AI everywhere",
-                  body: "LinkedIn, podcasts, your group chats ~ everyone's talking about it. You know you should be using it. You just don't know how.",
-                },
-                {
-                  label: "You tried it once, got confused",
-                  body: "You opened ChatGPT or Claude, typed something, got a weird response, and closed the tab. That was six months ago.",
-                },
-                {
-                  label: "You're ready but need a guide",
-                  body: "Not a YouTube rabbit hole. Not a 40-hour course. Just someone to walk you through it, in a small group, at your pace.",
-                },
-              ].map((item) => (
-                <div key={item.label} className="bg-white border border-beige-200 rounded-2xl p-6">
-                  <p className="font-semibold text-charcoal-900 text-sm mb-2">{item.label}</p>
-                  <p className="text-taupe-400 text-sm font-light leading-relaxed">{item.body}</p>
-                </div>
-              ))}
-            </div>
-            <p className="text-espresso-800 text-lg font-light mt-10 leading-relaxed">
-              This is your starting point. No experience needed. Just show up.
+              If you manage a household, freelance on the side, handle your own schedule and income, or support your family financially ~ you&apos;re already running a business. You just haven&apos;t called it that yet. This session was for you too.
             </p>
           </div>
         </div>
@@ -417,15 +553,15 @@ export default function ClaudeEventPage() {
       <section id="learn" className="section-padding bg-beige-50 border-y border-beige-200">
         <div className="section-container">
           <div className="max-w-xl mb-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">Agenda</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">What we covered</p>
             <h2
               className="text-4xl md:text-5xl font-light text-charcoal-900 mb-4"
               style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
             >
-              What we will cover
+              The session agenda
             </h2>
             <p className="text-espresso-800 font-light leading-relaxed">
-              No slides full of theory. We show you each tool live, using real business tasks, so you leave knowing exactly what to do next.
+              No slides full of theory. Each tool was shown live on real business tasks. Watch the replay to see it all.
             </p>
           </div>
 
@@ -433,7 +569,7 @@ export default function ClaudeEventPage() {
             {agendaItems.map((item) => (
               <div
                 key={item.num}
-                className="bg-beige-100 border border-beige-200 rounded-2xl p-7 flex flex-col gap-4 hover:border-beige-300 hover:shadow-md transition-all duration-200"
+                className="bg-beige-100 border border-beige-200 rounded-2xl p-7 flex flex-col gap-4"
               >
                 <div className="flex items-start justify-between gap-4">
                   <span
@@ -476,7 +612,7 @@ export default function ClaudeEventPage() {
             </div>
             <div>
               <p className="text-beige-200 font-light leading-relaxed text-lg">
-                Most business owners are doing tasks that Claude can handle in minutes. Not someday ~ right now. This session shows you exactly where your time is going and how to get it back.
+                Most business owners are doing tasks that Claude can handle in minutes. Not someday ~ right now. The session showed exactly where your time is going and how to get it back.
               </p>
             </div>
           </div>
@@ -485,7 +621,7 @@ export default function ClaudeEventPage() {
             {painPoints.map((p) => (
               <div
                 key={p.title}
-                className="bg-espresso-800 border border-white/5 rounded-xl p-5 flex gap-4 items-start hover:bg-espresso-700/60 hover:border-clay-500/30 transition-all duration-200"
+                className="bg-espresso-800 border border-white/5 rounded-xl p-5 flex gap-4 items-start"
               >
                 <div className="w-8 h-8 rounded-lg bg-clay-500/20 flex items-center justify-center shrink-0 mt-0.5 text-clay-500">
                   {p.icon}
@@ -505,13 +641,13 @@ export default function ClaudeEventPage() {
             >
               This is not about future-proofing your business. It&apos;s about what Claude can do for your business ~ and your life ~ right now.
             </p>
-            <p className="text-sm text-beige-300 font-light mt-2">Come with questions. Leave with a real plan.</p>
+            <p className="text-sm text-beige-300 font-light mt-2">Watch the replay. Then build.</p>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════
-          URGENCY STRIP — light
+          STAT STRIP
       ══════════════════════════════════════ */}
       <div className="bg-beige-100 border-y border-beige-200 py-12">
         <div className="section-container">
@@ -521,17 +657,17 @@ export default function ClaudeEventPage() {
                 <Users className="w-5 h-5 text-beige-50" />
               </div>
               <div>
-                <p className="font-semibold text-charcoal-900 text-base">222+ registered and counting</p>
+                <p className="font-semibold text-charcoal-900 text-base">500 registered · 54 attended live</p>
                 <p className="text-sm text-taupe-400 font-light">
-                  The demand is real ~ grab your spot before it fills up.
+                  The replay is free ~ watch it whenever you&apos;re ready.
                 </p>
               </div>
             </div>
             <Link
-              href="#register"
+              href={BOOTCAMP_URL}
               className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg shrink-0"
             >
-              Claim Your Spot Now
+              Join the bootcamp
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -545,7 +681,6 @@ export default function ClaudeEventPage() {
         <div className="section-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 
-            {/* Details */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">
                 Event Details
@@ -554,16 +689,15 @@ export default function ClaudeEventPage() {
                 className="text-4xl md:text-5xl font-light text-beige-50 mb-10"
                 style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
               >
-                All the details
+                About the session
               </h2>
               <div className="flex flex-col gap-6">
                 {[
                   { icon: <Calendar className="w-4 h-4" />, key: "Date", val: "Friday, May 1, 2026" },
-                  { icon: <Clock className="w-4 h-4" />, key: "Time", val: "6:00 PM to 8:00 PM EST", sub: "Session starts promptly. Join a few minutes early." },
-                  { icon: <Video className="w-4 h-4" />, key: "Format", val: "Live online via Zoom", sub: "Link sent to your email after registration" },
+                  { icon: <Clock className="w-4 h-4" />, key: "Time", val: "6:00 PM to 8:00 PM EST" },
+                  { icon: <Video className="w-4 h-4" />, key: "Format", val: "Live on Zoom · 54 attended", sub: "Replay available ~ watch at your own pace" },
                   { icon: <MapPin className="w-4 h-4" />, key: "Organizer", val: "Talent Mucho ~ Abie Maxey and Meri" },
                 ].map(({ icon, key, val, sub }) => (
-
                   <div key={key} className="flex gap-4 items-start">
                     <div className="w-8 h-8 rounded-lg bg-clay-500/20 flex items-center justify-center shrink-0 mt-0.5 text-clay-500">
                       {icon}
@@ -578,7 +712,6 @@ export default function ClaudeEventPage() {
               </div>
             </div>
 
-            {/* Host */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">
                 Your Host
@@ -625,23 +758,6 @@ export default function ClaudeEventPage() {
                   We built this event for people who are just getting started and want to maximise AI in their lives ~ not just at work, but everywhere. No gatekeeping. No overwhelm. Just real tools, real talk, and two people who genuinely want to see you win.
                 </p>
               </div>
-
-              {/* Zoom card */}
-              <div className="mt-8 bg-espresso-800 border border-white/5 rounded-2xl p-6 flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#2D8CFF] rounded-xl flex items-center justify-center shrink-0">
-                    <Video className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-beige-50 text-sm">Zoom Webinar</p>
-                    <p className="text-xs text-beige-300 font-light">Live, interactive, and recorded for attendees</p>
-                  </div>
-                </div>
-                <p className="text-xs text-beige-300 font-light leading-relaxed">
-                  Join from anywhere. Ask live questions, watch real-time demos, and get your specific
-                  business problems addressed during open Q&amp;A.
-                </p>
-              </div>
             </div>
 
           </div>
@@ -649,32 +765,45 @@ export default function ClaudeEventPage() {
       </section>
 
       {/* ══════════════════════════════════════
-          LAST CALL — slim final CTA · the form is in the hero, this just scrolls back up
+          FINAL CTA — bootcamp
       ══════════════════════════════════════ */}
       <section className="py-16 md:py-20 bg-beige-50 border-t border-beige-200">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-4">
-              Still here?
+              The next step
             </p>
             <h2
               className="text-3xl md:text-4xl font-light text-charcoal-900 mb-5 leading-tight"
               style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
             >
-              Two hours. Real tools. A plan you can use tonight.
+              You watched the intro. Now build the real thing.
             </h2>
             <p className="text-espresso-800/70 font-light leading-relaxed mb-8">
-              Join 272+ already registered ~ free, live, built for anyone ready to finally get into AI.
+              The bootcamp starts June 2. 9 live sessions. 4 weeks. You leave with the AI version of yourself ~ built live, owned forever.
             </p>
-            <Link
-              href="#register"
-              className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-            >
-              Reserve my free spot
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href={BOOTCAMP_URL}
+                className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+              >
+                Join the bootcamp ~ €247
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              {REPLAY_URL && (
+                <a
+                  href={REPLAY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-beige-300 text-espresso-800 hover:border-clay-500 hover:text-clay-600 font-medium text-base px-9 py-4 rounded-full transition-all duration-200"
+                >
+                  <Play className="w-4 h-4" />
+                  Watch the replay first
+                </a>
+              )}
+            </div>
             <p className="text-xs text-taupe-400 font-light italic mt-4">
-              Takes 30 seconds · Zoom link emailed before the event
+              Founding price · closes when cohort fills
             </p>
           </div>
         </div>
