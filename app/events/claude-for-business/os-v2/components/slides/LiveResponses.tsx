@@ -162,7 +162,7 @@ export function LiveResponses({
         gap: 24,
       }}
     >
-      {hasWords && (
+      {false && hasWords && (
         <div
           style={{
             padding: "28px 30px",
