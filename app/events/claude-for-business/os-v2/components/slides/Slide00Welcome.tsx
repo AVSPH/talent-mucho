@@ -855,158 +855,38 @@ export function CommunityPulse({
               "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)",
           }}
         />
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase" as const,
-                color: C.primary,
-                marginBottom: sz(12),
-              }}
-            >
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: sz(28) }}>
+          {/* Left: count + label + CTA */}
+          <div style={{ flex: 1 }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" as const, color: C.primary, marginBottom: sz(12) }}>
               Your community ~ right now
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(80),
-                fontWeight: 300,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-                color: onDark,
-              }}
-            >
-              {animCount}
+            <div style={{ ...serif, fontSize: sz(88), fontWeight: 300, letterSpacing: "-0.03em", lineHeight: 1, color: onDark }}>
+              536+
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(12),
-                letterSpacing: "0.14em",
-                textTransform: "uppercase" as const,
-                color: "rgba(250,248,245,0.5)",
-                marginTop: sz(8),
-              }}
-            >
-              members across all platforms
+            <div style={{ ...mono, fontSize: sz(13), letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(250,248,245,0.5)", marginTop: sz(10) }}>
+              members on Skool
+            </div>
+            <div style={{ ...serif, fontSize: sz(18), color: "rgba(250,248,245,0.65)", marginTop: sz(18), lineHeight: 1.5, maxWidth: sz(340) }}>
+              Scan to join ~ it&apos;s free. Ask questions, share wins, get early access to everything we build.
             </div>
           </div>
-          <svg
-            width={sz(140)}
-            height={sz(140)}
-            style={{ transform: "rotate(-90deg)" }}
-          >
-            {(() => {
-              const r = sz(52);
-              const sw = sz(16);
-              const cx = sz(70);
-              const cy = sz(70);
-              const circ = 2 * Math.PI * r;
-              const segs = [
-                { val: stats.ghlOnly, color: C.primary },
-                { val: stats.both, color: onDark },
-                { val: stats.skoolOnly, color: `${C.primary}60` },
-              ];
-              let cum = 0;
-              return segs.map((s, i) => {
-                const pct = s.val / stats.total;
-                const offset = circ * (1 - pct);
-                const rot = cum * 360;
-                cum += pct;
-                return (
-                  <circle
-                    key={i}
-                    cx={cx}
-                    cy={cy}
-                    r={r}
-                    fill="none"
-                    stroke={s.color}
-                    strokeWidth={sw}
-                    strokeDasharray={`${circ}`}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    style={{
-                      transform: `rotate(${rot}deg)`,
-                      transformOrigin: "50% 50%",
-                      transition: "all 1s cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
-                  />
-                );
-              });
-            })()}
-          </svg>
-        </div>
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            gap: sz(12),
-            marginTop: sz(24),
-          }}
-        >
-          {[
-            { label: "GHL funnel", val: stats.ghlOnly, color: C.primary },
-            { label: "Both platforms", val: stats.both, color: onDark },
-            {
-              label: "Skool community",
-              val: stats.skoolOnly,
-              color: `${C.primary}90`,
-            },
-          ].map((p) => (
-            <div
-              key={p.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: sz(8),
-                padding: `${sz(8)}px ${sz(14)}px`,
-                borderRadius: 100,
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  width: sz(8),
-                  height: sz(8),
-                  borderRadius: "50%",
-                  background: p.color,
-                }}
+          {/* Right: QR code */}
+          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: sz(12) }}>
+            <div style={{ background: "#FFFFFF", borderRadius: sz(14), padding: sz(10), border: "2px solid rgba(255,255,255,0.15)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent("https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7")}&margin=0&color=2A2520&bgcolor=FFFFFF`}
+                alt="Join the Skool community"
+                width={sz(160)}
+                height={sz(160)}
+                style={{ display: "block", imageRendering: "pixelated" }}
               />
-              <span
-                style={{
-                  ...mono,
-                  fontSize: sz(11),
-                  color: "rgba(250,248,245,0.7)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase" as const,
-                }}
-              >
-                {p.label}
-              </span>
-              <span
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  fontWeight: 300,
-                  color: onDark,
-                }}
-              >
-                {p.val}
-              </span>
             </div>
-          ))}
+            <div style={{ ...mono, fontSize: sz(10), color: "rgba(250,248,245,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" as const, textAlign: "center" }}>
+              skool.com · free to join
+            </div>
+          </div>
         </div>
       </div>
 
