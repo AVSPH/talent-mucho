@@ -461,6 +461,107 @@ function PlatformDonut({ stats, C }: { stats: Stats; C: Palette }) {
   );
 }
 
+// ── Pain Point Word Cloud ────────────────────────────────────────────────────
+
+const STOP_WORDS = new Set([
+  "a","an","the","and","or","but","in","on","at","to","for","of","with",
+  "by","from","is","are","was","were","be","been","being","have","has",
+  "had","do","does","did","will","would","could","should","may","might",
+  "i","my","me","we","our","you","your","it","its","this","that","these",
+  "those","not","no","so","if","as","up","out","about","into","than","more",
+  "can","when","how","all","just","very","also","get","use","need","want",
+  "time","way","make","like","know","think","work","new","good","really",
+  "still","even","much","many","too","what","there","their","they","them",
+  "he","she","his","her","him","who","which","while","because","since",
+  "am","own","any","each","other","some","most","through","over","after",
+  "before","been","then","now","only","s","t","d","re","ve","ll","m",
+]);
+
+function buildWordFreq(members: Member[]): { word: string; count: number }[] {
+  const freq: Record<string, number> = {};
+  for (const m of members) {
+    if (!m.painPoint) continue;
+    const words = m.painPoint
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STOP_WORDS.has(w));
+    for (const w of words) {
+      freq[w] = (freq[w] || 0) + 1;
+    }
+  }
+  return Object.entries(freq)
+    .map(([word, count]) => ({ word, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 60);
+}
+
+function PainWordCloud({ members, C }: { members: Member[]; C: Palette }) {
+  const words = useMemo(() => buildWordFreq(members), [members]);
+  if (words.length === 0) {
+    return (
+      <p style={{ color: C.muted, fontSize: 13 }}>No pain point data yet.</p>
+    );
+  }
+  const maxCount = words[0].count;
+  const minCount = words[words.length - 1].count;
+  const range = maxCount - minCount || 1;
+
+  // Shuffle for visual variety (stable seed via word itself)
+  const shuffled = [...words].sort((a, b) => {
+    const ha = a.word.charCodeAt(0) + a.word.charCodeAt(a.word.length - 1);
+    const hb = b.word.charCodeAt(0) + b.word.charCodeAt(b.word.length - 1);
+    return ha - hb;
+  });
+
+  // Clay palette for the TM theme, subtle olive/sand for AM
+  const palette = [C.primary, C.donutA, C.donutB, C.text, C.textSecondary];
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "8px 12px",
+        alignItems: "center",
+        lineHeight: 1.4,
+      }}
+    >
+      {shuffled.map(({ word, count }, i) => {
+        const t = (count - minCount) / range; // 0..1
+        const size = 11 + t * 20; // 11px..31px
+        const weight = t > 0.6 ? 600 : t > 0.3 ? 500 : 400;
+        const opacity = 0.45 + t * 0.55;
+        const color = palette[i % palette.length];
+        return (
+          <span
+            key={word}
+            title={`${count} mention${count !== 1 ? "s" : ""}`}
+            style={{
+              fontSize: size,
+              fontWeight: weight,
+              color,
+              opacity,
+              cursor: "default",
+              transition: "opacity 0.2s",
+              letterSpacing: t > 0.5 ? "-0.01em" : "0",
+              fontFamily: t > 0.6 ? "var(--dash-serif)" : "var(--dash-sans)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = String(opacity);
+            }}
+          >
+            {word}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 function Panel({
   children,
   className = "",
@@ -936,8 +1037,11 @@ export default function CommunityDashboard({ data }: { data: CommunityData }) {
               C={C}
               right={<span className="text-[11px] tracking-wide" style={{ color: C.muted }}>from Skool onboarding</span>}
             >
-              Top Pain Points
+              Pain Point Cloud
             </PanelTitle>
+            <PainWordCloud members={members} C={C} />
+            <div className="mt-6" />
+            <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: C.subtle, letterSpacing: "0.2em" }}>By category</p>
             <BarChartHorizontal data={painWithAnswers} total={Object.values(painWithAnswers).reduce((a, b) => a + b, 0)} C={C} />
           </Panel>
         </div>
