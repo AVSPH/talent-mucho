@@ -297,22 +297,40 @@ export default function EventGuidePage() {
         <div className="section-container">
           <div className="max-w-3xl mx-auto py-8">
 
-            {/* Free resource card */}
-            <div className="flex items-center gap-4 bg-clay-500/10 border border-clay-500/25 rounded-2xl px-5 py-4 mb-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/stickers/ok.png" alt="" className="w-10 h-10 object-contain shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-clay-500 mb-0.5">Free resource</p>
-                <p className="text-sm font-semibold text-beige-50">Claude AI for Business Owners</p>
-                <p className="text-xs text-beige-300/50 font-light">The Talent Mucho resource file ~ yours to keep</p>
+            {/* Free resource cards */}
+            <div className="flex flex-col gap-3 mb-8">
+              <div className="flex items-center gap-4 bg-clay-500/10 border border-clay-500/25 rounded-2xl px-5 py-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/stickers/ok.png" alt="" className="w-10 h-10 object-contain shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-clay-500 mb-0.5">Free resource</p>
+                  <p className="text-sm font-semibold text-beige-50">Claude AI for Business Owners</p>
+                  <p className="text-xs text-beige-300/50 font-light">The Talent Mucho resource file ~ yours to keep</p>
+                </div>
+                <a
+                  href="/claude-ai-for-business-resource.pdf"
+                  download="Claude_AI_for_Business_Owners.pdf"
+                  className="flex items-center gap-1.5 bg-clay-500 hover:bg-clay-600 text-beige-50 font-semibold text-xs px-4 py-2 rounded-full transition-all duration-200 shrink-0"
+                >
+                  Download ↓
+                </a>
               </div>
-              <a
-                href="/claude-ai-for-business-resource.pdf"
-                download="Claude_AI_for_Business_Owners.pdf"
-                className="flex items-center gap-1.5 bg-clay-500 hover:bg-clay-600 text-beige-50 font-semibold text-xs px-4 py-2 rounded-full transition-all duration-200 shrink-0"
-              >
-                Download ↓
-              </a>
+
+              <div className="flex items-center gap-4 bg-white/5 border border-white/15 rounded-2xl px-5 py-4">
+                <span className="text-2xl shrink-0">🤖</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-clay-500 mb-0.5">Bonus skill ~ free</p>
+                  <p className="text-sm font-semibold text-beige-50">Sarah ~ AI Ops Manager</p>
+                  <p className="text-xs text-beige-300/50 font-light">Set up your automated morning brief. She clocks in at 6:45 AM while you sleep.</p>
+                </div>
+                <a
+                  href="/sarah-ops-manager-skill.md"
+                  download="sarah-ops-manager-skill.md"
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/15 text-beige-100 font-semibold text-xs px-4 py-2 rounded-full transition-all duration-200 shrink-0"
+                >
+                  Download ↓
+                </a>
+              </div>
             </div>
 
             <div className="flex items-center gap-4 mb-6">
@@ -673,6 +691,104 @@ export default function EventGuidePage() {
 
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* SARAH SKILL SECTION */}
+      <section className="py-16 md:py-20 bg-charcoal-900 border-t border-white/8">
+        <div className="section-container">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-center gap-4 mb-10">
+              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500">🤖 Bonus skill ~ free</span>
+              <div className="flex-1 h-px bg-white/8" />
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden mb-4">
+              {/* Header */}
+              <div className="p-6 sm:p-8 border-b border-white/8">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-clay-500 mb-2">Sarah ~ AI Ops Manager</p>
+                    <h3
+                      className="text-2xl md:text-3xl font-light text-beige-50 leading-tight mb-3"
+                      style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
+                    >
+                      It&apos;s 6:45 AM.<br /><em className="italic text-clay-500">You&apos;re still asleep. Sarah&apos;s clocking in.</em>
+                    </h3>
+                    <p className="text-sm text-beige-300/60 font-light leading-relaxed max-w-lg">
+                      Sarah is a scheduled AI Ops Manager that lives inside a Claude Project. She reviews your inbox, calendar, Notion, and tasks ~ then hands you a clean morning brief before you open your eyes.
+                    </p>
+                  </div>
+                  <a
+                    href="/sarah-ops-manager-skill.md"
+                    download="sarah-ops-manager-skill.md"
+                    className="flex items-center gap-1.5 bg-clay-500 hover:bg-clay-600 text-beige-50 font-semibold text-xs px-4 py-2 rounded-full transition-all duration-200 shrink-0"
+                  >
+                    Download skill ↓
+                  </a>
+                </div>
+              </div>
+
+              {/* What she does */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/8">
+                {[
+                  { step: '01', label: 'Overnight signals', desc: 'Emails, Slack, calendar, Notion' },
+                  { step: '02', label: 'Ruthless triage', desc: 'Flags urgent vs. noise' },
+                  { step: '03', label: 'Writes the brief', desc: 'Scannable, ready when you wake' },
+                  { step: '04', label: 'Queues actions', desc: 'Drafts replies, flags blockers' },
+                ].map((s) => (
+                  <div key={s.step} className="bg-white/3 p-4">
+                    <div className="text-xs font-mono text-clay-500/60 tracking-widest mb-2">{s.step}</div>
+                    <div className="text-xs font-semibold text-beige-100 mb-1">{s.label}</div>
+                    <div className="text-xs text-beige-300/40 font-light leading-relaxed">{s.desc}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* System prompt */}
+              <div className="p-6 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-beige-300/50">API System Prompt ~ paste into your Claude Project</span>
+                  <button
+                    onClick={() => copyPrompt('sarah', `You are Sarah, an AI Ops Manager for [Business Name].
+
+It is 6:45 AM. Your job is to review the day and produce a morning brief for [Owner Name] before they wake up. They trained you on their business and gave you access to their tools.
+
+Run through:
+1. Check Gmail for overnight emails — triage by urgency
+2. Pull today's Google Calendar events
+3. Search Notion for recently updated pages, flagged tasks, and any comments or mentions
+4. Synthesize into a clean morning brief
+
+Tone: calm, confident, like a world-class chief of staff. You've already handled what you can. Surface only what needs a human decision.
+
+Format your output exactly as the Sarah Morning Brief format.`)}
+                    className="text-xs font-medium text-clay-400 hover:text-clay-300 transition-colors shrink-0"
+                  >
+                    {copied === 'sarah' ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+                <div className="rounded-xl bg-black/30 border border-white/10 overflow-hidden">
+                  <pre className="p-4 text-xs text-beige-200 font-light leading-relaxed whitespace-pre-wrap font-mono overflow-x-auto">{`You are Sarah, an AI Ops Manager for [Business Name].
+
+It is 6:45 AM. Your job is to review the day and produce a morning brief for [Owner Name] before they wake up. They trained you on their business and gave you access to their tools.
+
+Run through:
+1. Check Gmail for overnight emails — triage by urgency
+2. Pull today's Google Calendar events
+3. Search Notion for recently updated pages, flagged tasks, and any comments or mentions
+4. Synthesize into a clean morning brief
+
+Tone: calm, confident, like a world-class chief of staff. You've already handled what you can. Surface only what needs a human decision.
+
+Format your output exactly as the Sarah Morning Brief format.`}</pre>
+                </div>
+                <p className="text-xs text-beige-300/40 font-light mt-3">
+                  → Create a Claude Project · paste this as system instructions · connect Gmail, Calendar, Notion MCP · trigger manually or via Zapier at 6:45 AM
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
