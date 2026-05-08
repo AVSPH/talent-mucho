@@ -805,7 +805,7 @@ export function CommunityPulse({
   const painEntries = Object.entries(
     stats.byPainCategory as Record<string, number>,
   )
-    .filter(([k]) => k !== "No Answer" && k !== "Unspecified")
+    .filter(([k]) => k !== "No Answer" && k !== "Unspecified" && k.toLowerCase() !== "other")
     .sort((a, b) => b[1] - a[1]);
   const painTotal = painEntries.reduce((sum, [, v]) => sum + v, 0);
   const painMax = painEntries[0]?.[1] || 1;
@@ -1093,10 +1093,7 @@ export function CommunityPulse({
                       letterSpacing: "0.08em",
                     }}
                   >
-                    {count}{" "}
-                    <span style={{ opacity: 0.5 }}>
-                      ({((count / painTotal) * 100).toFixed(0)}%)
-                    </span>
+                    {((count / painTotal) * 100).toFixed(0)}%
                   </span>
                 </div>
                 <div
@@ -1249,7 +1246,7 @@ export function CommunityPulse({
           </div>
         </div>
 
-        <div
+        {false && <div
           style={{
             background: C.text,
             color: onDark,
@@ -1387,7 +1384,7 @@ export function CommunityPulse({
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Mentor track */}

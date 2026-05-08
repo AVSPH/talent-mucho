@@ -242,7 +242,7 @@ export function LiveResponses({
         </div>
       )}
 
-      {hasPoll && (
+      {false && hasPoll && (
         <div
           style={{
             padding: "28px 30px",
