@@ -884,25 +884,32 @@ export function CommunityPulse({
               />
             </div>
             <div style={{ ...mono, fontSize: sz(10), color: "rgba(250,248,245,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" as const, textAlign: "center" }}>
-              skool.com · free to join
+              skool.com/future-proof-with-ai-4339
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pain points */}
+      {/* Pain points + AI experience ~ two column */}
       <div
         style={{
-          background: C.surface,
-          borderRadius: sz(20),
-          padding: `${sz(28)}px ${sz(30)}px`,
-          border: `1px solid ${C.border}`,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: sz(20),
           marginBottom: sz(28),
           opacity: revealed >= 2 ? 1 : 0,
           transform: revealed >= 2 ? "translateY(0)" : "translateY(20px)",
           transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
+        <div
+          style={{
+            background: C.surface,
+            borderRadius: sz(20),
+            padding: `${sz(28)}px ${sz(30)}px`,
+            border: `1px solid ${C.border}`,
+          }}
+        >
         <div
           style={{
             ...mono,
@@ -1013,19 +1020,7 @@ export function CommunityPulse({
             );
           })}
         </div>
-      </div>
-
-      {/* AI experience */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: sz(20),
-          opacity: revealed >= 3 ? 1 : 0,
-          transform: revealed >= 3 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
+        </div>
         <div
           style={{
             background: C.surface,
@@ -1125,6 +1120,7 @@ export function CommunityPulse({
             })}
           </div>
         </div>
+      </div>
 
         {false && <div
           style={{
@@ -1265,7 +1261,6 @@ export function CommunityPulse({
             </div>
           </div>
         </div>}
-      </div>
 
       {/* Mentor track */}
       <div
