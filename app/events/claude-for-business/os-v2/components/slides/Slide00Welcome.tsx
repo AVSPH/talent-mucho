@@ -20,7 +20,7 @@ const WELCOME_CITIES = [
   "🍷 Sophie from Paris",
 ];
 
-const EVENT_START_LOCAL = "2026-05-01T18:00:00-04:00";
+const EVENT_START_LOCAL = "2026-05-08T16:00:00+02:00";
 
 // ── WelcomeInteractive ────────────────────────────────────────────────────────
 
@@ -250,7 +250,7 @@ export function WelcomeInteractive({
                     marginTop: 16,
                   }}
                 >
-                  May 1st · 6 PM EST · grab a drink, get comfy
+                  May 8th · 4 PM CEST · grab a drink, get comfy
                 </div>
               </>
             )}
@@ -317,14 +317,22 @@ export function WelcomeInteractive({
 
       {/* Two-column: Pain points + Agenda */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 26 }}>
-        {/* Pain points */}
+        {/* Pain point word cloud */}
         {(() => {
-          const realPains = communityData.members
-            .filter(
-              (m: { painPoint: string }) =>
-                m.painPoint && m.painPoint.length > 10 && m.painPoint !== ".",
-            )
-            .slice(0, 6);
+          const STOP = new Set([
+            "i","my","the","a","an","and","or","to","of","in","for","with","is","are","it","that","this","but","on","at","as","be","was","not","have","do","how","more","get","can","so","we","our","their","they","you","your","us","by","from","just","very","all","what","when","which","about","some","there","too","no","dont","im","its","ive","been","want","need","time","make","use","know","like","would","could","should","also","still","will","has","had","up","out","one","if","than","then","into","only","really","much","many","way","any","who","even","me","him","she","her","them",
+          ]);
+          const freq: Record<string, number> = {};
+          communityData.members.forEach((m: { painPoint: string }) => {
+            if (!m.painPoint || m.painPoint.length < 5) return;
+            m.painPoint.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).forEach((w: string) => {
+              if (w.length > 3 && !STOP.has(w)) freq[w] = (freq[w] || 0) + 1;
+            });
+          });
+          const words = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 40);
+          const max = words[0]?.[1] ?? 1;
+          const min = words[words.length - 1]?.[1] ?? 1;
+          const fsize = (n: number) => sz(Math.round(11 + ((n - min) / Math.max(max - min, 1)) * 18));
           return (
             <div
               style={{
@@ -348,104 +356,28 @@ export function WelcomeInteractive({
                   gap: 12,
                 }}
               >
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 22,
-                    height: 1,
-                    background: C.primary,
-                  }}
-                />
+                <span style={{ display: "inline-block", width: 22, height: 1, background: C.primary }} />
                 What you told us
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  color: C.muted,
-                  marginBottom: 22,
-                  lineHeight: 1.5,
-                }}
-              >
-                Real answers from your onboarding ~ this is why we&apos;re here.
+              <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: 20, lineHeight: 1.5 }}>
+                Your pain points ~ from your onboarding answers.
               </div>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                {realPains.map(
-                  (
-                    m: {
-                      firstName: string;
-                      painPoint: string;
-                      painCategory: string;
-                    },
-                    i: number,
-                  ) => {
-                    const visible = i < revealedPromises + 3;
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 14,
-                          padding: "14px 16px",
-                          borderRadius: 12,
-                          background: `${C.primary}08`,
-                          border: `1px solid ${C.border}`,
-                          opacity: visible ? 1 : 0.3,
-                          transform: visible
-                            ? "translateY(0)"
-                            : "translateY(6px)",
-                          transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: sz(28),
-                            height: sz(28),
-                            flexShrink: 0,
-                            borderRadius: "50%",
-                            background: C.primary,
-                            color: C.text === "#2A2520" ? onDark : C.bg,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            ...mono,
-                            fontSize: sz(11),
-                            fontWeight: 800,
-                          }}
-                        >
-                          {m.firstName.charAt(0)}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: sz(16),
-                              color: C.text,
-                              lineHeight: 1.45,
-                            }}
-                          >
-                            &ldquo;{m.painPoint}&rdquo;
-                          </div>
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: sz(10),
-                              color: C.muted,
-                              letterSpacing: "0.1em",
-                              textTransform: "uppercase",
-                              marginTop: 4,
-                            }}
-                          >
-                            {m.firstName} ~ {m.painCategory}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 14px", alignItems: "center", lineHeight: 1.4 }}>
+                {words.map(([word, count]) => (
+                  <span
+                    key={word}
+                    style={{
+                      ...sans,
+                      fontSize: fsize(count),
+                      fontWeight: count >= max * 0.6 ? 700 : count >= max * 0.35 ? 600 : 400,
+                      color: count >= max * 0.6 ? C.text : count >= max * 0.35 ? C.primary : C.muted,
+                      opacity: 0.55 + (count / max) * 0.45,
+                      cursor: "default",
+                    }}
+                  >
+                    {word}
+                  </span>
+                ))}
               </div>
             </div>
           );
@@ -601,7 +533,7 @@ export function WelcomeInteractive({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/VDIEGH")}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/KER8G6")}`}
             alt="QR code to workbook"
             width={sz(144)}
             height={sz(144)}
@@ -644,20 +576,56 @@ export function WelcomeInteractive({
           >
             Scan to answer live ~ your responses appear on screen
           </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(12),
-              color: C.text,
-              letterSpacing: "0.04em",
-              padding: "8px 14px",
-              borderRadius: 8,
-              background: `${C.primary}10`,
-              border: `1px solid ${C.border}`,
-              display: "inline-block",
-            }}
-          >
-            menti.talentmucho.com/join/VDIEGH
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div
+              style={{
+                ...mono,
+                fontSize: sz(11),
+                color: C.muted,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+              }}
+            >
+              Enter code at
+            </div>
+            <div
+              style={{
+                ...mono,
+                fontSize: sz(12),
+                color: C.text,
+                letterSpacing: "0.04em",
+                padding: "6px 12px",
+                borderRadius: 8,
+                background: `${C.primary}10`,
+                border: `1px solid ${C.border}`,
+                display: "inline-block",
+              }}
+            >
+              menti.talentmucho.com/join
+            </div>
+            <div
+              style={{
+                ...mono,
+                fontSize: sz(11),
+                color: C.muted,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                marginTop: 4,
+              }}
+            >
+              Code
+            </div>
+            <div
+              style={{
+                ...mono,
+                fontSize: sz(26),
+                fontWeight: 800,
+                color: C.text,
+                letterSpacing: "0.12em",
+              }}
+            >
+              KER8G6
+            </div>
           </div>
         </div>
       </div>
