@@ -82,7 +82,7 @@ export default function EventOS() {
 function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: ThemeKey) => void }) {
   const C = THEMES[theme].C;
   const isDark = THEMES[theme].isDark;
-  const [segIdx, setSegIdx] = useState(0);
+  const [segIdx, setSegIdx] = useState(6);
   const [beatIdx, setBeatIdx] = useState(0);
   const [view, setView] = useState<ViewType>('presenter');
   const [mode, setMode] = useState<Mode>('demo');
@@ -420,19 +420,25 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
 
         {/* Segment tabs */}
         <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
-          {segments.map((s, i) => (
-            <button key={s.id} onClick={() => goToSeg(i)} style={{
-              padding: '3px 9px', borderRadius: 100, fontSize: 9, ...mono,
-              cursor: 'pointer', letterSpacing: '0.05em', textTransform: 'uppercase',
-              border: `1px solid ${i === segIdx ? C.primary : C.border}`,
-              background: i === segIdx ? C.primary : 'transparent',
-              color: i === segIdx ? C.bg : C.muted,
-              fontWeight: i === segIdx ? 700 : 400,
-              transition: 'all 0.15s',
-            }}>
-              {s.num} {s.title}
-            </button>
-          ))}
+          {segments.map((s, i) => {
+            const isCurrent = i === segIdx;
+            const isDone = i < segIdx;
+            return (
+              <button key={s.id} onClick={() => goToSeg(i)} style={{
+                padding: '3px 9px', borderRadius: 100, fontSize: 9, ...mono,
+                cursor: 'pointer', letterSpacing: '0.05em', textTransform: 'uppercase',
+                border: `1px solid ${isCurrent ? C.primary : isDone ? C.border : C.border}`,
+                background: isCurrent ? C.primary : isDone ? `${C.primary}18` : 'transparent',
+                color: isCurrent ? C.bg : isDone ? C.muted : C.muted,
+                fontWeight: isCurrent ? 700 : 400,
+                opacity: isDone ? 0.5 : 1,
+                transition: 'all 0.15s',
+                textDecoration: isDone ? 'line-through' : 'none',
+              }}>
+                {isDone ? '✓ ' : ''}{s.num} {s.title}
+              </button>
+            );
+          })}
         </div>
 
         {/* Controls */}
