@@ -870,6 +870,42 @@ export default function CommunityDashboard({ data }: { data: CommunityData }) {
   delete painWithAnswers["No Answer"];
   delete painWithAnswers["Unspecified"];
 
+  const mentorTracks = useMemo(() => {
+    const ai = stats.byAILevel;
+    const total = stats.total;
+    const count = (levels: string[]) => levels.reduce((s, l) => s + (ai[l] || 0), 0);
+    const pct = (n: number) => `${Math.round((n / total) * 100)}%`;
+    return [
+      {
+        letter: "A",
+        track: "The Curious Beginner",
+        levels: ["Beginner", "Never Used AI", "Unknown"],
+        desc: "New to AI and just getting started. Teach them what Claude can actually do with zero jargon ~ quick wins first.",
+      },
+      {
+        letter: "B",
+        track: "The Hustler",
+        levels: ["Tried It", "Occasional"],
+        desc: "Has played with AI but not consistent. Give email templates, content batching, DM scripts ~ make it stick.",
+      },
+      {
+        letter: "C",
+        track: "The Operator",
+        levels: ["Intermediate", "Regular"],
+        desc: "Uses Claude regularly. Level up with SOPs, report gen, data analysis, and building repeatable systems.",
+      },
+      {
+        letter: "D",
+        track: "The Builder",
+        levels: ["Advanced", "Expert"],
+        desc: "Technical users ready for Claude API, agents, MCP integrations, and automation workflows.",
+      },
+    ].map((t) => {
+      const n = count(t.levels);
+      return { ...t, count: n, pct: pct(n) };
+    });
+  }, [stats]);
+
   function exportCSV() {
     const headers = ["First Name","Last Name","Email","Platform","Source","AI Level","Pain Point","Pain Category","Joined GHL","Joined Skool","Invited By"];
     const rows = filtered.map((m) => [
@@ -1068,12 +1104,7 @@ export default function CommunityDashboard({ data }: { data: CommunityData }) {
             </h2>
           </div>
           <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { track: "The Curious Beginner", letter: "A", pct: "~30%", desc: "No biz yet, never used AI. Teach them 'What is Claude?' with zero jargon." },
-              { track: "The Hustler", letter: "B", pct: "~38%", desc: "Has a side biz, beginner AI. Give email templates, content batching, DM scripts." },
-              { track: "The Operator", letter: "C", pct: "~18%", desc: "Uses Claude regularly. SOPs, report gen, data analysis, Notion integrations." },
-              { track: "The Builder", letter: "D", pct: "~9%", desc: "Technical users. Claude API, agents, MCP, automation workflows." },
-            ].map((t) => (
+            {mentorTracks.map((t) => (
               <div
                 key={t.letter}
                 className="rounded-xl p-5 transition-colors duration-300"
@@ -1100,12 +1131,20 @@ export default function CommunityDashboard({ data }: { data: CommunityData }) {
                       {t.track}
                     </span>
                   </div>
-                  <span
-                    className="text-[10px] font-semibold uppercase"
-                    style={{ color: C.headerMuted, letterSpacing: "0.1em" }}
-                  >
-                    {t.pct}
-                  </span>
+                  <div className="text-right">
+                    <span
+                      className="block text-sm font-semibold tabular-nums"
+                      style={{ color: C.headerText }}
+                    >
+                      {t.pct}
+                    </span>
+                    <span
+                      className="block text-[10px] tabular-nums"
+                      style={{ color: C.headerMuted, letterSpacing: "0.05em" }}
+                    >
+                      {t.count} members
+                    </span>
+                  </div>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: C.headerMuted }}>
                   {t.desc}
