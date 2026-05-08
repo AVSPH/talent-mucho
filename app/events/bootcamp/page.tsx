@@ -830,7 +830,91 @@ export default function BootcampPage() {
       </section>
 
       {/* ══════════════════════════════════════
-          11. FINAL CTA ~ light
+          11. INNER CIRCLE ~ beige
+      ══════════════════════════════════════ */}
+      <section className="section-padding bg-beige-100">
+        <div className="section-container">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">
+                What's Next · July 2026
+              </p>
+              <h2
+                className="text-4xl md:text-5xl font-light text-charcoal-900 mb-5 leading-tight"
+                style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+              >
+                The Inner Circle.
+              </h2>
+              <p className="text-espresso-800 font-light leading-relaxed max-w-xl mx-auto">
+                Bootcamp ends July 1. The Inner Circle is for graduates who don't want to stop ~ a
+                private ongoing group that keeps you building every month.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+              {[
+                {
+                  icon: "🔁",
+                  title: "Monthly live builds",
+                  desc: "One new Claude build every month ~ live, together, with real business output.",
+                },
+                {
+                  icon: "🔒",
+                  title: "Alumni-only space",
+                  desc: "A private channel for Cohort 1 graduates. No newcomers. Just people who did the work.",
+                },
+                {
+                  icon: "⚡",
+                  title: "First access to new tools",
+                  desc: "Every new Anthropic release, explained and applied to your business before it hits the mainstream.",
+                },
+                {
+                  icon: "💬",
+                  title: "Async accountability",
+                  desc: "Weekly check-ins, prompt reviews, and honest feedback from Abie, Meri, and your cohort.",
+                },
+              ].map((p) => (
+                <div
+                  key={p.title}
+                  className="bg-white border border-beige-200 rounded-xl p-5 flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow duration-200"
+                >
+                  <span className="text-xl shrink-0 mt-0.5">{p.icon}</span>
+                  <div>
+                    <p className="font-semibold text-sm text-charcoal-900 mb-1">{p.title}</p>
+                    <p className="text-xs text-taupe-400 font-light leading-relaxed">{p.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-white border border-beige-200 rounded-2xl p-7 md:p-9 text-center shadow-elegant">
+              <p
+                className="text-2xl md:text-3xl font-light text-charcoal-900 mb-3 leading-tight"
+                style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+              >
+                Cohort 1 graduates get in <em className="italic text-clay-500">first.</em>
+              </p>
+              <p className="text-sm text-taupe-400 font-light leading-relaxed mb-7 max-w-md mx-auto">
+                The Inner Circle opens to Cohort 1 in July 2026 at the founding alumni rate.
+                Join the waitlist now and we'll reach out the moment it's ready.
+              </p>
+              <a
+                href="mailto:hello@talentmucho.com?subject=Inner%20Circle%20Waitlist"
+                className="inline-flex items-center gap-2 bg-charcoal-900 hover:bg-espresso-800 text-beige-50 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-200"
+              >
+                Join the waitlist
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <p className="text-xs text-taupe-400/70 font-light mt-4 italic">
+                No commitment. We'll send details in July after graduation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          12. FINAL CTA ~ light
       ══════════════════════════════════════ */}
       <section className="py-20 md:py-28 bg-beige-50">
         <div className="section-container">
