@@ -10,7 +10,7 @@ import {
 export const metadata: Metadata = {
   title: "Claude AI for Business Owners | Talent Mucho",
   description:
-    "A hands-on Zoom session covering Claude Chat, Code, and Cowork. 500 registered · 54 attended live. Watch the replay.",
+    "A hands-on Zoom session covering Claude Chat, Code, and Cowork. 300 registered · 54 attended live. Watch the replay.",
 };
 
 // ── Update these when links are available ──────────────────────────────────
@@ -105,7 +105,7 @@ export default function ClaudeEventPage() {
             </div>
             <span className="hidden sm:block text-beige-100/20">·</span>
             <span className="text-beige-300 text-sm font-light">
-              500 registered · <span className="text-clay-500 font-medium">54 attended live</span>
+              300 registered · <span className="text-clay-500 font-medium">54 attended live</span>
             </span>
             {REPLAY_URL && (
               <>
@@ -179,13 +179,13 @@ export default function ClaudeEventPage() {
               </p>
 
               <p className="text-base md:text-lg text-espresso-800 font-light leading-relaxed mb-8 max-w-xl">
-                500 people registered. 54 joined live. The session covered Claude Chat, Code, and Cowork ~ real tools, real business tasks, no theory.
+                300 people registered. 54 joined live. The session covered Claude Chat, Code, and Cowork ~ real tools, real business tasks, no theory.
               </p>
 
               {/* Stats row */}
               <div className="flex flex-wrap gap-3 mb-8">
                 {[
-                  { icon: <Users className="w-3.5 h-3.5" />, label: "500 registered" },
+                  { icon: <Users className="w-3.5 h-3.5" />, label: "300 registered" },
                   { icon: <CheckCircle className="w-3.5 h-3.5" />, label: "54 attended live" },
                   { icon: <Calendar className="w-3.5 h-3.5" />, label: "May 1, 2026" },
                   { icon: <Clock className="w-3.5 h-3.5" />, label: "2 hours" },
@@ -442,7 +442,7 @@ export default function ClaudeEventPage() {
                     className="text-7xl md:text-8xl font-light text-charcoal-900 leading-none"
                     style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                   >
-                    <em className="italic text-clay-500">500+</em>
+                    <em className="italic text-clay-500">300+</em>
                   </div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-taupe-400 mt-2">
                     members
@@ -460,10 +460,10 @@ export default function ClaudeEventPage() {
                     className="text-3xl md:text-4xl font-light text-charcoal-900 mb-4 leading-tight"
                     style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                   >
-                    500 people said yes. <em className="italic text-clay-500">Will you?</em>
+                    300 people said yes. <em className="italic text-clay-500">Will you?</em>
                   </h2>
                   <p className="text-espresso-800 font-light leading-relaxed text-base mb-5">
-                    Our Skool community passed 500 members. Founders, VAs, freelancers, and operators ~ all building with AI together. <span className="text-clay-500 font-medium">Free to join.</span>
+                    Our Skool community passed 300 members. Founders, VAs, freelancers, and operators ~ all building with AI together. <span className="text-clay-500 font-medium">Free to join.</span>
                   </p>
 
                   <div className="flex items-center gap-3">
@@ -477,7 +477,7 @@ export default function ClaudeEventPage() {
                         </div>
                       ))}
                       <div className="w-9 h-9 rounded-full bg-clay-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                        +495
+                        +295
                       </div>
                     </div>
                     <p className="text-xs text-taupe-400 font-light italic">
