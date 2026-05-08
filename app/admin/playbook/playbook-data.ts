@@ -30,7 +30,7 @@ export const FREE_SESSION: SalesSession = {
   title: "Free Live Build: Make Claude Sound Exactly Like You",
   date: "Fri, May 9",
   totalMin: 120,
-  tagline: "They came thinking AI sounds robotic. They leave knowing it sounds like them.",
+  tagline: "They came to learn AI. They leave having built the first piece of their AI self.",
   agenda: [
     { time: "0:00", label: "Welcome + frame the session", duration: "5 min", type: "buffer" },
     { time: "0:05", label: "Show the FINISHED thing first — in your voice", duration: "7 min", type: "build" },
@@ -50,7 +50,7 @@ export const FREE_SESSION: SalesSession = {
     "Prepare 3 sample outputs to show: one caption, one client email, one sales message — all from your project",
     "Tell attendees in advance: 'Bring 3 examples of your writing — a caption, an email, anything in your voice'",
     "Mary: have the Stripe bootcamp link ready to drop in chat at exactly 1:40",
-    "Prepare a one-liner for the pitch moment: '9 sessions · 4 real deliverables · €247 founding price'",
+    "Prepare a one-liner for the pitch moment: 'In 4 weeks you build the AI version of yourself — your voice, your ops, your clients, your dashboard. €247 founding price.'",
   ],
   buildSteps: [
     {
@@ -84,15 +84,15 @@ export const FREE_SESSION: SalesSession = {
       tip: "When you say something specific and accurate about their output, the room realises: this thing actually worked. That's the social proof you can't manufacture. The person who shares a mediocre result makes others want more coaching. The person who shares a great result makes others want what they have. Both convert.",
     },
   ],
-  transitionScript: "\"You just taught an AI to write in your exact voice. In 30 minutes. With a free account. Here's what I want you to sit with: most businesses spend thousands on copywriters because they can't get content that sounds like them. You just solved that yourself. But here's what today was — it was Week 1, Session 2 of our bootcamp. In the full programme, you build three of these Projects: one for your brand voice, one for your operations, one for your clients. Then in Week 2 you give your assistant file access — it can read your inbox, organise your folders, and execute tasks without you. Week 3 you build with Claude Code — you describe what you want and it writes the software. You leave Week 3 with a custom dashboard you built. Week 4 is the full stack working together in a daily routine that takes 10 minutes. €247. 9 live sessions starting June 2. 4 deliverables you keep. And the founding price closes after this cohort. I want to tell you exactly what each session looks like.\"",
+  transitionScript: "\"What you just built — that's the first piece of the AI version of you. In 30 minutes, with a free account, you trained Claude to write like you. Not like AI. Like you. Here's what I want you to sit with: most business owners are the bottleneck in their own business. Everything needs their voice, their judgment, their time. What we're building in the bootcamp is the version of you that runs when you can't. Week 1: three Claude Projects — your voice, your operations, your clients. Week 2: your AI employee in Cowork — it has file access, it executes tasks, it works while you sleep. Week 3: Claude Code — you describe what you want in English, it writes the software, you leave with a dashboard you built. Week 4: the full stack, running together, in a 10-minute daily routine. €247. 9 live sessions starting June 2. 4 deliverables you keep. That's the AI version of yourself. Let me show you exactly what each session builds.\"",
   pitchPoints: [
-    "\"What you built today is Week 1, Session 2. There are 8 more sessions after that.\"",
-    "\"In Week 1 you build 3 Projects: brand voice, operations, and a client hub. All loaded with your business.\"",
-    "\"Week 2 gives your assistant hands — Cowork lets it access your files, your inbox, your computer. It executes tasks, not just drafts them.\"",
-    "\"Week 3 is Claude Code. You describe what you want in English, Claude writes the software. You leave with a dashboard you built.\"",
-    "\"Week 4 is integration — everything works together in a daily 10-minute routine. The system runs while you sleep.\"",
-    "\"€247 founding price. Cohort 2 opens at €397. This room, this price, does not come back.\"",
-    "\"Small group. Live. Both Abie and I are in every session. You can ask anything.\"",
+    "\"What you built today is the first layer. The bootcamp has 4 layers — and each one makes the AI version of you more complete.\"",
+    "\"Week 1: 3 Claude Projects — your voice (done today), your operations, your clients. Claude trained on your actual business.\"",
+    "\"Week 2: your AI employee. Cowork gives it file access. It can open your folders, sort your inbox, execute tasks. It works when you don't.\"",
+    "\"Week 3: Claude Code. You describe what you want in English. Claude writes the software. You leave with a dashboard you built yourself.\"",
+    "\"Week 4: everything runs together. Morning check-in, midday triage, end-of-day dashboard — under 10 minutes. The system runs whether you show up or not.\"",
+    "\"€247 founding price. The AI version of you — your voice, your ops, your employees, your dashboard. Cohort 2 is €397. This price does not come back.\"",
+    "\"Small group. Live. Both Abie and I are in every session. You are not learning from a recording — you're building with us.\"",
   ],
   objections: [
     {
@@ -124,7 +124,7 @@ export const FREE_SESSION: SalesSession = {
       response: "\"4–7 PM CEST: that's 10 AM New York, 7 AM LA, 10 PM Manila, 11 PM Manila, midnight in Dubai. We have students joining from [PH/Africa/etc.]. Recordings are always there for anyone who can't make it live.\"",
     },
   ],
-  closingScript: "\"The link is going live right now. Mary is dropping it in chat. €247 founding price — closes tonight at midnight. After that it's €397 for Cohort 2. [Pause.] You came today because you wanted to learn how to use AI. You left with Claude writing in your actual voice. That's what this bootcamp does — but across your entire business, over 4 weeks, live with us. We'd love to have you in the room on June 2. The link is in chat. See you there.\"",
+  closingScript: "\"The link is going live right now. Mary is dropping it in chat. €247 founding price — closes tonight at midnight. After that it's €397 for Cohort 2. [Pause 10 seconds.] You came today because you wanted to learn AI. You're leaving with Claude writing in your actual voice. That's layer one. The bootcamp builds the other three — your AI employee, your dashboard, your daily routine. The full AI version of you. 4 weeks. Live with us. We'd love to have you on June 2. Link is in chat.\"",
   urgencyMechanics: [
     "Mary drops the Stripe link in chat at exactly 1:40 — not before. Scarcity works better when the moment is earned.",
     "Say 'founding price closes tonight at midnight' at least 3 times in the last 20 minutes. Repetition isn't annoying — it's a reminder people need.",
@@ -162,7 +162,7 @@ export const PLAYBOOK: SessionNote[] = [
       mary: "Chat monitoring, tech support, timekeeping, Project troubleshooting",
     },
     opening:
-      "\"Welcome to Cohort 1. I'm Abie, this is Mary — we both run our businesses on Claude every day. This isn't a theory course. There are no slides to get through. By the time we're done today, you'll have your first Claude Project loaded with your actual business docs. Let's go.\"",
+      "\"Welcome to Cohort 1. I'm Abie, this is Mary — we both run our businesses on Claude every day. Over the next 4 weeks, you're not learning AI tools. You're building the AI version of yourself — Claude trained on your voice, your business, your clients. By the end of this session you'll have your first Project loaded with your actual docs. That's layer one. Let's go.\"",
     demo: [
       "Open claude.ai → Projects → New Project → name it 'Operations Hub'",
       "Upload 3 docs live: services/offer page, FAQ, one real client email",
@@ -186,7 +186,7 @@ export const PLAYBOOK: SessionNote[] = [
     talkingPoints: [
       "The format: 10 min context, 15 min live demo, 105 min you build, 30 min showcase, 20 min office hours.",
       "Meri is always in the chat — no question is too basic. Stuck for 5 minutes? Ask.",
-      "Pick one project for the whole month. Building one real thing beats prototyping five.",
+      "Pick one project for the whole month. The AI version of you should know one business deeply, not five businesses shallowly.",
       "We ship working things, not pretty things. Done beats perfect, every time.",
     ],
   },
@@ -479,7 +479,7 @@ export const PLAYBOOK: SessionNote[] = [
       "Showcase format: screen share, 2 minutes max. 'Here's what I built. Here's what it does. Here's one thing I'd change.'",
       "After showcases: open a doc together. 'Moment 1 — morning: [specific prompt]. Moment 2 — midday: [specific task]. Moment 3 — end of day: [specific check].'",
       "Make it concrete: not 'open Claude' but 'Open Client Hub Project → paste this prompt → read the output.'",
-      "Final frame: 'You came in as a business owner who'd heard of AI. You leave as an operator who runs it.'",
+      "Final frame: 'You came in as the bottleneck in your business. You leave with an AI version of yourself that handles the parts that used to require you in the room.'",
     ],
     blocks: [
       { problem: "Student is nervous to showcase", fix: "Mary: 'Just show the window, you don't need to explain anything. We'll ask questions after.' Lower the bar verbally." },
@@ -493,10 +493,10 @@ export const PLAYBOOK: SessionNote[] = [
       "3. When you're ready for more: Cohort 2 opens in [date TBC]. You'll get first notice in Skool.",
     ],
     talkingPoints: [
-      "The certificate isn't the goal. The habit is. 30 days of the routine will change how you work.",
-      "Don't stop updating your Projects. They should reflect your business 6 months from now too.",
-      "You're ahead of 99% of small business owners. Use that advantage.",
-      "Cohort 2 will have your testimonials, your screenshots, your wins. Help us recruit them.",
+      "You didn't just learn AI. You built the AI version of yourself. That's a different thing entirely.",
+      "Keep updating your Projects. The AI version of you should grow as your business grows.",
+      "The bottleneck used to be you. Now you have a system that runs without you in the room.",
+      "Cohort 2 will see your builds, your screenshots, your routine. You're the proof that this works.",
     ],
   },
 ];
