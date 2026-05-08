@@ -24,6 +24,7 @@ import { LiveQAFeed } from "./slides/Slide07QA";
 import { ValueStack, ThreeDoorsOut } from "./slides/Slide08NextStep";
 import { LiveResponses } from "./slides/LiveResponses";
 import { AILandscape } from "./slides/Slide02AILandscape";
+import { AnatomyPromptVisual } from "./slides/Slide06AnatomyPrompt";
 
 export function AudienceView({
   seg,
@@ -347,7 +348,7 @@ export function AudienceView({
         <div
           style={{
             display:
-              seg.panel === "compare" || seg.num === "00" || seg.num === "01"
+              seg.panel === "compare" || seg.num === "00" || seg.num === "01" || seg.num === "06"
                 ? "none"
                 : "grid",
             gridTemplateColumns: "1.5fr 1fr",
@@ -795,6 +796,17 @@ export function AudienceView({
             )}
           </div>
         </div>
+
+        {/* ── Anatomy of a good prompt ~ segment 06 ── */}
+        {seg.num === "06" && (
+          <AnatomyPromptVisual
+            C={C}
+            mono={mono}
+            sans={sans}
+            serif={serif}
+            scale={audScale}
+          />
+        )}
 
         {/* ── AI Landscape ~ segment 02 (above compare panel) ── */}
         {seg.num === "02" && (
