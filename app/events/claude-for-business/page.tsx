@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 // ── Update these when links are available ──────────────────────────────────
-const REPLAY_URL = ""; // paste Loom / YouTube URL here
+const REPLAY_URL = "https://www.skool.com/future-proof-with-ai-4339/classroom/8703f5c7?md=87c6f6f824bf48019ea5d7c392522a0c";
 const BOOTCAMP_URL = "/events/bootcamp";
 
 const agendaItems = [
@@ -301,38 +301,34 @@ export default function ClaudeEventPage() {
               The full 2-hour session ~ Claude Chat, Code, and Cowork, shown live on real business tasks. 54 people were in the room. Now you can be too.
             </p>
 
-            {/* Video placeholder / embed */}
-            <div className="relative bg-espresso-800 border border-white/10 rounded-2xl overflow-hidden mb-8 aspect-video max-w-3xl mx-auto flex items-center justify-center">
-              {REPLAY_URL ? (
-                <iframe
-                  src={REPLAY_URL}
-                  className="absolute inset-0 w-full h-full"
-                  allow="autoplay; fullscreen"
-                  allowFullScreen
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-4 p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-clay-500/20 flex items-center justify-center">
-                    <Play className="w-7 h-7 text-clay-500" />
-                  </div>
-                  <p className="text-beige-300 font-light text-sm">Replay uploading ~ check back shortly</p>
-                </div>
-              )}
-            </div>
-
-            {REPLAY_URL ? (
+            {/* Replay CTA card */}
+            <div className="max-w-3xl mx-auto mb-8">
               <a
                 href={REPLAY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-8 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                className="group flex items-center gap-6 bg-espresso-800 border border-white/10 hover:border-clay-500/40 rounded-2xl p-8 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
               >
-                <Play className="w-4 h-4" />
-                Watch the full replay
+                <div className="w-16 h-16 rounded-full bg-clay-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200">
+                  <Play className="w-6 h-6 text-white ml-0.5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-beige-50 font-medium text-lg mb-1">Watch the full replay</p>
+                  <p className="text-beige-300 font-light text-sm">2 hours · Claude Chat, Code &amp; Cowork · Hosted on Skool</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-clay-500 shrink-0 group-hover:translate-x-1 transition-transform duration-200" />
               </a>
-            ) : (
-              <p className="text-beige-300/60 text-sm font-light italic">Replay link coming soon</p>
-            )}
+            </div>
+
+            <a
+              href={REPLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-8 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <Play className="w-4 h-4" />
+              Watch the full replay
+            </a>
           </div>
         </div>
       </section>
