@@ -429,10 +429,61 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 06 ~ Live build
+  // 06 ~ Anatomy of a good prompt
   {
-    id: 6, num: '06', title: 'Live', titleItalic: 'build',
-    subtitle: "7:20~7:35 PM ~ pick a real problem from the audience, solve it with Claude on the spot",
+    id: 6, num: '06', title: 'Anatomy of', titleItalic: 'a good prompt',
+    subtitle: '7:20~7:30 PM ~ what separates a vague prompt from one that actually works',
+    duration: '10 min', speakers: ['ABIE'], panel: 'demo',
+    audWhatTitle: 'Anatomy of <em>a good prompt</em>',
+    audWhatBody: "<p>The difference between \"write me an email\" and an output you actually send is <em>the prompt.</em></p><p>Every great prompt has four parts: <em>role, task, format, and constraints.</em> Learn these once and your results improve immediately ~ on any AI tool, forever.</p>",
+    audTakeaway: "Role. Task. Format. Constraints. <em>Four parts. That's the whole skill.</em>",
+    beats: [
+      {
+        id: 'ap1', title: 'Why prompts fail', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: "Abie on cam. Show a bad prompt on screen ~ 'write me a follow-up email to a client'." },
+          { type: 'scripted', speaker: 'ABIE', text: "How many of you have typed something into Claude, got a mediocre result, and thought: <em>\"this thing is overhyped\"?</em> That's not a Claude problem. That's a briefing problem." },
+          { type: 'scripted', speaker: 'ABIE', text: "Claude is not a search engine. You don't search it. You <em>brief</em> it ~ like a smart new hire who's genuinely capable but needs context to do great work." },
+          { type: 'bullets', speaker: 'ABIE', items: [
+            "<em>\"Write me an email\"</em> ~ Claude has no idea who you are, who it's for, or how you talk",
+            "<em>\"Summarise this\"</em> ~ summarise how? For who? 3 lines or 3 paragraphs?",
+            "Garbage in, garbage out. <em>Context in, gold out.</em>",
+          ]},
+        ],
+      },
+      {
+        id: 'ap2', title: 'The 4 parts', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "Every great prompt has <em>four parts.</em> You don't need all four every time ~ but knowing them makes you a 10x better prompter immediately." },
+          { type: 'bullets', speaker: 'ABIE', items: [
+            "<em>1. Role ~ who Claude is.</em> \"You are my senior marketing editor.\" Sets the persona, the expertise, the tone.",
+            "<em>2. Task ~ what you need.</em> One clear sentence. \"Rewrite the hook on this LinkedIn post to be more punchy.\"",
+            "<em>3. Format ~ how you want the output.</em> \"Give me 3 versions. Each under 100 words. Bullet points.\"",
+            "<em>4. Constraints ~ what to avoid.</em> \"No buzzwords. No em dashes. Sound like a human, not a press release.\"",
+          ]},
+          { type: 'stage', text: "Show each element on screen. Let it land ~ don't rush." },
+        ],
+      },
+      {
+        id: 'ap3', title: 'Before vs after', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "Same request. Two prompts. Watch the difference." },
+          { type: 'stage', text: "Live demo: run the bad prompt first ~ 'write me a follow-up email to a client'. Show the generic output. Then run the same request with all four parts. Let them compare side by side." },
+          { type: 'scripted', speaker: 'ABIE', text: "Same Claude. Same model. <em>Different briefing.</em> The second one sounds like you. The first one sounds like a LinkedIn template from 2021." },
+          { type: 'scripted', speaker: 'ABIE', text: "That gap? That's the skill. And unlike learning Python ~ <em>you can learn this in an afternoon.</em>" },
+        ],
+      },
+      {
+        id: 'ap4', title: 'Write your first real prompt', speaker: 'ABIE', blocks: [
+          { type: 'workbook', text: "WORKBOOK ~ Build your first structured prompt right now:\nRole: You are my ____\nTask: ____\nFormat: Give me ____\nConstraints: Don't ____" },
+          { type: 'scripted', speaker: 'ABIE', text: "If you leave tonight with nothing else, leave with <em>this structure.</em> Role, task, format, constraints. That's 80% of what separates the people getting results from the people who give up after day three." },
+          { type: 'poll', text: "POLL ~ Which part are you most likely to forget?\n1 = Role\n2 = Task\n3 = Format\n4 = Constraints" },
+        ],
+      },
+    ],
+  },
+
+  // 07 ~ Live build
+  {
+    id: 7, num: '07', title: 'Live', titleItalic: 'build',
+    subtitle: "7:30~7:45 PM ~ pick a real problem from the audience, solve it with Claude on the spot",
     duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'showcase',
     audWhatTitle: 'Live <em>build</em>',
     audWhatBody: "<p>This is hands-on. We pick <em>a real problem from someone in the room</em> and build a solution with Claude ~ right here, right now.</p><p>No prep. No slides. Just a screen share and a problem worth solving.</p>",
@@ -477,10 +528,10 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 07 ~ Q&A
+  // 08 ~ Q&A
   {
-    id: 7, num: '07', title: 'Open', titleItalic: 'Q&A',
-    subtitle: '7:35~7:50 PM ~ pre-screened Q&A with real demos',
+    id: 8, num: '08', title: 'Open', titleItalic: 'Q&A',
+    subtitle: '7:45~8:00 PM ~ pre-screened Q&A with real demos',
     duration: '15 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Open <em>Q&amp;A</em>',
     audWhatBody: "<p>Meri's been collecting your questions all hour. We're going to take the top ones and answer them with real demos ~ not generic advice.</p>",
@@ -500,10 +551,10 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 08 ~ Next step
+  // 09 ~ Next step
   {
-    id: 8, num: '08', title: 'Next', titleItalic: 'step',
-    subtitle: '5:50~6:00 PM ~ transition, pitch bootcamp, close',
+    id: 9, num: '09', title: 'Next', titleItalic: 'step',
+    subtitle: '8:00~8:10 PM ~ transition, pitch bootcamp, close',
     duration: '10 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Your <em>next step</em>',
     audWhatBody: "<p>You just built the ops layer. The bootcamp builds the other three ~ your voice, your AI employee, your dashboard. <em>The full AI version of you.</em></p>",

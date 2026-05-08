@@ -1404,8 +1404,8 @@ export function AudienceView({
           </>
         )}
 
-        {/* ── Live build ~ segment 06 ── */}
-        {seg.num === "06" && (
+        {/* ── Live build ~ segment 07 ── */}
+        {seg.num === "07" && (
           <LiveBuildGuide
             C={C}
             mono={mono}
@@ -1415,8 +1415,8 @@ export function AudienceView({
           />
         )}
 
-        {/* ── Q&A ~ segment 07 ── */}
-        {seg.num === "07" && (
+        {/* ── Q&A ~ segment 08 ── */}
+        {seg.num === "08" && (
           <LiveQAFeed
             C={C}
             mono={mono}
@@ -1426,8 +1426,8 @@ export function AudienceView({
           />
         )}
 
-        {/* ── Next step ~ segment 08 ── */}
-        {seg.num === "08" && (
+        {/* ── Next step ~ segment 09 ── */}
+        {seg.num === "09" && (
           <>
             <ValueStack
               C={C}
