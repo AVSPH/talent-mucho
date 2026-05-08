@@ -741,6 +741,13 @@ export default function EventGuidePage() {
                     href: 'https://abiemaxey.com/playbooks/zero-to-production',
                     slug: 'zero-to-production',
                   },
+                  {
+                    num: '04',
+                    title: 'Skill Maker',
+                    desc: 'Build a reusable Claude skill in minutes ~ describe what you want it to do and get a ready-to-paste system prompt.',
+                    href: 'https://abiemaxey.com/tools/skill-maker',
+                    slug: 'skill-maker',
+                  },
                 ].map((pb) => (
                   <a
                     key={pb.num}
