@@ -21,7 +21,7 @@ import {
 } from "./slides/Slide05AIEmployees";
 import { LiveBuildGuide } from "./slides/Slide06LiveBuild";
 import { LiveQAFeed } from "./slides/Slide07QA";
-import { ValueStack, ThreeDoorsOut } from "./slides/Slide08NextStep";
+import { BootcampPreview, ValueStack, SkoolJoinCard, ThreeDoorsOut, BonusSlide, FreeGuideCTA } from "./slides/Slide08NextStep";
 import { LiveResponses } from "./slides/LiveResponses";
 import { AILandscape } from "./slides/Slide02AILandscape";
 import { AnatomyPromptVisual } from "./slides/Slide06AnatomyPrompt";
@@ -1453,6 +1453,13 @@ export function AudienceView({
         {/* ── Next step ~ segment 10 ── */}
         {seg.num === "10" && (
           <>
+            <BootcampPreview
+              C={C}
+              mono={mono}
+              sans={sans}
+              serif={serif}
+              scale={audScale}
+            />
             <ValueStack
               C={C}
               mono={mono}
@@ -1460,7 +1467,28 @@ export function AudienceView({
               serif={serif}
               scale={audScale}
             />
+            <SkoolJoinCard
+              C={C}
+              mono={mono}
+              sans={sans}
+              serif={serif}
+              scale={audScale}
+            />
             <ThreeDoorsOut
+              C={C}
+              mono={mono}
+              sans={sans}
+              serif={serif}
+              scale={audScale}
+            />
+            <BonusSlide
+              C={C}
+              mono={mono}
+              sans={sans}
+              serif={serif}
+              scale={audScale}
+            />
+            <FreeGuideCTA
               C={C}
               mono={mono}
               sans={sans}
