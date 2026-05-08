@@ -319,6 +319,78 @@ export function WelcomeInteractive({
         </div>
       </div>
 
+      {/* Join the workbook ~ after countdown */}
+      <div
+        style={{
+          marginTop: 20,
+          padding: "22px 28px",
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 24,
+        }}
+      >
+        <div
+          style={{
+            flexShrink: 0,
+            width: sz(120),
+            height: sz(120),
+            borderRadius: 12,
+            background: "#FFFFFF",
+            padding: 6,
+            border: `1px solid ${C.border}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/KER8G6")}`}
+            alt="QR code to workbook"
+            width={sz(108)}
+            height={sz(108)}
+            style={{ display: "block", imageRendering: "pixelated" }}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              ...mono,
+              fontSize: sz(13),
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: C.primary,
+              marginBottom: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <span style={{ display: "inline-block", width: 18, height: 1, background: C.primary }} />
+            Join the workbook
+          </div>
+          <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 4 }}>Enter code at</div>
+              <div style={{ ...mono, fontSize: sz(12), color: C.text, letterSpacing: "0.04em", padding: "5px 10px", borderRadius: 7, background: `${C.primary}10`, border: `1px solid ${C.border}`, display: "inline-block" }}>
+                menti.talentmucho.com/join
+              </div>
+            </div>
+            <div>
+              <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 4 }}>Code</div>
+              <div style={{ ...mono, fontSize: sz(28), fontWeight: 800, color: C.text, letterSpacing: "0.12em" }}>KER8G6</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Two-column: Pain points + Agenda */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 26 }}>
         {/* Pain point word cloud */}
@@ -477,7 +549,6 @@ export function WelcomeInteractive({
                       fontWeight: 600,
                       color: isDone ? C.muted : C.text,
                       letterSpacing: "-0.01em",
-                      textDecoration: isDone ? "line-through" : "none",
                     }}
                   >
                     {s.title}
@@ -505,132 +576,6 @@ export function WelcomeInteractive({
                 </div>
               );
             })}
-          </div>
-        </div>
-      </div>
-
-      {/* QR Code */}
-      <div
-        style={{
-          marginTop: 26,
-          padding: "28px 30px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 28,
-        }}
-      >
-        <div
-          style={{
-            flexShrink: 0,
-            width: sz(160),
-            height: sz(160),
-            borderRadius: 14,
-            background: "#FFFFFF",
-            padding: 8,
-            border: `1px solid ${C.border}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/KER8G6")}`}
-            alt="QR code to workbook"
-            width={sz(144)}
-            height={sz(144)}
-            style={{ display: "block", imageRendering: "pixelated" }}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(13),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 8,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
-            Join the workbook
-          </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(18),
-              color: C.muted,
-              marginBottom: 16,
-              lineHeight: 1.5,
-            }}
-          >
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                color: C.muted,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-              }}
-            >
-              Enter code at
-            </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(12),
-                color: C.text,
-                letterSpacing: "0.04em",
-                padding: "6px 12px",
-                borderRadius: 8,
-                background: `${C.primary}10`,
-                border: `1px solid ${C.border}`,
-                display: "inline-block",
-              }}
-            >
-              menti.talentmucho.com/join
-            </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                color: C.muted,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                marginTop: 4,
-              }}
-            >
-              Code
-            </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(26),
-                fontWeight: 800,
-                color: C.text,
-                letterSpacing: "0.12em",
-              }}
-            >
-              KER8G6
-            </div>
           </div>
         </div>
       </div>
