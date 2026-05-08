@@ -746,7 +746,91 @@ export default function BootcampPage() {
       </section>
 
       {/* ══════════════════════════════════════
-          10. FINAL CTA ~ light
+          10. FAQ / OBJECTION HANDLING ~ dark
+      ══════════════════════════════════════ */}
+      <section className="section-padding bg-charcoal-900">
+        <div className="section-container">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3 text-center">
+              Before you go
+            </p>
+            <h2
+              className="text-4xl md:text-5xl font-light text-beige-50 mb-12 text-center leading-tight"
+              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+            >
+              Questions we always get.
+            </h2>
+
+            <div className="flex flex-col gap-5">
+              {[
+                {
+                  q: "I can figure this out myself.",
+                  a: "You probably can. It'll take 6 months of broken prompts, wrong turns, and YouTube rabbit holes. We compress that to 4 weeks ~ live, with two people who run their businesses on this every single day. Week 3 is Claude Code in a terminal. Week 2 is Cowork with file access. You could get there alone. This is just the faster, less painful path.",
+                },
+                {
+                  q: "€247 is a lot for me right now.",
+                  a: "How many hours a week do you spend writing content, chasing clients, and doing admin that Claude could handle in minutes? If this saves you 3 hours a week, it pays for itself in the first month. €247 is also less than one hour with most business coaches ~ and you get 27 hours of live instruction plus four deliverables you keep forever.",
+                },
+                {
+                  q: "I'm not technical enough for Claude Code.",
+                  a: "Week 3 is the most technical week, and we go extremely slowly ~ terminal step by step, Meri in the chat the entire time. If you can describe what you want in plain English, you can do it. We've had complete non-coders build their first dashboard and genuinely not believe they did it.",
+                },
+                {
+                  q: "I'm not sure I have time for 9 sessions.",
+                  a: "Sessions are Tuesdays and Thursdays, 4–7 PM CEST. Recordings go up within 24 hours. Miss one, watch the replay, complete the deliverable. Between sessions it's 15–30 minutes a day ~ most students tell us they're saving time by Week 3 because their AI stack is handling the repetitive work.",
+                },
+                {
+                  q: "What if I don't have a business yet?",
+                  a: "Even better ~ you get to build the AI version of a business that doesn't have bad habits yet. About 30% of Cohort 1 are in the 'side project or just starting' stage. The deliverables are built around whatever you're working on. No business too small.",
+                },
+                {
+                  q: "Does this work if I'm not in Europe?",
+                  a: "4–7 PM CEST is 10 AM New York, 7 AM LA, 10 PM Manila, midnight in Dubai. We have people joining from the Philippines, West Africa, and Latin America. Recordings are always there if you can't make it live ~ and the Skool community is active 24/7.",
+                },
+                {
+                  q: "What happens after Cohort 1 ends?",
+                  a: "You keep everything ~ your Projects, your AI employee, your dashboard, your code. The Skool community stays open. Cohort 2 is planned for later in 2026 at €397. The people who built with us in Cohort 1 get first access and the founding alumni rate.",
+                },
+              ].map(({ q, a }) => (
+                <details
+                  key={q}
+                  className="group bg-espresso-800/60 border border-white/5 rounded-2xl overflow-hidden"
+                >
+                  <summary className="flex items-center justify-between gap-4 p-6 cursor-pointer list-none select-none hover:bg-white/[0.03] transition-colors">
+                    <span className="font-medium text-beige-50 text-base leading-snug">{q}</span>
+                    <span className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center shrink-0 text-clay-500 group-open:rotate-45 transition-transform duration-200">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                  </summary>
+                  <div className="px-6 pb-6 pt-0">
+                    <div className="border-t border-white/5 pt-4">
+                      <p className="text-beige-300 font-light leading-relaxed text-sm">{a}</p>
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <p className="text-center mt-10 text-beige-300/50 text-sm font-light">
+              Still have a question?{" "}
+              <a
+                href="https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-clay-500 hover:text-clay-400 transition-colors"
+              >
+                Ask in the community
+              </a>{" "}
+              or email us at hello@talentmucho.com.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          11. FINAL CTA ~ light
       ══════════════════════════════════════ */}
       <section className="py-20 md:py-28 bg-beige-50">
         <div className="section-container">
