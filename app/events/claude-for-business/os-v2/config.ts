@@ -429,9 +429,28 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 06 ~ Anatomy of a good prompt
+  // 06 ~ Claude Quiz
   {
-    id: 6, num: '06', title: 'Anatomy of', titleItalic: 'a good prompt',
+    id: 6, num: '06', title: 'Claude', titleItalic: 'Quiz',
+    subtitle: '7:15~7:20 PM ~ sixteen terms, can you name them all?',
+    duration: '5 min', speakers: ['BOTH'], panel: 'demo',
+    audWhatTitle: 'The <em>Claude Quiz</em>',
+    audWhatBody: "<p>Sixteen terms. Sixteen clues. How many can you name before the answer appears?</p><p>Read each clue on screen, take a guess in your head, then we reveal the answer together.</p>",
+    audTakeaway: "If you knew half of these coming in ~ <em>you already know more than most.</em>",
+    beats: [
+      {
+        id: 'cq1', title: 'Run the quiz', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: 'Audience view shows the interactive quiz. Walk through rounds together ~ read clues aloud, give the room a moment to guess, then click reveal.' },
+          { type: 'scripted', speaker: 'BOTH', text: "Alright ~ heads up, this is interactive. Look at your screen. We've got 12 terms to guess. Read each clue, take a guess in your head, then we reveal together." },
+          { type: 'scripted', speaker: 'ABIE', text: "Don't feel bad if you don't know them yet ~ that's the whole point of tonight. By 8 PM you'll know every single one." },
+        ],
+      },
+    ],
+  },
+
+  // 07 ~ Anatomy of a good prompt (was 06)
+  {
+    id: 7, num: '07', title: 'Anatomy of', titleItalic: 'a good prompt',
     subtitle: '7:20~7:30 PM ~ what separates a vague prompt from one that actually works',
     duration: '10 min', speakers: ['ABIE'], panel: 'demo',
     audWhatTitle: 'Anatomy of <em>a good prompt</em>',
@@ -480,9 +499,9 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 07 ~ Live build
+  // 08 ~ Live build (was 07)
   {
-    id: 7, num: '07', title: 'Live', titleItalic: 'build',
+    id: 8, num: '08', title: 'Live', titleItalic: 'build',
     subtitle: "7:30~7:45 PM ~ pick a real problem from the audience, solve it with Claude on the spot",
     duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'showcase',
     audWhatTitle: 'Live <em>build</em>',
@@ -528,9 +547,9 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 08 ~ Q&A
+  // 09 ~ Q&A (was 08)
   {
-    id: 8, num: '08', title: 'Open', titleItalic: 'Q&A',
+    id: 9, num: '09', title: 'Open', titleItalic: 'Q&A',
     subtitle: '7:45~8:00 PM ~ pre-screened Q&A with real demos',
     duration: '15 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Open <em>Q&amp;A</em>',
@@ -551,9 +570,9 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 09 ~ Next step
+  // 10 ~ Next step (was 09)
   {
-    id: 9, num: '09', title: 'Next', titleItalic: 'step',
+    id: 10, num: '10', title: 'Next', titleItalic: 'step',
     subtitle: '8:00~8:10 PM ~ transition, pitch bootcamp, close',
     duration: '10 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Your <em>next step</em>',

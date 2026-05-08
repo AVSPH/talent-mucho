@@ -25,6 +25,7 @@ import { ValueStack, ThreeDoorsOut } from "./slides/Slide08NextStep";
 import { LiveResponses } from "./slides/LiveResponses";
 import { AILandscape } from "./slides/Slide02AILandscape";
 import { AnatomyPromptVisual } from "./slides/Slide06AnatomyPrompt";
+import { ClaudeQuiz } from "./slides/Slide06ClaudeQuiz";
 
 export function AudienceView({
   seg,
@@ -348,7 +349,7 @@ export function AudienceView({
         <div
           style={{
             display:
-              seg.panel === "compare" || seg.num === "00" || seg.num === "01" || seg.num === "06"
+              seg.panel === "compare" || seg.num === "00" || seg.num === "01" || seg.num === "06" || seg.num === "07"
                 ? "none"
                 : "grid",
             gridTemplateColumns: "1.5fr 1fr",
@@ -797,8 +798,19 @@ export function AudienceView({
           </div>
         </div>
 
-        {/* ── Anatomy of a good prompt ~ segment 06 ── */}
+        {/* ── Claude Quiz ~ segment 06 ── */}
         {seg.num === "06" && (
+          <ClaudeQuiz
+            C={C}
+            mono={mono}
+            sans={sans}
+            serif={serif}
+            scale={audScale}
+          />
+        )}
+
+        {/* ── Anatomy of a good prompt ~ segment 07 ── */}
+        {seg.num === "07" && (
           <AnatomyPromptVisual
             C={C}
             mono={mono}
@@ -1416,8 +1428,8 @@ export function AudienceView({
           </>
         )}
 
-        {/* ── Live build ~ segment 07 ── */}
-        {seg.num === "07" && (
+        {/* ── Live build ~ segment 08 ── */}
+        {seg.num === "08" && (
           <LiveBuildGuide
             C={C}
             mono={mono}
@@ -1427,8 +1439,8 @@ export function AudienceView({
           />
         )}
 
-        {/* ── Q&A ~ segment 08 ── */}
-        {seg.num === "08" && (
+        {/* ── Q&A ~ segment 09 ── */}
+        {seg.num === "09" && (
           <LiveQAFeed
             C={C}
             mono={mono}
@@ -1438,8 +1450,8 @@ export function AudienceView({
           />
         )}
 
-        {/* ── Next step ~ segment 09 ── */}
-        {seg.num === "09" && (
+        {/* ── Next step ~ segment 10 ── */}
+        {seg.num === "10" && (
           <>
             <ValueStack
               C={C}
