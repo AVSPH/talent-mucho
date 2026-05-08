@@ -1347,6 +1347,7 @@ export function AudienceView({
               scale={audScale}
               segments={segments}
               timerSecs={timerSecs}
+              currentSegIdx={segIdx}
             />
             <LocationCloud
               C={C}

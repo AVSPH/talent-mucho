@@ -21,6 +21,8 @@ const WELCOME_CITIES = [
 ];
 
 const EVENT_START_LOCAL = "2026-05-08T16:00:00+02:00";
+// Update this as the session progresses (0-indexed: 5 = segments 00-05 done, next is 06)
+const DONE_THROUGH = 5;
 
 // ── WelcomeInteractive ────────────────────────────────────────────────────────
 
@@ -32,9 +34,11 @@ export function WelcomeInteractive({
   scale = 1,
   segments,
   timerSecs,
+  currentSegIdx = 0,
 }: SlideProps & {
   segments: Segment[];
   timerSecs: number;
+  currentSegIdx?: number;
 }) {
   const [now, setNow] = useState(Date.now());
   const [cityIdx, setCityIdx] = useState(0);
@@ -428,78 +432,79 @@ export function WelcomeInteractive({
             Two hours. Nine beats. No filler.
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {segments.map((s) => (
-              <div
-                key={s.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "auto 1fr auto",
-                  gap: 12,
-                  alignItems: "center",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: s.id === 0 ? `${C.primary}15` : "transparent",
-                  border: `1px solid ${s.id === 0 ? `${C.primary}40` : "transparent"}`,
-                }}
-              >
+            {segments.map((s, i) => {
+              const isDone = i <= DONE_THROUGH;
+              const isCurrent = i === DONE_THROUGH + 1;
+              return (
                 <div
+                  key={s.id}
                   style={{
-                    width: sz(28),
-                    height: sz(28),
-                    flexShrink: 0,
-                    borderRadius: "50%",
-                    background: s.id === 0 ? C.primary : `${C.muted}15`,
-                    color:
-                      s.id === 0
-                        ? C.text === "#2A2520"
-                          ? onDark
-                          : C.bg
-                        : C.muted,
-                    display: "flex",
+                    display: "grid",
+                    gridTemplateColumns: "auto 1fr auto",
+                    gap: 12,
                     alignItems: "center",
-                    justifyContent: "center",
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 800,
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    background: isCurrent ? `${C.primary}15` : "transparent",
+                    border: `1px solid ${isCurrent ? `${C.primary}40` : "transparent"}`,
+                    opacity: isDone ? 0.4 : 1,
                   }}
                 >
-                  {s.num}
+                  <div
+                    style={{
+                      width: sz(28),
+                      height: sz(28),
+                      flexShrink: 0,
+                      borderRadius: "50%",
+                      background: isCurrent ? C.primary : isDone ? `${C.muted}30` : `${C.muted}15`,
+                      color: isCurrent
+                        ? C.text === "#2A2520" ? onDark : C.bg
+                        : C.muted,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      ...mono,
+                      fontSize: sz(11),
+                      fontWeight: 800,
+                    }}
+                  >
+                    {isDone ? "✓" : s.num}
+                  </div>
+                  <div
+                    style={{
+                      ...sans,
+                      fontSize: sz(15),
+                      fontWeight: 600,
+                      color: isDone ? C.muted : C.text,
+                      letterSpacing: "-0.01em",
+                      textDecoration: isDone ? "line-through" : "none",
+                    }}
+                  >
+                    {s.title}
+                    {s.titleItalic && !isDone && (
+                      <>
+                        {" "}
+                        <em style={{ ...serif, fontWeight: 400, color: C.primary }}>
+                          {s.titleItalic}
+                        </em>
+                      </>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      ...mono,
+                      fontSize: sz(11),
+                      fontWeight: 600,
+                      color: C.muted,
+                      letterSpacing: "0.06em",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {!isDone && s.duration}
+                  </div>
                 </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(15),
-                    fontWeight: 600,
-                    color: C.text,
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {s.title}
-                  {s.titleItalic && (
-                    <>
-                      {" "}
-                      <em
-                        style={{ ...serif, fontWeight: 400, color: C.primary }}
-                      >
-                        {s.titleItalic}
-                      </em>
-                    </>
-                  )}
-                </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 600,
-                    color: C.muted,
-                    letterSpacing: "0.06em",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {s.duration}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
