@@ -126,10 +126,10 @@ const audiencePills = [
 ];
 
 const walkAways = [
-  "3 configured Claude Projects loaded with your business",
-  "1 AI employee in Cowork doing real work in your workflows",
-  "1 custom dashboard built with Claude Code ~ no coding",
-  "A daily AI routine that runs whether you show up or not",
+  "Claude trained on your voice, your offers, your clients",
+  "1 AI employee in Cowork handling real work in your business",
+  "1 custom dashboard built with Claude Code ~ no prior coding",
+  "A Claude stack that thinks and writes like you ~ 24/7",
 ];
 
 export default function BootcampPage() {
@@ -176,14 +176,15 @@ export default function BootcampPage() {
                   lineHeight: 1.05,
                 }}
               >
-                One month. Three tools.
+                Build the AI version
                 <br />
-                <em className="italic text-clay-500">A business that runs differently.</em>
+                <em className="italic text-clay-500">of yourself.</em>
               </h1>
 
               <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed mb-9 max-w-xl">
-                9 live sessions. 4 weeks. Four real deliverables you walk away with ~
-                not just notes and inspiration. By Week 4, AI is running inside your business.
+                In 4 weeks, you&apos;ll put everything you know into Claude ~
+                your voice, your offers, your clients. Then watch it work
+                while you don&apos;t. 9 live sessions. 4 real deliverables.
               </p>
 
               <ul className="flex flex-col gap-3 mb-9 max-w-xl">
@@ -297,13 +298,13 @@ export default function BootcampPage() {
       <div className="bg-beige-100 border-y border-beige-200 py-6">
         <div className="section-container">
           <p className="text-center text-sm md:text-base text-espresso-800 font-light leading-relaxed">
-            <span className="font-semibold">9 live sessions</span>
+            <span className="font-semibold">Your voice in Claude</span>
             <span className="text-taupe-400 mx-3">·</span>
-            <span className="font-semibold">27 hrs of instruction</span>
+            <span className="font-semibold">Your own AI employee</span>
             <span className="text-taupe-400 mx-3">·</span>
-            <span className="font-semibold">4 deliverables you keep</span>
+            <span className="font-semibold">Your business dashboard</span>
             <span className="text-taupe-400 mx-3">·</span>
-            <span className="italic text-clay-500">VIP bundle included free</span>
+            <span className="italic text-clay-500">Built live, in 4 weeks</span>
           </p>
         </div>
       </div>
