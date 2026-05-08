@@ -20,7 +20,9 @@ const WELCOME_CITIES = [
   "🍷 Sophie from Paris",
 ];
 
-const EVENT_START_LOCAL = "2026-05-01T18:00:00-04:00";
+const EVENT_START_LOCAL = "2026-05-08T16:00:00+02:00";
+// Update this as the session progresses (0-indexed: 5 = segments 00-05 done, next is 06)
+const DONE_THROUGH = 5;
 
 // ── WelcomeInteractive ────────────────────────────────────────────────────────
 
@@ -32,9 +34,11 @@ export function WelcomeInteractive({
   scale = 1,
   segments,
   timerSecs,
+  currentSegIdx = 0,
 }: SlideProps & {
   segments: Segment[];
   timerSecs: number;
+  currentSegIdx?: number;
 }) {
   const [now, setNow] = useState(Date.now());
   const [cityIdx, setCityIdx] = useState(0);
@@ -250,7 +254,7 @@ export function WelcomeInteractive({
                     marginTop: 16,
                   }}
                 >
-                  May 1st · 6 PM EST · grab a drink, get comfy
+                  May 8th · 4 PM CEST · grab a drink, get comfy
                 </div>
               </>
             )}
@@ -315,16 +319,96 @@ export function WelcomeInteractive({
         </div>
       </div>
 
+      {/* Join the workbook ~ after countdown */}
+      <div
+        style={{
+          marginTop: 20,
+          padding: "22px 28px",
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 24,
+        }}
+      >
+        <div
+          style={{
+            flexShrink: 0,
+            width: sz(120),
+            height: sz(120),
+            borderRadius: 12,
+            background: "#FFFFFF",
+            padding: 6,
+            border: `1px solid ${C.border}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/KER8G6")}`}
+            alt="QR code to workbook"
+            width={sz(108)}
+            height={sz(108)}
+            style={{ display: "block", imageRendering: "pixelated" }}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              ...mono,
+              fontSize: sz(13),
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: C.primary,
+              marginBottom: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <span style={{ display: "inline-block", width: 18, height: 1, background: C.primary }} />
+            Join the workbook
+          </div>
+          <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 4 }}>Enter code at</div>
+              <div style={{ ...mono, fontSize: sz(12), color: C.text, letterSpacing: "0.04em", padding: "5px 10px", borderRadius: 7, background: `${C.primary}10`, border: `1px solid ${C.border}`, display: "inline-block" }}>
+                menti.talentmucho.com/join
+              </div>
+            </div>
+            <div>
+              <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 4 }}>Code</div>
+              <div style={{ ...mono, fontSize: sz(28), fontWeight: 800, color: C.text, letterSpacing: "0.12em" }}>KER8G6</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Two-column: Pain points + Agenda */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 26 }}>
-        {/* Pain points */}
+        {/* Pain point word cloud */}
         {(() => {
-          const realPains = communityData.members
-            .filter(
-              (m: { painPoint: string }) =>
-                m.painPoint && m.painPoint.length > 10 && m.painPoint !== ".",
-            )
-            .slice(0, 6);
+          const STOP = new Set([
+            "i","my","the","a","an","and","or","to","of","in","for","with","is","are","it","that","this","but","on","at","as","be","was","not","have","do","how","more","get","can","so","we","our","their","they","you","your","us","by","from","just","very","all","what","when","which","about","some","there","too","no","dont","im","its","ive","been","want","need","time","make","use","know","like","would","could","should","also","still","will","has","had","up","out","one","if","than","then","into","only","really","much","many","way","any","who","even","me","him","she","her","them",
+          ]);
+          const freq: Record<string, number> = {};
+          communityData.members.forEach((m: { painPoint: string }) => {
+            if (!m.painPoint || m.painPoint.length < 5) return;
+            m.painPoint.toLowerCase().replace(/[^a-z\s]/g, " ").split(/\s+/).forEach((w: string) => {
+              if (w.length > 3 && !STOP.has(w)) freq[w] = (freq[w] || 0) + 1;
+            });
+          });
+          const words = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 40);
+          const max = words[0]?.[1] ?? 1;
+          const min = words[words.length - 1]?.[1] ?? 1;
+          const fsize = (n: number) => sz(Math.round(11 + ((n - min) / Math.max(max - min, 1)) * 18));
           return (
             <div
               style={{
@@ -348,104 +432,28 @@ export function WelcomeInteractive({
                   gap: 12,
                 }}
               >
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 22,
-                    height: 1,
-                    background: C.primary,
-                  }}
-                />
+                <span style={{ display: "inline-block", width: 22, height: 1, background: C.primary }} />
                 What you told us
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  color: C.muted,
-                  marginBottom: 22,
-                  lineHeight: 1.5,
-                }}
-              >
-                Real answers from your onboarding ~ this is why we&apos;re here.
+              <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: 20, lineHeight: 1.5 }}>
+                Your pain points ~ from your onboarding answers.
               </div>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                {realPains.map(
-                  (
-                    m: {
-                      firstName: string;
-                      painPoint: string;
-                      painCategory: string;
-                    },
-                    i: number,
-                  ) => {
-                    const visible = i < revealedPromises + 3;
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 14,
-                          padding: "14px 16px",
-                          borderRadius: 12,
-                          background: `${C.primary}08`,
-                          border: `1px solid ${C.border}`,
-                          opacity: visible ? 1 : 0.3,
-                          transform: visible
-                            ? "translateY(0)"
-                            : "translateY(6px)",
-                          transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: sz(28),
-                            height: sz(28),
-                            flexShrink: 0,
-                            borderRadius: "50%",
-                            background: C.primary,
-                            color: C.text === "#2A2520" ? onDark : C.bg,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            ...mono,
-                            fontSize: sz(11),
-                            fontWeight: 800,
-                          }}
-                        >
-                          {m.firstName.charAt(0)}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: sz(16),
-                              color: C.text,
-                              lineHeight: 1.45,
-                            }}
-                          >
-                            &ldquo;{m.painPoint}&rdquo;
-                          </div>
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: sz(10),
-                              color: C.muted,
-                              letterSpacing: "0.1em",
-                              textTransform: "uppercase",
-                              marginTop: 4,
-                            }}
-                          >
-                            {m.firstName} ~ {m.painCategory}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 14px", alignItems: "center", lineHeight: 1.4 }}>
+                {words.map(([word, count]) => (
+                  <span
+                    key={word}
+                    style={{
+                      ...sans,
+                      fontSize: fsize(count),
+                      fontWeight: count >= max * 0.6 ? 700 : count >= max * 0.35 ? 600 : 400,
+                      color: count >= max * 0.6 ? C.text : count >= max * 0.35 ? C.primary : C.muted,
+                      opacity: 0.55 + (count / max) * 0.45,
+                      cursor: "default",
+                    }}
+                  >
+                    {word}
+                  </span>
+                ))}
               </div>
             </div>
           );
@@ -496,168 +504,78 @@ export function WelcomeInteractive({
             Two hours. Nine beats. No filler.
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {segments.map((s) => (
-              <div
-                key={s.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "auto 1fr auto",
-                  gap: 12,
-                  alignItems: "center",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: s.id === 0 ? `${C.primary}15` : "transparent",
-                  border: `1px solid ${s.id === 0 ? `${C.primary}40` : "transparent"}`,
-                }}
-              >
+            {segments.map((s, i) => {
+              const isDone = i <= DONE_THROUGH;
+              const isCurrent = i === DONE_THROUGH + 1;
+              return (
                 <div
+                  key={s.id}
                   style={{
-                    width: sz(28),
-                    height: sz(28),
-                    flexShrink: 0,
-                    borderRadius: "50%",
-                    background: s.id === 0 ? C.primary : `${C.muted}15`,
-                    color:
-                      s.id === 0
-                        ? C.text === "#2A2520"
-                          ? onDark
-                          : C.bg
-                        : C.muted,
-                    display: "flex",
+                    display: "grid",
+                    gridTemplateColumns: "auto 1fr auto",
+                    gap: 12,
                     alignItems: "center",
-                    justifyContent: "center",
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 800,
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    background: isCurrent ? `${C.primary}15` : "transparent",
+                    border: `1px solid ${isCurrent ? `${C.primary}40` : "transparent"}`,
+                    opacity: isDone ? 0.4 : 1,
                   }}
                 >
-                  {s.num}
+                  <div
+                    style={{
+                      width: sz(28),
+                      height: sz(28),
+                      flexShrink: 0,
+                      borderRadius: "50%",
+                      background: isCurrent ? C.primary : isDone ? `${C.muted}30` : `${C.muted}15`,
+                      color: isCurrent
+                        ? C.text === "#2A2520" ? onDark : C.bg
+                        : C.muted,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      ...mono,
+                      fontSize: sz(11),
+                      fontWeight: 800,
+                    }}
+                  >
+                    {isDone ? "✓" : s.num}
+                  </div>
+                  <div
+                    style={{
+                      ...sans,
+                      fontSize: sz(15),
+                      fontWeight: 600,
+                      color: isDone ? C.muted : C.text,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {s.title}
+                    {s.titleItalic && !isDone && (
+                      <>
+                        {" "}
+                        <em style={{ ...serif, fontWeight: 400, color: C.primary }}>
+                          {s.titleItalic}
+                        </em>
+                      </>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      ...mono,
+                      fontSize: sz(11),
+                      fontWeight: 600,
+                      color: C.muted,
+                      letterSpacing: "0.06em",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {!isDone && s.duration}
+                  </div>
                 </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(15),
-                    fontWeight: 600,
-                    color: C.text,
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {s.title}
-                  {s.titleItalic && (
-                    <>
-                      {" "}
-                      <em
-                        style={{ ...serif, fontWeight: 400, color: C.primary }}
-                      >
-                        {s.titleItalic}
-                      </em>
-                    </>
-                  )}
-                </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 600,
-                    color: C.muted,
-                    letterSpacing: "0.06em",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {s.duration}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* QR Code */}
-      <div
-        style={{
-          marginTop: 26,
-          padding: "28px 30px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 28,
-        }}
-      >
-        <div
-          style={{
-            flexShrink: 0,
-            width: sz(160),
-            height: sz(160),
-            borderRadius: 14,
-            background: "#FFFFFF",
-            padding: 8,
-            border: `1px solid ${C.border}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/VDIEGH")}`}
-            alt="QR code to workbook"
-            width={sz(144)}
-            height={sz(144)}
-            style={{ display: "block", imageRendering: "pixelated" }}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(13),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 8,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
-            Join the workbook
-          </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(18),
-              color: C.muted,
-              marginBottom: 16,
-              lineHeight: 1.5,
-            }}
-          >
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(12),
-              color: C.text,
-              letterSpacing: "0.04em",
-              padding: "8px 14px",
-              borderRadius: 8,
-              background: `${C.primary}10`,
-              border: `1px solid ${C.border}`,
-              display: "inline-block",
-            }}
-          >
-            menti.talentmucho.com/join/VDIEGH
+              );
+            })}
           </div>
         </div>
       </div>
@@ -887,7 +805,7 @@ export function CommunityPulse({
   const painEntries = Object.entries(
     stats.byPainCategory as Record<string, number>,
   )
-    .filter(([k]) => k !== "No Answer" && k !== "Unspecified")
+    .filter(([k]) => k !== "No Answer" && k !== "Unspecified" && k.toLowerCase() !== "other")
     .sort((a, b) => b[1] - a[1]);
   const painTotal = painEntries.reduce((sum, [, v]) => sum + v, 0);
   const painMax = painEntries[0]?.[1] || 1;
@@ -937,174 +855,61 @@ export function CommunityPulse({
               "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)",
           }}
         />
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase" as const,
-                color: C.primary,
-                marginBottom: sz(12),
-              }}
-            >
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: sz(28) }}>
+          {/* Left: count + label + CTA */}
+          <div style={{ flex: 1 }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" as const, color: C.primary, marginBottom: sz(12) }}>
               Your community ~ right now
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(80),
-                fontWeight: 300,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-                color: onDark,
-              }}
-            >
-              {animCount}
+            <div style={{ ...serif, fontSize: sz(88), fontWeight: 300, letterSpacing: "-0.03em", lineHeight: 1, color: onDark }}>
+              536+
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(12),
-                letterSpacing: "0.14em",
-                textTransform: "uppercase" as const,
-                color: "rgba(250,248,245,0.5)",
-                marginTop: sz(8),
-              }}
-            >
-              members across all platforms
+            <div style={{ ...mono, fontSize: sz(13), letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(250,248,245,0.5)", marginTop: sz(10) }}>
+              members on Skool
+            </div>
+            <div style={{ ...serif, fontSize: sz(18), color: "rgba(250,248,245,0.65)", marginTop: sz(18), lineHeight: 1.5, maxWidth: sz(340) }}>
+              Scan to join ~ it&apos;s free. Ask questions, share wins, get early access to everything we build.
             </div>
           </div>
-          <svg
-            width={sz(140)}
-            height={sz(140)}
-            style={{ transform: "rotate(-90deg)" }}
-          >
-            {(() => {
-              const r = sz(52);
-              const sw = sz(16);
-              const cx = sz(70);
-              const cy = sz(70);
-              const circ = 2 * Math.PI * r;
-              const segs = [
-                { val: stats.ghlOnly, color: C.primary },
-                { val: stats.both, color: onDark },
-                { val: stats.skoolOnly, color: `${C.primary}60` },
-              ];
-              let cum = 0;
-              return segs.map((s, i) => {
-                const pct = s.val / stats.total;
-                const offset = circ * (1 - pct);
-                const rot = cum * 360;
-                cum += pct;
-                return (
-                  <circle
-                    key={i}
-                    cx={cx}
-                    cy={cy}
-                    r={r}
-                    fill="none"
-                    stroke={s.color}
-                    strokeWidth={sw}
-                    strokeDasharray={`${circ}`}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    style={{
-                      transform: `rotate(${rot}deg)`,
-                      transformOrigin: "50% 50%",
-                      transition: "all 1s cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
-                  />
-                );
-              });
-            })()}
-          </svg>
-        </div>
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            gap: sz(12),
-            marginTop: sz(24),
-          }}
-        >
-          {[
-            { label: "GHL funnel", val: stats.ghlOnly, color: C.primary },
-            { label: "Both platforms", val: stats.both, color: onDark },
-            {
-              label: "Skool community",
-              val: stats.skoolOnly,
-              color: `${C.primary}90`,
-            },
-          ].map((p) => (
-            <div
-              key={p.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: sz(8),
-                padding: `${sz(8)}px ${sz(14)}px`,
-                borderRadius: 100,
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  width: sz(8),
-                  height: sz(8),
-                  borderRadius: "50%",
-                  background: p.color,
-                }}
+          {/* Right: QR code */}
+          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: sz(12) }}>
+            <div style={{ background: "#FFFFFF", borderRadius: sz(14), padding: sz(10), border: "2px solid rgba(255,255,255,0.15)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent("https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7")}&margin=0&color=2A2520&bgcolor=FFFFFF`}
+                alt="Join the Skool community"
+                width={sz(160)}
+                height={sz(160)}
+                style={{ display: "block", imageRendering: "pixelated" }}
               />
-              <span
-                style={{
-                  ...mono,
-                  fontSize: sz(11),
-                  color: "rgba(250,248,245,0.7)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase" as const,
-                }}
-              >
-                {p.label}
-              </span>
-              <span
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  fontWeight: 300,
-                  color: onDark,
-                }}
-              >
-                {p.val}
-              </span>
             </div>
-          ))}
+            <div style={{ ...mono, fontSize: sz(10), color: "rgba(250,248,245,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" as const, textAlign: "center" }}>
+              skool.com/future-proof-with-ai-4339
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Pain points */}
+      {/* Pain points + AI experience ~ two column */}
       <div
         style={{
-          background: C.surface,
-          borderRadius: sz(20),
-          padding: `${sz(28)}px ${sz(30)}px`,
-          border: `1px solid ${C.border}`,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: sz(20),
           marginBottom: sz(28),
           opacity: revealed >= 2 ? 1 : 0,
           transform: revealed >= 2 ? "translateY(0)" : "translateY(20px)",
           transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
+        <div
+          style={{
+            background: C.surface,
+            borderRadius: sz(20),
+            padding: `${sz(28)}px ${sz(30)}px`,
+            border: `1px solid ${C.border}`,
+          }}
+        >
         <div
           style={{
             ...mono,
@@ -1175,10 +980,7 @@ export function CommunityPulse({
                       letterSpacing: "0.08em",
                     }}
                   >
-                    {count}{" "}
-                    <span style={{ opacity: 0.5 }}>
-                      ({((count / painTotal) * 100).toFixed(0)}%)
-                    </span>
+                    {((count / painTotal) * 100).toFixed(0)}%
                   </span>
                 </div>
                 <div
@@ -1218,19 +1020,7 @@ export function CommunityPulse({
             );
           })}
         </div>
-      </div>
-
-      {/* AI experience */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: sz(20),
-          opacity: revealed >= 3 ? 1 : 0,
-          transform: revealed >= 3 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
+        </div>
         <div
           style={{
             background: C.surface,
@@ -1330,8 +1120,9 @@ export function CommunityPulse({
             })}
           </div>
         </div>
+      </div>
 
-        <div
+        {false && <div
           style={{
             background: C.text,
             color: onDark,
@@ -1469,8 +1260,7 @@ export function CommunityPulse({
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div>}
 
       {/* Mentor track */}
       <div
