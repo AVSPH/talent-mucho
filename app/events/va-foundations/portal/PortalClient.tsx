@@ -1,141 +1,111 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Lock, Mail, Video, FileText, ArrowRight, CheckCircle2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Video, FileText } from "lucide-react";
 import { VA_FOUNDATIONS_CURRICULUM } from "@/lib/va-foundations/curriculum";
 
-const STORAGE_KEY = "tm_va_foundations_portal";
-
-interface Participant {
-  email: string;
-  name: string | null;
-  certified: boolean;
-}
+const PIN = "00012";
+const STORAGE_KEY = "tm_va_foundations_portal_unlocked";
 
 export default function PortalClient() {
-  const [participant, setParticipant] = useState<Participant | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const [unlocked, setUnlocked] = useState<boolean | null>(null);
 
   useEffect(() => {
     try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
-      if (raw) setParticipant(JSON.parse(raw));
+      setUnlocked(window.sessionStorage.getItem(STORAGE_KEY) === "1");
     } catch {
-      /* ignore */
-    } finally {
-      setLoaded(true);
+      setUnlocked(false);
     }
   }, []);
 
-  function handleUnlock(p: Participant) {
+  function handleUnlock() {
     try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+      window.sessionStorage.setItem(STORAGE_KEY, "1");
     } catch {
       /* ignore */
     }
-    setParticipant(p);
+    setUnlocked(true);
   }
 
-  if (!loaded) {
+  if (unlocked === null) {
     return <div className="min-h-screen bg-beige-50" />;
   }
 
-  if (!participant) {
-    return <EmailGate onUnlock={handleUnlock} />;
+  if (!unlocked) {
+    return <PinGate onUnlock={handleUnlock} />;
   }
 
-  return <Curriculum participant={participant} />;
+  return <Curriculum />;
 }
 
 /* ──────────────────────────────────────────
-   EMAIL GATE
+   PIN GATE
 ────────────────────────────────────────── */
-function EmailGate({ onUnlock }: { onUnlock: (p: Participant) => void }) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "checking" | "not_found" | "error">("idle");
+function PinGate({ onUnlock }: { onUnlock: () => void }) {
+  const [val, setVal] = useState("");
+  const [shake, setShake] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = email.trim().toLowerCase();
-    if (!trimmed.includes("@")) return;
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
-    setStatus("checking");
-    try {
-      const res = await fetch(`/api/events/va-foundations/portal/${encodeURIComponent(trimmed)}`);
-      if (res.ok) {
-        const data = await res.json();
-        onUnlock({ email: data.email, name: data.name ?? null, certified: !!data.certified });
-        return;
-      }
-      if (res.status === 404) {
-        setStatus("not_found");
-        return;
-      }
-      setStatus("error");
-    } catch {
-      setStatus("error");
+  function tryPin(v: string) {
+    if (v === PIN) {
+      onUnlock();
+      return;
+    }
+    if (v.length === PIN.length) {
+      setShake(true);
+      setVal("");
+      setTimeout(() => setShake(false), 500);
+    } else {
+      setVal(v);
     }
   }
 
   return (
     <div className="min-h-screen bg-charcoal-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-clay-500/15 border border-clay-500/30 flex items-center justify-center mb-5">
-            <Lock className="w-5 h-5 text-clay-500" />
-          </div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-3">
-            Participant Portal
-          </p>
-          <h1
-            className="text-3xl font-light text-beige-50 leading-tight"
-            style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
-          >
-            VA Foundations <em className="italic text-clay-500">Workshop</em>
-          </h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-espresso-800/60 border border-white/5 rounded-2xl p-6">
-          <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-beige-300/70 mb-2">
-            Enter the email you registered with
-          </label>
-          <div className="flex items-center gap-2 bg-charcoal-900 border border-white/10 rounded-xl px-4 py-3 mb-4">
-            <Mail className="w-4 h-4 text-taupe-400 shrink-0" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="bg-transparent text-beige-50 text-sm outline-none w-full placeholder:text-beige-300/30"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={status === "checking"}
-            className="w-full inline-flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 disabled:opacity-60 text-beige-50 font-medium text-sm px-6 py-3 rounded-full transition-all duration-200"
-          >
-            {status === "checking" ? "Checking..." : "Unlock the portal"}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-
-          {status === "not_found" && (
-            <p className="text-xs text-beige-300/70 font-light leading-relaxed mt-4">
-              We don't see that email on the roster yet. If you just registered, it can take a
-              little while to show up here. Email{" "}
-              <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:text-clay-400">
-                hello@talentmucho.com
-              </a>{" "}
-              if it still doesn't work.
-            </p>
-          )}
-          {status === "error" && (
-            <p className="text-xs text-beige-300/70 font-light leading-relaxed mt-4">
-              Something went wrong checking the roster. Please try again in a moment.
-            </p>
-          )}
-        </form>
+      <div className="flex flex-col items-center gap-6 max-w-sm text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-clay-500">
+          Talent Mucho · VA Foundations Workshop
+        </p>
+        <h1
+          className="text-3xl md:text-4xl font-light text-beige-50 leading-tight"
+          style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+        >
+          Participants only.
+        </h1>
+        <p className="text-sm text-beige-300 font-light leading-relaxed">
+          Enter your access PIN to continue.
+        </p>
+        <input
+          ref={inputRef}
+          type="password"
+          inputMode="numeric"
+          maxLength={PIN.length}
+          value={val}
+          onChange={(e) => tryPin(e.target.value.replace(/\D/g, ""))}
+          aria-label="Access PIN"
+          placeholder="·····"
+          className={`bg-espresso-800 border border-white/10 rounded-xl text-beige-50 text-2xl text-center w-48 outline-none focus:border-clay-500 transition-all ${shake ? "animate-shake" : ""}`}
+          style={{ letterSpacing: "0.5em", padding: "14px 16px 14px 28px" }}
+        />
+        <p className="text-xs text-beige-300/50 font-light">
+          Lost your PIN? Email{" "}
+          <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:text-clay-400">
+            hello@talentmucho.com
+          </a>
+          .
+        </p>
+        <style>{`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+          }
+          .animate-shake { animation: shake 0.4s ease; }
+        `}</style>
       </div>
     </div>
   );
@@ -144,7 +114,7 @@ function EmailGate({ onUnlock }: { onUnlock: (p: Participant) => void }) {
 /* ──────────────────────────────────────────
    CURRICULUM / LESSONS
 ────────────────────────────────────────── */
-function Curriculum({ participant }: { participant: Participant }) {
+function Curriculum() {
   return (
     <div className="min-h-screen bg-beige-50">
       <section className="pt-16 pb-10 bg-charcoal-900">
@@ -156,19 +126,11 @@ function Curriculum({ participant }: { participant: Participant }) {
             className="text-3xl md:text-4xl font-light text-beige-50 mb-2 leading-tight"
             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
           >
-            Welcome{participant.name ? `, ${participant.name}` : ""}.
+            Welcome.
           </h1>
           <p className="text-beige-300 font-light text-sm">
             All 8 hours, lesson by lesson. Recordings and resources appear here as each session wraps.
           </p>
-          {participant.certified && (
-            <div className="inline-flex items-center gap-2 mt-4 bg-clay-500/10 border border-clay-500/30 rounded-full px-4 py-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-clay-500" />
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-clay-500">
-                Certified
-              </span>
-            </div>
-          )}
         </div>
       </section>
 
