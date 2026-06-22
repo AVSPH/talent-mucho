@@ -181,13 +181,30 @@ function Curriculum() {
                           ))}
                         </ul>
 
-                        <div className="flex flex-col gap-3.5 mb-5 bg-beige-50 border border-beige-200 rounded-xl p-5">
-                          {lesson.content.map((p, idx) => (
-                            <p key={idx} className="text-sm text-espresso-800 font-light leading-relaxed">
-                              {p}
-                            </p>
-                          ))}
-                        </div>
+                        <ul className="flex flex-col gap-2.5 mb-5 bg-beige-50 border border-beige-200 rounded-xl p-5">
+                          {lesson.content.map((line, idx) => {
+                            const isExample = line.startsWith("Example");
+                            return (
+                              <li
+                                key={idx}
+                                className={
+                                  isExample
+                                    ? "text-sm text-espresso-800 font-light leading-relaxed italic bg-white border border-beige-200 rounded-lg px-3 py-2"
+                                    : "text-sm text-espresso-800 font-light leading-relaxed flex gap-2"
+                                }
+                              >
+                                {isExample ? (
+                                  line
+                                ) : (
+                                  <>
+                                    <span className="text-clay-500 shrink-0">✓</span>
+                                    <span>{line}</span>
+                                  </>
+                                )}
+                              </li>
+                            );
+                          })}
+                        </ul>
 
                         <div className="flex flex-col gap-2">
                           {lesson.recordingUrl ? (
