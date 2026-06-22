@@ -98,9 +98,9 @@ const sessions = [
       },
       {
         h: "Hour 2 (90 min)",
-        title: "Build Your Portfolio + Landing Page with Claude",
+        title: "Build Your Portfolio Landing Page with Claude",
         items: [
-          "Hands-on: Claude writes your bio and builds your landing page",
+          "Hands-on: Claude writes your bio and builds your portfolio landing page",
           "How to publish it free before the session ends",
         ],
       },
@@ -127,7 +127,7 @@ const sessions = [
 const walkAways = [
   "A clear niche, service menu, and rates you can pitch with confidence",
   "A profile written to get noticed on LinkedIn, Upwork, and Talent Mucho",
-  "A live portfolio + landing page built and published with Claude",
+  "A live portfolio landing page built and published with Claude",
   "A working VA business dashboard to track clients, tasks, and invoices",
   "Talent Mucho VA certification, on completion",
 ];
@@ -150,7 +150,7 @@ const vipPerks = [
   {
     icon: <Sparkles className="w-4 h-4" />,
     title: "Built live, not pre-recorded",
-    desc: "Your landing page and dashboard are built with Claude during the session ~ you leave with both done.",
+    desc: "Your portfolio landing page and dashboard are built with Claude during the session ~ you leave with both done.",
   },
   {
     icon: <Star className="w-4 h-4" />,
@@ -202,7 +202,7 @@ export default function VAFoundationsPage() {
 
               <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed mb-9 max-w-xl">
                 Two live sessions. Eight hours. Day 1 you learn how to position, price, and pitch
-                yourself as a VA. Day 2 you build your portfolio, landing page, and dashboard live ~
+                yourself as a VA. Day 2 you build your portfolio landing page and dashboard live ~
                 with Claude.
               </p>
 
@@ -535,7 +535,7 @@ export default function VAFoundationsPage() {
                 {[
                   "8 live hours across 2 days",
                   "Day 1: niche, offer, rates, profile, pitching",
-                  "Day 2: portfolio, landing page & dashboard built live with Claude",
+                  "Day 2: portfolio landing page & dashboard built live with Claude",
                   "Templates: pitch messages, service menu, prompt briefs",
                   "Talent Mucho VA network certification",
                 ].map((item) => (
