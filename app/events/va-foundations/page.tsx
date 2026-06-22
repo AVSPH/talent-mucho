@@ -50,32 +50,24 @@ const sessions = [
         h: "Hour 1",
         title: "What It Really Means to Be a VA",
         items: [
-          "Welcome + what to expect from both days",
           "What a VA actually does vs. what most people think",
-          "Types of VA work: admin, social media, ops, executive, AI-assisted",
           "Who hires VAs and what they're really looking for",
-          "Q&A",
         ],
       },
       {
         h: "Hour 2",
         title: "Your Offer: Niche, Services, and Rates",
         items: [
-          "Why generalist VAs struggle to get hired",
-          "How to choose a niche that matches your skills",
-          "Building a service menu and setting your rates",
-          "Common pricing mistakes first-time VAs make",
-          "Exercise: Draft your starter service offer",
+          "How to choose a niche and build a service menu",
+          "Exercise: Draft your starter service offer and rates",
         ],
       },
       {
         h: "Hour 3",
         title: "Your VA Profile and Online Presence",
         items: [
-          "Where clients actually find VAs",
           "LinkedIn, Upwork, and Talent Mucho: how to show up on each",
           "Writing a profile that sounds human, not like a job application",
-          "What to put in your portfolio when you have no clients yet",
         ],
       },
       {
@@ -83,9 +75,6 @@ const sessions = [
         title: "Pitching and Getting Your First Client",
         items: [
           "The cold outreach method that actually works",
-          "Writing a pitch message (templates + live edits)",
-          "Discovery calls: what to say, what to ask, how to close",
-          "Red flags to watch out for in potential clients",
           "Homework: Send 3 outreach messages before Day 2",
         ],
       },
@@ -104,8 +93,6 @@ const sessions = [
         title: "Working Smarter with Claude",
         items: [
           "Why AI makes VAs more valuable, not replaceable",
-          "The VA tasks Claude handles best: emails, SOPs, content, research",
-          "How to prompt Claude well: the brief format that gets results",
           "Live demo: Claude doing real VA work in real time",
         ],
       },
@@ -113,9 +100,7 @@ const sessions = [
         h: "Hour 2 (90 min)",
         title: "Build Your Portfolio + Landing Page with Claude",
         items: [
-          "What every VA portfolio needs",
-          "Hands-on: Claude writes your bio from a simple prompt",
-          "Hands-on: Claude builds your one-page landing page (live, HTML output)",
+          "Hands-on: Claude writes your bio and builds your landing page",
           "How to publish it free before the session ends",
         ],
       },
@@ -123,7 +108,6 @@ const sessions = [
         h: "Hour 3",
         title: "Build Your VA Dashboard with Claude",
         items: [
-          "What to track: clients, tasks, deadlines, invoices, capacity",
           "Hands-on: Claude generates your working dashboard",
           "How to customize and host it",
         ],
@@ -133,8 +117,7 @@ const sessions = [
         title: "Certification + Next Steps",
         items: [
           "Talent Mucho VA network: how it works, what's expected",
-          "Certification requirements and submission",
-          "Final Q&A and closing",
+          "Certification requirements + final Q&A",
         ],
       },
     ],
@@ -400,8 +383,8 @@ export default function VAFoundationsPage() {
               Two days. Eight hours. Real assets by the end.
             </h2>
             <p className="text-espresso-800 font-light leading-relaxed">
-              Day 1 is about you ~ who you are as a VA and how to get hired. Day 2 is about building
-              ~ live, with Claude, in front of the group.
+              A focused overview, not a deep dive ~ four hours a day is enough to touch every topic
+              that matters and leave with real assets, not theory.
             </p>
           </div>
 
