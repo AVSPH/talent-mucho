@@ -172,7 +172,7 @@ function Curriculum() {
                         </span>
                       </summary>
                       <div className="px-6 md:px-8 pb-6">
-                        <ul className="flex flex-col gap-1.5 mb-4">
+                        <ul className="flex flex-col gap-1.5 mb-5">
                           {lesson.items.map((item) => (
                             <li key={item} className="text-sm text-espresso-800 font-light leading-relaxed flex gap-2">
                               <span className="text-taupe-400 shrink-0">·</span>
@@ -180,6 +180,14 @@ function Curriculum() {
                             </li>
                           ))}
                         </ul>
+
+                        <div className="flex flex-col gap-3.5 mb-5 bg-beige-50 border border-beige-200 rounded-xl p-5">
+                          {lesson.content.map((p, idx) => (
+                            <p key={idx} className="text-sm text-espresso-800 font-light leading-relaxed">
+                              {p}
+                            </p>
+                          ))}
+                        </div>
 
                         <div className="flex flex-col gap-2">
                           {lesson.recordingUrl ? (
