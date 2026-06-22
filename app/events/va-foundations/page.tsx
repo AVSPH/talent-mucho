@@ -108,8 +108,8 @@ const sessions = [
         h: "Hour 3",
         title: "Build Your VA Dashboard with Claude",
         items: [
-          "Hands-on: Claude generates your working dashboard",
-          "How to customize and host it",
+          "Hands-on: Claude generates your starter dashboard template",
+          "Take-home: customize and host it after the session",
         ],
       },
       {
@@ -150,7 +150,7 @@ const vipPerks = [
   {
     icon: <Sparkles className="w-4 h-4" />,
     title: "Built live, not pre-recorded",
-    desc: "Your portfolio landing page and dashboard are built with Claude during the session ~ you leave with both done.",
+    desc: "Your portfolio landing page is published live in the session. Your dashboard starts as a working template you customize after.",
   },
   {
     icon: <Star className="w-4 h-4" />,
@@ -535,7 +535,7 @@ export default function VAFoundationsPage() {
                 {[
                   "8 live hours across 2 days",
                   "Day 1: niche, offer, rates, profile, pitching",
-                  "Day 2: portfolio landing page & dashboard built live with Claude",
+                  "Day 2: portfolio landing page built live + starter dashboard with Claude",
                   "Templates: pitch messages, service menu, prompt briefs",
                   "Talent Mucho VA network certification",
                 ].map((item) => (
@@ -605,7 +605,7 @@ export default function VAFoundationsPage() {
                 },
                 {
                   q: "What do I actually walk away with?",
-                  a: "A defined niche and service menu, a rewritten VA profile, a published one-page portfolio site, a working dashboard to track clients and invoices, and Talent Mucho VA certification on completion.",
+                  a: "A defined niche and service menu, a rewritten VA profile, a published one-page portfolio site, a starter dashboard template to track clients and invoices, and Talent Mucho VA certification on completion.",
                 },
                 {
                   q: "What happens after the workshop?",
