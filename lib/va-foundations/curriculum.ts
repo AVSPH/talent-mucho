@@ -44,7 +44,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Exercise: Finish this sentence ~ 'I help [who], so they can stop worrying about [what].' Keep it; you'll reuse it in Hours 2-4.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d1-h2",
@@ -63,7 +68,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Exercise: Fill in the template ~ 'I help [niche] with [3 services] so they can [outcome]. Starting at [rate].' Write your version down before Hour 3.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d1-h3",
@@ -82,7 +92,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Exercise: Using your Hour 2 offer line, draft a headline + 3-sentence About section for one platform. We'll workshop a few live.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d1-h4",
@@ -101,7 +116,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Homework: Send 3 real outreach messages using this structure to 3 real businesses you'd actually want as clients. Bring whatever responses (or silence) you get to Day 2.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
     ],
   },
@@ -126,7 +146,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Golden rule: AI drafts, you decide. Never send a client-facing message straight from Claude without reading it for accuracy and tone first.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d2-h2",
@@ -144,7 +169,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Step 4 (10 min) ~ Publish: Host it live and free (GitHub Pages, Netlify drop, Vercel, or your no-code builder's publish button). Leave with a real working URL to put in outreach messages.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d2-h3",
@@ -162,7 +192,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Take-home: customize the template with your real (or first prospective) clients, pick where you'll host it long-term (Notion, Airtable, or a simple Google Sheet are all fine), and bring questions to Hour 4.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
       {
         id: "d2-h4",
@@ -180,7 +215,12 @@ export const VA_FOUNDATIONS_CURRICULUM: Session[] = [
           "Final Q&A: bring open questions about your offer, profile, build, or certification ~ last live chance to get unstuck before working solo.",
         ],
         recordingUrl: null,
-        resources: [],
+        resources: [
+          {
+            label: "Templates & Guides PDF (this lesson)",
+            url: "/assets/va-foundations/va-foundations-templates-guide.pdf",
+          },
+        ],
       },
     ],
   },
