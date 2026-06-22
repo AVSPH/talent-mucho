@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         "/services/websites",
         "/events",
         "/events/bootcamp",
+        "/events/va-foundations",
         "/community",
     ];
 
