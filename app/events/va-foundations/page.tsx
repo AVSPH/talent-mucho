@@ -183,9 +183,17 @@ export default function VAFoundationsPage() {
                 </span>
               </div>
 
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-taupe-400 mb-4">
-                Talent Mucho · VA Foundations Workshop
-              </p>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-taupe-400">
+                  Talent Mucho · VA Foundations Workshop
+                </p>
+                <Link
+                  href="/events/va-foundations/portal"
+                  className="text-xs font-medium text-clay-500 hover:text-clay-600 transition-colors whitespace-nowrap"
+                >
+                  Already registered? →
+                </Link>
+              </div>
 
               <h1
                 className="font-light tracking-tight text-charcoal-900 mb-6"
