@@ -26,7 +26,7 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-xl font-semibold text-charcoal-900 mb-3">1. Who we are</h2>
               <p>
-                This Privacy Policy applies to <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey) and Mary Kris Gebe, freelancers registered in Spain. Our website is <a href="https://talentmucho.com" className="text-clay-500 hover:underline">talentmucho.com</a>.
+                This Privacy Policy applies to <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey), a freelancer registered in Spain, and Mary Kris Gebe, a freelancer registered in the Philippines. Our website is <a href="https://talentmucho.com" className="text-clay-500 hover:underline">talentmucho.com</a>.
               </p>
               <p className="mt-3">
                 For any privacy-related questions, contact us at: <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>
