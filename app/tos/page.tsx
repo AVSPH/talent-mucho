@@ -31,7 +31,17 @@ export default function TosPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">2. Events and registrations</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">2. No affiliation with Anthropic</h2>
+              <p>
+                Talent Mucho is an independent education provider and is not affiliated with, certified by, or endorsed by Anthropic, PBC, or any other AI company referenced in our content, branding, or events. Any references to Claude, Anthropic, or other third-party products or trademarks are for descriptive and educational purposes only.
+              </p>
+              <p className="mt-3">
+                All of our events, courses, and materials are provided for educational purposes only. Any certificate issued upon completion of an event or course is a Talent Mucho certificate of completion only, confirming attendance or participation, and is not a certification, accreditation, or endorsement issued by Anthropic or any other third party.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">3. Events and registrations</h2>
               <ul className="list-disc pl-6 mt-3 space-y-2">
                 <li>By registering for a free event, you agree to receive a Zoom link and event-related communications via email.</li>
                 <li>Free event spots are not guaranteed until registration is confirmed via email.</li>
@@ -41,7 +51,7 @@ export default function TosPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">3. Paid products and VIP access</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">4. Paid products and VIP access</h2>
               <ul className="list-disc pl-6 mt-3 space-y-2">
                 <li>All payments are processed securely via Stripe. By completing a purchase, you agree to Stripe&apos;s terms of service.</li>
                 <li>VIP event access includes the benefits listed at the time of purchase.</li>
@@ -51,14 +61,14 @@ export default function TosPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">4. Intellectual property</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">5. Intellectual property</h2>
               <p>
                 All content on this website ~ including text, design, graphics, and event materials ~ is the property of Talent Mucho. You may not reproduce, distribute, or use our content without prior written permission.
               </p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">5. Code of conduct</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">6. Code of conduct</h2>
               <p>By attending our events, you agree to:</p>
               <ul className="list-disc pl-6 mt-3 space-y-1">
                 <li>Treat all attendees, hosts, and speakers with respect</li>
@@ -69,35 +79,35 @@ export default function TosPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">6. Limitation of liability</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">7. Limitation of liability</h2>
               <p>
                 Talent Mucho provides educational content and events for informational purposes only. We do not guarantee specific results from attending our events or using our materials. To the extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of our services.
               </p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">7. Third-party platforms</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">8. Third-party platforms</h2>
               <p>
                 Our services use third-party platforms including Zoom, Skool, Stripe, and GoHighLevel. Your use of these platforms is subject to their respective terms of service. We are not responsible for any issues arising from third-party platforms.
               </p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">8. Governing law</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">9. Governing law</h2>
               <p>
                 These terms are governed by the laws of Spain. Any disputes will be subject to the jurisdiction of the courts of Spain.
               </p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">9. Changes to these terms</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">10. Changes to these terms</h2>
               <p>
                 We may update these terms from time to time. Continued use of our services after changes are posted constitutes your acceptance of the updated terms.
               </p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">10. Contact</h2>
+              <h2 className="text-xl font-semibold text-charcoal-900 mb-3">11. Contact</h2>
               <p>
                 For any questions about these Terms of Service, contact us at <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>.
               </p>
